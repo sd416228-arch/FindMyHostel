@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking #{{ booking.id }} - FindMy Hostel{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'bookings:list' %}">My Bookings</a></li>
+        <li class="breadcrumb-item active">Booking #{{ booking.id }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h4 class="mb-0">Booking #{{ booking.id }}</h4>
+            </div>
+            <div class="card-body">
+                <!-- Status -->
+                <div class="mb-4">
+                    <p class="mb-1"><strong>Status:</strong></p>
+                    {% if booking.status == 'pending' %}
+                        <span class="badge bg-warning text-dark">Pending Confirmation</span>
+                    {% elif booking.status == 'confirmed' %}
+                        <span class="badge bg-success">Confirmed</span>
+                    {% elif booking.status == 'checked_in' %}
+                        <span class="badge bg-info">Checked In</span>
+                    {% elif booking.status == 'completed' %}
+                        <span class="badge bg-secondary">Completed</span>
+                    {% else %}
+                        <span class="badge bg-danger">Cancelled</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Hostel & Room Info -->
+                <div class="mb-4">
+                    <h5>Hostel Information</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Hostel:</strong></p>
+                            <p><a href="{% url 'hostels:detail' booking.room.hostel.id %}">{{ booking.room.hostel.name }}</a></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Room:</strong></p>
+                            <p>{{ booking.room.room_number }} ({{ booking.room.get_room_type_display }})</p>
+                        </div>
+                    </div>
+                    
+                    <p class="mb-1"><strong>Location:</strong></p>
+                    <p>{{ booking.room.hostel.location }}, {{ booking.room.hostel.city }}, {{ booking.room.hostel.country }}</p>
+                    
+                    <p class="mb-1"><strong>Contact:</strong></p>
+                    <p>
+                        <i class="fas fa-phone"></i> <a href="tel:{{ booking.room.hostel.phone }}">{{ booking.room.hostel.phone }}</a><br>
+                        <i class="fas fa-envelope"></i> <a href="mailto:{{ booking.room.hostel.email }}">{{ booking.room.hostel.email }}</a>
+                    </p>
+                </div>
+                
+                <hr>
+                
+                <!-- Booking Details -->
+                <div class="mb-4">
+                    <h5>Booking Details</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Check-in:</strong></p>
+                            <p>{{ booking.check_in_date|date:"l, F d, Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Check-out:</strong></p>
+                            <p>{{ booking.check_out_date|date:"l, F d, Y" }}</p>
+                        </div>
+                    </div>
+                    
+                    <p class="mb-1"><strong>Duration:</strong></p>
+                    <p>{{ booking.total_nights }} night(s)</p>
+                    
+                    <p class="mb-1"><strong>Number of Guests:</strong></p>
+                    <p>{{ booking.number_of_guests }}</p>
+                    
+                    {% if booking.special_requests %}
+                        <p class="mb-1"><strong>Special Requests:</strong></p>
+                        <p>{{ booking.special_requests }}</p>
+                    {% endif %}
+                </div>
+                
+                <hr>
+                
+                <!-- Guest Information -->
+                <div class="mb-4">
+                    <h5>Guest Information</h5>
+                    <p class="mb-1"><strong>Name:</strong></p>
+                    <p>{{ booking.guest_name }}</p>
+                    
+                    <p class="mb-1"><strong>Email:</strong></p>
+                    <p><a href="mailto:{{ booking.guest_email }}">{{ booking.guest_email }}</a></p>
+                    
+                    <p class="mb-1"><strong>Phone:</strong></p>
+                    <p><a href="tel:{{ booking.guest_phone }}">{{ booking.guest_phone }}</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Price Summary -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Price Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>${{ booking.price_per_night }} × {{ booking.total_nights }} nights</span>
+                    <span>${{ booking.total_price }}</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-2">
+                    <strong>Total:</strong>
+                    <strong class="h5" style="color: var(--primary-color);">${{ booking.total_price }}</strong>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Booking Timeline -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Booking Timeline</h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot bg-primary"></div>
+                        <div>
+                            <p class="mb-0"><strong>Booking Created</strong></p>
+                            <small class="text-muted">{{ booking.created_at|date:"M d, Y H:i" }}</small>
+                        </div>
+                    </div>
+                    {% if booking.status != 'pending' %}
+                        <div class="timeline-item">
+                            <div class="timeline-dot bg-success"></div>
+                            <div>
+                                <p class="mb-0"><strong>Booking Confirmed</strong></p>
+                                <small class="text-muted">{{ booking.updated_at|date:"M d, Y H:i" }}</small>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if booking.status == 'checked_in' %}
+                        <div class="timeline-item">
+                            <div class="timeline-dot bg-info"></div>
+                            <div>
+                                <p class="mb-0"><strong>Checked In</strong></p>
+                                <small class="text-muted">{{ booking.updated_at|date:"M d, Y H:i" }}</small>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if booking.status == 'completed' %}
+                        <div class="timeline-item">
+                            <div class="timeline-dot bg-secondary"></div>
+                            <div>
+                                <p class="mb-0"><strong>Booking Completed</strong></p>
+                                <small class="text-muted">{{ booking.updated_at|date:"M d, Y H:i" }}</small>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        {% if booking.status not in 'completed,cancelled' %}
+            <div class="d-grid gap-2">
+                <form method="POST" action="{% url 'bookings:cancel' booking.id %}" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger">
+                        <i class="fas fa-times"></i> Cancel Booking
+                    </button>
+                </form>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <p class="mb-0"><small>This booking cannot be modified.</small></p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .timeline-item {
+        display: flex;
+        margin-bottom: 1.5rem;
+    }
+    
+    .timeline-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 1rem;
+        margin-top: 0.25rem;
+        flex-shrink: 0;
+    }
+</style>
+
+{% endblock %}

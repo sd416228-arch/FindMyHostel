@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Hostels - FindMy Hostel{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">
+    <i class="fas fa-search"></i> Find Hostels
+</h1>
+
+<div class="row">
+    <!-- Sidebar Filters -->
+    <div class="col-md-3 mb-4">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-body">
+                <h5 class="card-title">Filters</h5>
+                <form method="GET" id="filterForm">
+                    <!-- City Filter -->
+                    <div class="mb-3">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city" name="city" value="{{ filters.city }}" placeholder="Enter city">
+                    </div>
+                    
+                    <!-- Price Range -->
+                    <div class="mb-3">
+                        <label class="form-label">Price Range</label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="number" class="form-control" name="min_price" placeholder="Min" value="{{ filters.min_price }}">
+                            </div>
+                            <div class="col">
+                                <input type="number" class="form-control" name="max_price" placeholder="Max" value="{{ filters.max_price }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Dates -->
+                    <div class="mb-3">
+                        <label for="check_in" class="form-label">Check-in</label>
+                        <input type="date" class="form-control" id="check_in" name="check_in" value="{{ filters.check_in }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="check_out" class="form-label">Check-out</label>
+                        <input type="date" class="form-control" id="check_out" name="check_out" value="{{ filters.check_out }}">
+                    </div>
+                    
+                    <!-- Submit -->
+                    <button type="submit" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <a href="{% url 'hostels:list' %}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-redo"></i> Reset
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Results -->
+    <div class="col-md-9">
+        {% if hostels %}
+            <div class="row">
+                {% for hostel in hostels %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            {% if hostel.cover_image %}
+                                <img src="{{ hostel.cover_image.url }}" class="card-img-top" alt="{{ hostel.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-image fa-5x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="card-body">
+                                <h5 class="card-title">{{ hostel.name }}</h5>
+                                
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-map-marker-alt"></i> {{ hostel.city }}, {{ hostel.country }}
+                                    </small>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <span class="fw-bold">{{ hostel.rating|floatformat:1 }}</span>
+                                        <span class="text-muted">({{ hostel.reviews_count }})</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="card-text text-truncate">{{ hostel.description }}</p>
+                                
+                                <div class="mb-2">
+                                    <small>
+                                        {% for amenity in hostel.get_amenities_list %}
+                                            <span class="badge bg-light text-dark">{{ amenity }}</span>
+                                        {% endfor %}
+                                    </small>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">From <strong>${{ hostel.base_price }}</strong>/night</h6>
+                                    </div>
+                                    <a href="{% url 'hostels:detail' hostel.id %}" class="btn btn-primary btn-sm">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center py-5">
+                <i class="fas fa-search fa-3x mb-3"></i>
+                <p class="mb-0">No hostels found matching your criteria. Try adjusting your filters.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

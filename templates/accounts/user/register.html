@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - FindMy Hostel{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body p-5">
+                <h2 class="card-title mb-4 text-center">Create Account</h2>
+                
+                <form method="POST" id="registerForm" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control {% if errors.email %}is-invalid{% endif %}" 
+                               id="email" name="email" required value="{{ form_data.email }}">
+                        {% if errors.email %}
+                            <div class="invalid-feedback d-block">{{ errors.email }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted" id="emailHelp"></small>
+                    </div>
+                    
+                    <!-- Username -->
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control {% if errors.username %}is-invalid{% endif %}" 
+                               id="username" name="username" required value="{{ form_data.username }}">
+                        {% if errors.username %}
+                            <div class="invalid-feedback d-block">{{ errors.username }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Role -->
+                    <div class="mb-3">
+                        <label for="role" class="form-label">I am a <span class="text-danger">*</span></label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="student" {% if form_data.role == 'student' %}selected{% endif %}>Student (Traveler)</option>
+                            <option value="owner" {% if form_data.role == 'owner' %}selected{% endif %}>Hostel Owner</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Phone -->
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ form_data.phone }}">
+                    </div>
+                    
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control {% if errors.password %}is-invalid{% endif %}" 
+                               id="password" name="password" required>
+                        {% if errors.password %}
+                            <div class="invalid-feedback d-block">{{ errors.password }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">Minimum 8 characters</small>
+                    </div>
+                    
+                    <!-- Confirm Password -->
+                    <div class="mb-3">
+                        <label for="password_confirm" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
+                    </div>
+                    
+                    <!-- Terms -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" required>
+                        <label class="form-check-label" for="terms">
+                            I agree to the Terms & Conditions
+                        </label>
+                    </div>
+                    
+                    <!-- Submit -->
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">Register</button>
+                </form>
+                
+                <hr>
+                <p class="text-center mb-0">Already have an account? <a href="{% url 'accounts:login' %}">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Client-side form validation
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('password_confirm').value;
+        
+        let hasError = false;
+        
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            document.getElementById('email').classList.add('is-invalid');
+            hasError = true;
+        }
+        
+        // Password validation
+        if (password.length < 8) {
+            document.getElementById('password').classList.add('is-invalid');
+            hasError = true;
+        }
+        
+        // Password match
+        if (password !== passwordConfirm) {
+            document.getElementById('password_confirm').classList.add('is-invalid');
+            hasError = true;
+        }
+        
+        if (hasError) {
+            e.preventDefault();
+        }
+    });
+    
+    // Real-time email validation with AJAX
+    document.getElementById('email').addEventListener('blur', function() {
+        const email = this.value;
+        if (email && email.includes('@')) {
+            fetch('{% url "accounts:check_email_api" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({email: email})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.exists) {
+                    document.getElementById('email').classList.add('is-invalid');
+                    document.getElementById('emailHelp').textContent = 'Email already registered';
+                } else {
+                    document.getElementById('email').classList.remove('is-invalid');
+                    document.getElementById('emailHelp').textContent = '';
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}

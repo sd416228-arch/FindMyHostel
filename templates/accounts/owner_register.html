@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Sign Up - FindMy Hostel{% endblock %}
+{% block main_class %}fm-auth-shell{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <section class="fm-auth-scene admin">
+                <div class="fm-auth-header">
+                    <h1>Admin Sign Up</h1>
+                    <p>Create an owner account to manage hostel listings.</p>
+                </div>
+
+                <div class="fm-auth-card">
+                    <form method="POST" id="ownerRegisterForm">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control {% if errors.email %}is-invalid{% endif %}" name="email" placeholder="Enter your admin email" value="{{ form_data.email|default:'' }}" required>
+                            {% if errors.email %}<div class="invalid-feedback d-block">{{ errors.email }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control {% if errors.username %}is-invalid{% endif %}" name="username" placeholder="Choose a username" value="{{ form_data.username|default:'' }}" required>
+                            {% if errors.username %}<div class="invalid-feedback d-block">{{ errors.username }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" name="phone" placeholder="Enter your phone number" value="{{ form_data.phone|default:'' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control {% if errors.password %}is-invalid{% endif %}" name="password" placeholder="Create a password" required>
+                            {% if errors.password %}<div class="invalid-feedback d-block">{{ errors.password }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" name="password_confirm" placeholder="Confirm your password" required>
+                        </div>
+
+                        <button type="submit" class="btn fm-btn-blue btn-lg w-100">Sign Up</button>
+                    </form>
+                </div>
+
+                <p class="fm-auth-bottom text-center">
+                    Already have an admin account? <a href="{% url 'accounts:owner_login' %}">Login</a>
+                    <span class="d-block mt-2">Booking a hostel? <a href="{% url 'accounts:student_register' %}">User Sign Up</a></span>
+                </p>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

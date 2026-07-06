@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if room %}Edit{% else %}Add{% endif %} Room - FindMy Hostel{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="card-title mb-4">
+                    {% if room %}Edit Room{% else %}Add New Room{% endif %}
+                    - {{ hostel.name }}
+                </h2>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="room_number" class="form-label">Room Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="room_number" name="room_number" required value="{{ room.room_number|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="room_type" class="form-label">Room Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="room_type" name="room_type" required>
+                                <option value="">Select type</option>
+                                <option value="single" {% if room.room_type == 'single' %}selected{% endif %}>Single</option>
+                                <option value="double" {% if room.room_type == 'double' %}selected{% endif %}>Double</option>
+                                <option value="dorm" {% if room.room_type == 'dorm' %}selected{% endif %}>Dormitory</option>
+                                <option value="deluxe" {% if room.room_type == 'deluxe' %}selected{% endif %}>Deluxe</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="capacity" class="form-label">Capacity (guests) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" min="1" required value="{{ room.capacity|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="price_per_night" class="form-label">Price per Night ($) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="price_per_night" name="price_per_night" step="0.01" min="0" required value="{{ room.price_per_night|default:'' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{ room.description|default:'' }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Room Image</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                        {% if room.image %}
+                            <small class="text-muted d-block mt-2">Current: <a href="{{ room.image.url }}" target="_blank">View Image</a></small>
+                        {% endif %}
+                    </div>
+                    
+                    <h5 class="mt-4 mb-3">Room Features</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="has_ac" name="has_ac" {% if room.has_ac %}checked{% endif %}>
+                                <label class="form-check-label" for="has_ac">Air Conditioning</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="has_bathroom" name="has_bathroom" {% if room.has_bathroom %}checked{% endif %}>
+                                <label class="form-check-label" for="has_bathroom">Private Bathroom</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="has_tv" name="has_tv" {% if room.has_tv %}checked{% endif %}>
+                                <label class="form-check-label" for="has_tv">TV</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="has_balcony" name="has_balcony" {% if room.has_balcony %}checked{% endif %}>
+                                <label class="form-check-label" for="has_balcony">Balcony</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Save Room
+                        </button>
+                        <a href="{% url 'hostels:owner_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

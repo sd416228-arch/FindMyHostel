@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}FindMyHostel - Hostels in Nepal{% endblock %}
+{% block main_class %}fm-page{% endblock %}
+
+{% block content %}
+<section class="fm-hero">
+    <div class="fm-hero-overlay">
+        <div class="container">
+            <div class="fm-hero-content">
+                <h1>Find Your <strong>Perfect Hostel in Nepal</strong></h1>
+                <p>Search and Book Hostels Easily Across Nepal</p>
+
+                <form class="fm-search-bar" action="{% url 'hostels:list' %}" method="get">
+                    <select class="form-select" name="city" aria-label="City or area">
+                        <option value="">City or Area</option>
+                        <option value="Kathmandu">Kathmandu</option>
+                        <option value="Pokhara">Pokhara</option>
+                        <option value="Butwal">Butwal</option>
+                        <option value="Biratnagar">Biratnagar</option>
+                    </select>
+                    <select class="form-select" name="room_type" aria-label="Room type">
+                        <option value="">Room Type</option>
+                        <option value="single">Single Room</option>
+                        <option value="double">Double Room</option>
+                        <option value="dormitory">Dormitory</option>
+                    </select>
+                    <select class="form-select" name="max_price" aria-label="Price range">
+                        <option value="">Price Range</option>
+                        <option value="5000">Under Rs.5000</option>
+                        <option value="10000">Under Rs.10000</option>
+                        <option value="20000">Under Rs.20000</option>
+                    </select>
+                    <button class="btn fm-btn-orange" type="submit">
+                        <i class="fas fa-search"></i> Search Hostel
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container fm-audience-section">
+    <div class="row g-4 justify-content-center">
+        {% if not user.is_authenticated or not user.is_hostel_owner %}
+        <div class="col-lg-5">
+            <div class="fm-audience-card">
+                <h2>For <span>Hostel Seekers</span></h2>
+                <div class="fm-audience-row">
+                    <i class="fas fa-map-location-dot"></i>
+                    <div>
+                        <h3>Explore & Book Hostels</h3>
+                        <p>Find verified rooms across Nepal.</p>
+                    </div>
+                </div>
+                <div class="fm-audience-row">
+                    <i class="fas fa-comments"></i>
+                    <div>
+                        <h3>Best Deals & Reviews</h3>
+                        <p>Compare prices before you book.</p>
+                    </div>
+                    <a class="btn fm-btn-orange ms-lg-auto" href="{% url 'hostels:list' %}">Find Hostels</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if not user.is_authenticated or user.is_hostel_owner %}
+        <div class="col-lg-5">
+            <div class="fm-audience-card fm-owner-card">
+                <h2>For <span>Hostel Owners</span></h2>
+                <div class="fm-audience-row">
+                    <i class="fas fa-suitcase"></i>
+                    <div>
+                        <h3>Manage Listings</h3>
+                        <p>Add rooms, prices, and hostel details.</p>
+                    </div>
+                </div>
+                <div class="fm-audience-row">
+                    <i class="fas fa-calendar-check"></i>
+                    <div>
+                        <h3>Track Bookings</h3>
+                        <p>Manage guest requests from one dashboard.</p>
+                    </div>
+                    {% if user.is_authenticated and user.is_hostel_owner %}
+                        <a class="btn fm-btn-blue ms-lg-auto" href="{% url 'hostels:owner_dashboard' %}">Hostel Dashboard</a>
+                    {% else %}
+                        <a class="btn fm-btn-blue ms-lg-auto" href="{% url 'accounts:owner_login' %}">Hostel Dashboard</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="container fm-section" id="popular-hostels">
+    <div class="fm-section-title">
+        <span></span>
+        <h2>Popular Hostels in Nepal</h2>
+        <span></span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <article class="fm-hostel-card">
+                <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=900&q=80" alt="Himalaya Hostel">
+                <div>
+                    <h3>Himalaya Hostel</h3>
+                    <p>Kathmandu valley stay near the city center.</p>
+                    <div class="fm-card-footer">
+                        <span class="rating">★★★★★</span>
+                        <a href="{% url 'hostels:list' %}" class="btn fm-btn-orange">View Details</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="col-md-4">
+            <article class="fm-hostel-card">
+                <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80" alt="Everest View Hostel">
+                <div>
+                    <h3>Everest View Hostel</h3>
+                    <p>Mountain views, warm rooms, and easy booking.</p>
+                    <div class="fm-card-footer">
+                        <span class="rating">★★★★★</span>
+                        <a href="{% url 'hostels:list' %}" class="btn fm-btn-blue">View Details</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="col-md-4">
+            <article class="fm-hostel-card">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80" alt="Lakeside Hostel">
+                <div>
+                    <h3>Lakeside Hostel</h3>
+                    <p>Pokhara comfort near lakeside cafes and trails.</p>
+                    <div class="fm-card-footer">
+                        <span class="rating">★★★★★</span>
+                        <a href="{% url 'hostels:list' %}" class="btn fm-btn-blue">View Details</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="fm-why" id="why-choose">
+    <div class="container">
+        <h2>Why Choose FindMyHostel?</h2>
+        <div class="fm-why-strip">
+            <div><i class="fas fa-circle-check"></i> Verified Listings</div>
+            <div><i class="fas fa-bed"></i> Easy Booking</div>
+            <div><i class="fas fa-headset"></i> 24/7 Support</div>
+        </div>
+    </div>
+</section>
+{% endblock %}

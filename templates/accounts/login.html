@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - FindMy Hostel{% endblock %}
+{% block main_class %}fm-auth-shell{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <section class="fm-auth-scene">
+                <div class="fm-auth-header">
+                    <h1>Login</h1>
+                    <p>Access your account and continue booking or managing hostels.</p>
+                </div>
+
+                <div class="fm-auth-card">
+                    <form method="POST" id="loginForm" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required value="{{ email }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                            <label class="form-check-label" for="remember">Remember me</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">Login</button>
+                    </form>
+                </div>
+
+                <p class="fm-auth-bottom text-center">
+                    Don't have an account? <a href="{% url 'accounts:register' %}">Register here</a>
+                    <span class="d-block mt-2">Or choose <a href="{% url 'accounts:student_login' %}">User login</a> / <a href="{% url 'accounts:owner_login' %}">Admin login</a></span>
+                </p>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        if (!email || !password) {
+            e.preventDefault();
+            alert('Please fill in all fields');
+        }
+    });
+</script>
+{% endblock %}

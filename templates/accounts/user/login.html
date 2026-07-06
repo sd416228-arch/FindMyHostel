@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - FindMy Hostel{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body p-5">
+                <h2 class="card-title mb-4 text-center">Welcome Back</h2>
+                
+                <form method="POST" id="loginForm" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" required value="{{ email }}">
+                    </div>
+                    
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    
+                    <!-- Remember Me -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">
+                            Remember me
+                        </label>
+                    </div>
+                    
+                    <!-- Submit -->
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">Login</button>
+                </form>
+                
+                <hr>
+                <div class="text-center">
+                    <p class="mb-2">Don't have an account? <a href="{% url 'accounts:register' %}">Register here</a></p>
+                    <p class="mb-2">Hostel owner? <a href="{% url 'accounts:owner_register' %}">Register here</a> or <a href="{% url 'accounts:owner_login' %}">Login here</a></p>
+                    <p class="mb-0 text-muted"><a href="#">Forgot password?</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Client-side validation
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        if (!email || !password) {
+            e.preventDefault();
+            alert('Please fill in all fields');
+        }
+    });
+</script>
+
+{% endblock %}

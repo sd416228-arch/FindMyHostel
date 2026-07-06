@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - FindMy Hostel{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="card-title mb-4">My Profile</h2>
+                
+                <div class="text-center mb-4">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="Profile" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                            <i class="fas fa-user fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Email</label>
+                    <p class="h5">{{ user.email }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Username</label>
+                    <p class="h5">{{ user.username }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Role</label>
+                    <p class="h5">
+                        {% if user.is_hostel_owner %}
+                            <span class="badge bg-primary">Hostel Owner</span>
+                        {% else %}
+                            <span class="badge bg-success">Student/Traveler</span>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Phone</label>
+                    <p class="h5">{{ user.phone|default:"Not provided" }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Member Since</label>
+                    <p class="h5">{{ user.created_at|date:"F d, Y" }}</p>
+                </div>
+                
+                <hr>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

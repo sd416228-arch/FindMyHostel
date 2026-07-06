@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if hostel %}Edit{% else %}Add{% endif %} Hostel - FindMy Hostel{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="card-title mb-4">
+                    {% if hostel %}Edit Hostel{% else %}Add New Hostel{% endif %}
+                </h2>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Hostel Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required value="{{ hostel.name|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required value="{{ hostel.email|default:'' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required>{{ hostel.description|default:'' }}</textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="location" name="location" required value="{{ hostel.location|default:'' }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="city" name="city" required value="{{ hostel.city|default:'' }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="country" class="form-label">Country <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="country" name="country" required value="{{ hostel.country|default:'' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required value="{{ hostel.phone|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="website" class="form-label">Website</label>
+                            <input type="url" class="form-control" id="website" name="website" value="{{ hostel.website|default:'' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="base_price" class="form-label">Base Price ($/night) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" min="0" required value="{{ hostel.base_price|default:'' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="cover_image" class="form-label">Cover Image</label>
+                        <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*">
+                        {% if hostel.cover_image %}
+                            <small class="text-muted d-block mt-2">Current: <a href="{{ hostel.cover_image.url }}" target="_blank">View Image</a></small>
+                        {% endif %}
+                    </div>
+                    
+                    <h5 class="mt-4 mb-3">Amenities</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="wifi" name="wifi" {% if hostel.wifi %}checked{% endif %}>
+                                <label class="form-check-label" for="wifi">WiFi</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="parking" name="parking" {% if hostel.parking %}checked{% endif %}>
+                                <label class="form-check-label" for="parking">Parking</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="laundry" name="laundry" {% if hostel.laundry %}checked{% endif %}>
+                                <label class="form-check-label" for="laundry">Laundry</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="kitchen" name="kitchen" {% if hostel.kitchen %}checked{% endif %}>
+                                <label class="form-check-label" for="kitchen">Kitchen</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="gym" name="gym" {% if hostel.gym %}checked{% endif %}>
+                                <label class="form-check-label" for="gym">Gym</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Save Hostel
+                        </button>
+                        <a href="{% url 'hostels:owner_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
