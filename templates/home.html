@@ -8,8 +8,8 @@
     <div class="fm-hero-overlay">
         <div class="container">
             <div class="fm-hero-content">
-                <h1>Find Your <strong>Perfect Hostel in Nepal</strong></h1>
-                <p>Search and Book Hostels Easily Across Nepal</p>
+                    <h1>Find Your <strong>Perfect Hostel</strong> in Nepal</h1>
+                <p>Search, compare, and book verified hostels across Nepal — no booking fees, no hidden charges.</p>
 
                 <form class="fm-search-bar" action="{% url 'hostels:list' %}" method="get">
                     <select class="form-select" name="city" aria-label="City or area">
@@ -27,12 +27,12 @@
                     </select>
                     <select class="form-select" name="max_price" aria-label="Price range">
                         <option value="">Price Range</option>
-                        <option value="5000">Under Rs.5000</option>
-                        <option value="10000">Under Rs.10000</option>
-                        <option value="20000">Under Rs.20000</option>
+                        <option value="5000">Under Rs.5,000</option>
+                        <option value="10000">Under Rs.10,000</option>
+                        <option value="20000">Under Rs.20,000</option>
                     </select>
                     <button class="btn fm-btn-orange" type="submit">
-                        <i class="fas fa-search"></i> Search Hostel
+                        <i class="fas fa-search me-2"></i> Search
                     </button>
                 </form>
             </div>
@@ -42,8 +42,8 @@
 
 <section class="container fm-audience-section">
     <div class="row g-4 justify-content-center">
-        {% if not user.is_authenticated or not user.is_hostel_owner %}
-        <div class="col-lg-5">
+        {% if user.is_authenticated and not user.is_hostel_owner %}
+        <div class="col-md-8 col-lg-5">
             <div class="fm-audience-card">
                 <h2>For <span>Hostel Seekers</span></h2>
                 <div class="fm-audience-row">
@@ -65,7 +65,7 @@
         </div>
         {% endif %}
 
-        {% if not user.is_authenticated or user.is_hostel_owner %}
+        {% if user.is_authenticated and user.is_hostel_owner %}
         <div class="col-lg-5">
             <div class="fm-audience-card fm-owner-card">
                 <h2>For <span>Hostel Owners</span></h2>
@@ -73,20 +73,16 @@
                     <i class="fas fa-suitcase"></i>
                     <div>
                         <h3>Manage Listings</h3>
-                        <p>Add rooms, prices, and hostel details.</p>
+                        <p>Add rooms, prices, and details.</p>
                     </div>
                 </div>
                 <div class="fm-audience-row">
                     <i class="fas fa-calendar-check"></i>
                     <div>
                         <h3>Track Bookings</h3>
-                        <p>Manage guest requests from one dashboard.</p>
+                        <p>Manage requests from one dashboard.</p>
                     </div>
-                    {% if user.is_authenticated and user.is_hostel_owner %}
-                        <a class="btn fm-btn-blue ms-lg-auto" href="{% url 'hostels:owner_dashboard' %}">Hostel Dashboard</a>
-                    {% else %}
-                        <a class="btn fm-btn-blue ms-lg-auto" href="{% url 'accounts:owner_login' %}">Hostel Dashboard</a>
-                    {% endif %}
+                    <a class="btn fm-btn-blue ms-lg-auto" href="{% url 'hostels:owner_dashboard' %}">Dashboard</a>
                 </div>
             </div>
         </div>
@@ -94,7 +90,76 @@
     </div>
 </section>
 
-<section class="container fm-section" id="popular-hostels">
+{% if not user.is_authenticated %}
+<section class="container-fluid px-0 my-5 position-relative overflow-hidden" id="community" style="background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);">
+    <div style="background: linear-gradient(135deg, var(--fm-blue), var(--fm-blue-dark)); position: relative; z-index: 1;">
+        <div class="text-center text-white py-4 px-3" style="font-size: 1.05rem; font-weight: 500;">
+            <i class="fas fa-check-circle me-2" style="color: #22c55e;"></i>
+            Over 30+ verified hostels across Nepal &bull; Perfect for Students and Travelers
+        </div>
+        <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width: 100%; height: 70px; display: block; transform: translateY(1px);">
+            <path d="M0,0 C320,90 420,90 720,30 C1020,-30 1120,-30 1440,60 L1440,0 L0,0 Z" fill="var(--fm-blue)"/>
+        </svg>
+    </div>
+
+    <div class="position-absolute w-100 d-flex justify-content-center align-items-end" style="bottom: 0; left: 0; height: 80px; opacity: 0.04; z-index: 0; pointer-events: none;">
+        <svg width="100%" height="80" viewBox="0 0 1000 80" preserveAspectRatio="none">
+            <path d="M50,80 L50,60 Q70,30 100,60 L100,80 Z" fill="black"/>
+            <path d="M250,80 L250,50 L230,50 L230,40 L270,40 L270,50 L250,50 Z" fill="black"/>
+            <path d="M450,80 L450,30 Q480,10 500,30 L500,80 Z" fill="black"/>
+            <path d="M700,80 L700,40 L680,40 L680,25 L720,25 L720,40 L700,40 Z" fill="black"/>
+            <path d="M900,80 L900,60 Q920,30 950,60 L950,80 Z" fill="black"/>
+        </svg>
+    </div>
+
+    <div class="container position-relative z-2" id="peopleContainer" style="margin-top: -80px; padding-bottom: 20px;">
+        <div class="d-flex justify-content-center align-items-center gap-2 flex-nowrap flex-md-wrap overflow-auto pb-2">
+            <div class="d-none d-md-block" style="transform: translateY(-10px);">
+                <img src="https://images.unsplash.com/photo-1526809627725-7036fbccfcbc?auto=format&fit=crop&w=400&q=80" alt="Traveler"
+                     style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.10);">
+            </div>
+            <div class="d-none d-md-block" style="transform: translateY(15px);">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" alt="Student"
+                     style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.10);">
+            </div>
+            <div>
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80" alt="Student"
+                     style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.10);"
+                     class="d-md-none">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80" alt="Student"
+                     style="width: 140px; height: 140px; object-fit: cover; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.10);"
+                     class="d-none d-md-block">
+            </div>
+            <div>
+                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80" alt="Students"
+                     style="width: 90px; height: 90px; object-fit: cover; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 15px 40px rgba(0,0,0,0.12);"
+                     class="d-md-none">
+                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80" alt="Students"
+                     style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 6px solid #fff; box-shadow: 0 15px 40px rgba(0,0,0,0.12);"
+                     class="d-none d-md-block">
+            </div>
+            <div>
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" alt="Traveler"
+                     style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.10);"
+                     class="d-md-none">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" alt="Traveler"
+                     style="width: 140px; height: 140px; object-fit: cover; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.10);"
+                     class="d-none d-md-block">
+            </div>
+            <div class="d-none d-md-block" style="transform: translateY(10px);">
+                <img src="https://images.unsplash.com/photo-1506863530036-1ef0d464f068?auto=format&fit=crop&w=400&q=80" alt="Traveler"
+                     style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.10);">
+            </div>
+            <div class="d-none d-lg-block" style="transform: translateY(-5px);">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80" alt="Student"
+                     style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.10);">
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="container py-5" id="popular-hostels">
     <div class="fm-section-title">
         <span></span>
         <h2>Popular Hostels in Nepal</h2>
@@ -102,56 +167,382 @@
     </div>
 
     <div class="row g-4">
-        <div class="col-md-4">
-            <article class="fm-hostel-card">
-                <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=900&q=80" alt="Himalaya Hostel">
-                <div>
-                    <h3>Himalaya Hostel</h3>
-                    <p>Kathmandu valley stay near the city center.</p>
-                    <div class="fm-card-footer">
-                        <span class="rating">★★★★★</span>
-                        <a href="{% url 'hostels:list' %}" class="btn fm-btn-orange">View Details</a>
+        {% for hostel in popular_hostels %}
+        <div class="col-md-6 col-lg-4">
+            <article class="fm-hostel-card h-100 d-flex flex-column shadow-sm" style="border: 1px solid var(--fm-line); border-radius: 20px;">
+                {% if hostel.cover_image %}
+                <img src="{{ hostel.cover_image.url }}" alt="{{ hostel.name }}" class="w-100" style="object-fit: cover;">
+                {% else %}
+                <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=900&q=80" alt="{{ hostel.name }}" class="w-100" style="object-fit: cover;">
+                {% endif %}
+                <div class="p-4 d-flex flex-column flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h3 class="mb-0 fs-6 fw-bold" style="color: var(--fm-ink);">{{ hostel.name }}</h3>
+                        <div class="d-inline-flex align-items-center gap-1 bg-light px-2 py-1 rounded-3 small fw-bold" style="color: #f59e0b;">
+                            <i class="fas fa-star" style="font-size: 0.7rem;"></i> {{ hostel.rating|default:"0.0" }}
+                            <span class="text-muted fw-normal" style="font-size: 0.7rem;">({{ hostel.reviews_count|default:"0" }})</span>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1" style="color: var(--fm-orange);"></i> {{ hostel.city }}</p>
+                    <p class="mb-3 flex-grow-1" style="color: var(--fm-muted); font-size: 0.88rem; line-height: 1.6;">{{ hostel.description|truncatewords:18 }}</p>
+                    <div class="d-flex justify-content-between align-items-center pt-3" style="border-top: 1px solid var(--fm-line);">
+                        <div>
+                            <span class="fw-bold" style="color: var(--fm-ink); font-size: 1.15rem;">Rs. {{ hostel.base_price }}</span>
+                            <span class="text-muted" style="font-size: 0.75rem;"> /month</span>
+                        </div>
+                        <a href="{% url 'hostels:detail' hostel.id %}" class="btn fm-btn-orange btn-sm px-3 py-2" style="font-size: 0.8rem;">
+                            View Details <i class="fas fa-arrow-right ms-1" style="font-size: 0.7rem;"></i>
+                        </a>
                     </div>
                 </div>
             </article>
         </div>
-        <div class="col-md-4">
-            <article class="fm-hostel-card">
-                <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80" alt="Everest View Hostel">
-                <div>
-                    <h3>Everest View Hostel</h3>
-                    <p>Mountain views, warm rooms, and easy booking.</p>
-                    <div class="fm-card-footer">
-                        <span class="rating">★★★★★</span>
-                        <a href="{% url 'hostels:list' %}" class="btn fm-btn-blue">View Details</a>
-                    </div>
-                </div>
-            </article>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">No hostels available yet. Check back soon!</p>
         </div>
-        <div class="col-md-4">
-            <article class="fm-hostel-card">
-                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80" alt="Lakeside Hostel">
-                <div>
-                    <h3>Lakeside Hostel</h3>
-                    <p>Pokhara comfort near lakeside cafes and trails.</p>
-                    <div class="fm-card-footer">
-                        <span class="rating">★★★★★</span>
-                        <a href="{% url 'hostels:list' %}" class="btn fm-btn-blue">View Details</a>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="py-5 my-5" id="why-choose" style="background: linear-gradient(180deg, #fff 0%, #f0f6ff 100%);">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-5">
+                <div class="position-relative ps-4 pb-4 pt-5" style="border-left: 4px solid var(--fm-orange); border-bottom: 4px solid var(--fm-orange); border-bottom-left-radius: 40px;">
+                    <div class="position-absolute shadow" style="top: -14px; left: 28px; background: linear-gradient(135deg, var(--fm-orange), #f59e0b); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-quote-left text-white"></i>
+                    </div>
+
+                    <h2 class="fw-bolder mb-4" style="color: var(--fm-ink); font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.1; letter-spacing: -1px;">
+                        WHY<br>
+                        <span style="background: linear-gradient(135deg, var(--fm-orange), #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">FINDMYHOSTEL?</span>
+                    </h2>
+
+                    <p class="fs-5 pe-3" style="color: var(--fm-muted); font-weight: 500;">
+                        <span class="fw-bold" style="color: var(--fm-orange);">1,000+</span> hostels across Nepal are verified for your safety.
+                    </p>
+
+                    <div class="position-absolute shadow" style="bottom: -24px; right: -24px; background: linear-gradient(135deg, var(--fm-orange), #f59e0b); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-quote-right text-white"></i>
                     </div>
                 </div>
-            </article>
+            </div>
+
+            <div class="col-lg-7 ps-lg-5">
+                <span class="d-inline-block px-3 py-1 rounded-pill fw-bold mb-3" style="background: linear-gradient(135deg, rgba(26,86,219,0.08), rgba(26,86,219,0.04)); color: var(--fm-blue); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Why Choose Us</span>
+
+                <h2 class="display-5 fw-bolder mb-3" style="color: var(--fm-ink); letter-spacing: -1px;">
+                    The smartest way to<br>book your <span style="background: linear-gradient(135deg, var(--fm-orange), #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Hostel.</span>
+                </h2>
+
+                <p class="fs-5 mb-5" style="color: var(--fm-muted); max-width: 90%; line-height: 1.7;">
+                    We've built Nepal's most reliable hostel network so you can focus on your journey, not the logistics.
+                </p>
+
+                <div class="row g-4">
+                    <div class="col-md-6 d-flex align-items-start gap-3">
+                        <div class="rounded-3 shadow-sm flex-shrink-0 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, var(--fm-blue), var(--fm-blue-dark)); width: 50px; height: 50px;">
+                            <i class="fas fa-shield-alt text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1" style="color: var(--fm-ink); font-size: 1rem;">Verified Listings</h5>
+                            <p class="small mb-0" style="color: var(--fm-muted); line-height: 1.6;">Every hostel is personally inspected for safety and cleanliness.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-start gap-3">
+                        <div class="rounded-3 shadow-sm flex-shrink-0 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, var(--fm-orange), var(--fm-orange-dark)); width: 50px; height: 50px;">
+                            <i class="fas fa-bed text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1" style="color: var(--fm-ink); font-size: 1rem;">Easy Booking</h5>
+                            <p class="small mb-0" style="color: var(--fm-muted); line-height: 1.6;">No booking fees. You pay exactly what the hostel lists.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-start gap-3">
+                        <div class="rounded-3 shadow-sm flex-shrink-0 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, var(--fm-blue), var(--fm-blue-dark)); width: 50px; height: 50px;">
+                            <i class="fas fa-headset text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1" style="color: var(--fm-ink); font-size: 1rem;">24/7 Support</h5>
+                            <p class="small mb-0" style="color: var(--fm-muted); line-height: 1.6;">Our local team is always ready to help with any issues.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-start gap-3">
+                        <div class="rounded-3 shadow-sm flex-shrink-0 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, var(--fm-orange), var(--fm-orange-dark)); width: 50px; height: 50px;">
+                            <i class="fas fa-bolt text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1" style="color: var(--fm-ink); font-size: 1rem;">Instant Confirmation</h5>
+                            <p class="small mb-0" style="color: var(--fm-muted); line-height: 1.6;">Get instant confirmation and your room secured in seconds.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="fm-why" id="why-choose">
-    <div class="container">
-        <h2>Why Choose FindMyHostel?</h2>
-        <div class="fm-why-strip">
-            <div><i class="fas fa-circle-check"></i> Verified Listings</div>
-            <div><i class="fas fa-bed"></i> Easy Booking</div>
-            <div><i class="fas fa-headset"></i> 24/7 Support</div>
+<section class="container py-5 mb-5" id="how-it-works">
+    <div class="text-center mb-5">
+        <span class="d-inline-block px-3 py-1 rounded-pill fw-bold mb-3" style="background: linear-gradient(135deg, rgba(26,86,219,0.08), rgba(26,86,219,0.04)); color: var(--fm-blue); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">How It Works</span>
+        <h2 class="display-5 fw-bolder mb-3" style="color: var(--fm-ink); letter-spacing: -1px;">Three steps to <span style="background: linear-gradient(135deg, var(--fm-orange), #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Perfection</span></h2>
+    </div>
+
+    <div class="row g-4 text-center">
+        <div class="col-md-4 px-4">
+            <div class="d-flex flex-column align-items-center">
+                <div class="d-flex align-items-center justify-content-center mb-4 rounded-3 position-relative" style="background: linear-gradient(135deg, rgba(26,86,219,0.08), rgba(26,86,219,0.02)); width: 90px; height: 90px; border: 1.5px solid rgba(26,86,219,0.10);">
+                    <i class="fas fa-search" style="color: var(--fm-blue); font-size: 1.5rem;"></i>
+                    <span class="position-absolute d-flex align-items-center justify-content-center fw-bold rounded-circle border border-2 border-white" style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--fm-orange), #f59e0b); color: white; top: -6px; right: -6px; font-size: 0.75rem;">1</span>
+                </div>
+                <h5 class="fw-bold mb-2" style="color: var(--fm-ink);">Explore & Compare</h5>
+                <p class="mb-0" style="color: var(--fm-muted); font-size: 0.9rem; line-height: 1.6;">Browse verified listings with photos, rates, and guest reviews.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 px-4">
+            <div class="d-flex flex-column align-items-center">
+                <div class="d-flex align-items-center justify-content-center mb-4 rounded-3 position-relative" style="background: linear-gradient(135deg, rgba(232,93,38,0.08), rgba(232,93,38,0.02)); width: 90px; height: 90px; border: 1.5px solid rgba(232,93,38,0.10);">
+                    <i class="fas fa-check-circle" style="color: var(--fm-orange); font-size: 1.5rem;"></i>
+                    <span class="position-absolute d-flex align-items-center justify-content-center fw-bold rounded-circle border border-2 border-white" style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--fm-blue), #0f3a8e); color: white; top: -6px; right: -6px; font-size: 0.75rem;">2</span>
+                </div>
+                <h5 class="fw-bold mb-2" style="color: var(--fm-ink);">Choose & Book</h5>
+                <p class="mb-0" style="color: var(--fm-muted); font-size: 0.9rem; line-height: 1.6;">Select your room and book securely with zero commission.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 px-4">
+            <div class="d-flex flex-column align-items-center">
+                <div class="d-flex align-items-center justify-content-center mb-4 rounded-3 position-relative" style="background: linear-gradient(135deg, rgba(26,86,219,0.08), rgba(26,86,219,0.02)); width: 90px; height: 90px; border: 1.5px solid rgba(26,86,219,0.10);">
+                    <i class="fas fa-door-open" style="color: var(--fm-blue); font-size: 1.5rem;"></i>
+                    <span class="position-absolute d-flex align-items-center justify-content-center fw-bold rounded-circle border border-2 border-white" style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--fm-orange), #f59e0b); color: white; top: -6px; right: -6px; font-size: 0.75rem;">3</span>
+                </div>
+                <h5 class="fw-bold mb-2" style="color: var(--fm-ink);">Arrive with Ease</h5>
+                <p class="mb-0" style="color: var(--fm-muted); font-size: 0.9rem; line-height: 1.6;">Get clear arrival details so move-in day feels seamless.</p>
+            </div>
         </div>
     </div>
 </section>
+
+<style>
+    .sticky-note-container {
+        perspective: 1000px;
+        height: 380px;
+    }
+    .sticky-note {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+        transform-style: preserve-3d;
+    }
+    .sticky-note-container:hover .sticky-note,
+    .sticky-note.flipped {
+        transform: rotateY(180deg);
+    }
+    .sticky-note-front, .sticky-note-back {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        backface-visibility: hidden;
+        padding: 2rem;
+        box-shadow: 3px 5px 15px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+    }
+    .sticky-note-front {
+        transform: rotateY(0deg);
+    }
+    .sticky-note-back {
+        transform: rotateY(180deg);
+    }
+    .sticky-style {
+        border-bottom-right-radius: 40px 10px;
+        border-bottom-left-radius: 10px 5px;
+    }
+    .sticky-tape {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 25px;
+        background-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        z-index: 2;
+    }
+    .note-1 .sticky-note-front { background: #fdfd96; transform: rotate(-2deg); }
+    .note-1 .sticky-note-back { background: #fff59d; transform: rotateY(180deg) rotate(1deg); }
+    .note-2 .sticky-note-front { background: #b5e7a0; transform: rotate(3deg); }
+    .note-2 .sticky-note-back { background: #a5d6a7; transform: rotateY(180deg) rotate(-2deg); }
+    .note-3 .sticky-note-front { background: #ffb7b2; transform: rotate(-1deg); }
+    .note-3 .sticky-note-back { background: #ffcdd2; transform: rotateY(180deg) rotate(2deg); }
+    .review-text {
+        font-family: 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', sans-serif;
+        font-size: 1.05rem;
+        color: #333;
+        line-height: 1.6;
+    }
+</style>
+
+<section class="py-5 mb-5" id="reviews" style="background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div>
+                <span class="d-inline-block px-3 py-1 rounded-pill fw-bold mb-3" style="background: linear-gradient(135deg, rgba(26,86,219,0.08), rgba(26,86,219,0.04)); color: var(--fm-blue); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">Testimonials</span>
+                <h2 class="display-5 fw-bolder mb-3" style="color: var(--fm-ink); letter-spacing: -1px;">What Our <span style="background: linear-gradient(135deg, var(--fm-orange), #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Users</span> Say</h2>
+                <p class="text-muted">Hover over the sticky notes to reveal more reviews!</p>
+            </div>
+            <button class="btn rounded-pill px-4 mt-2" style="background: #fff; color: var(--fm-blue); font-size: 1rem; font-weight: 700; box-shadow: 0 8px 20px rgba(26,86,219,0.15); border: 1.5px solid rgba(26,86,219,0.2);" data-bs-toggle="modal" data-bs-target="#addReviewModal">
+                <i class="fas fa-plus me-2"></i> Add Your Review
+            </button>
+        </div>
+
+        {{ testimonials|json_script:"testimonials-data" }}
+
+        <div class="row justify-content-center" id="reviewsRow">
+            <div class="col-md-6 col-lg-5">
+                <div class="sticky-note-container note-1" id="activeStickyNoteContainer">
+                    <div class="sticky-note" id="activeStickyNote">
+                        <div class="sticky-note-front sticky-style">
+                            <div class="sticky-tape"></div>
+                            <div class="d-flex align-items-center mb-3 mt-2" id="noteFrontStars"></div>
+                            <p class="review-text mb-4 flex-grow-1" id="noteFrontText">Loading reviews...</p>
+                            <div class="mt-auto d-flex align-items-center justify-content-end text-end">
+                                <div class="me-3">
+                                    <h6 class="mb-0 fw-bold" id="noteFrontName" style="color: var(--fm-ink);">-</h6>
+                                    <small class="text-muted" id="noteFrontRole"></small>
+                                </div>
+                                <img src="" alt="Avatar" class="rounded-circle shadow-sm" width="45" height="45" id="noteFrontAvatar" style="display: none; object-fit: cover;">
+                            </div>
+                        </div>
+                        <div class="sticky-note-back sticky-style">
+                            <div class="sticky-tape"></div>
+                            <div class="d-flex align-items-center mb-3 mt-2" id="noteBackStars"></div>
+                            <p class="review-text mb-4 flex-grow-1" id="noteBackText">Loading reviews...</p>
+                            <div class="mt-auto d-flex align-items-center justify-content-end text-end">
+                                <div class="me-3">
+                                    <h6 class="mb-0 fw-bold" id="noteBackName" style="color: var(--fm-ink);">-</h6>
+                                    <small class="text-muted" id="noteBackRole"></small>
+                                </div>
+                                <img src="" alt="Avatar" class="rounded-circle shadow-sm" width="45" height="45" id="noteBackAvatar" style="display: none; object-fit: cover;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="addReviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-4">
+      <div class="modal-header border-0 pb-0 pt-4 px-4">
+        <h5 class="modal-title fw-bold" style="color: var(--fm-ink);"><i class="fas fa-star me-2" style="color: #f59e0b;"></i> Add Your Review</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        {% if user.is_authenticated %}
+        <form method="POST" action="{% url 'hostels:submit_testimonial' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">Role <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="role" placeholder="e.g. Student, Traveler" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">Rating</label>
+            <select class="form-select" name="rating">
+              <option value="5">5 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="2">2 Stars</option>
+              <option value="1">1 Star</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="form-label text-muted small fw-bold">Your Review <span class="text-danger">*</span></label>
+            <textarea class="form-control" name="content" rows="3" placeholder="Share your experience..." required></textarea>
+          </div>
+          <button type="submit" class="btn w-100 rounded-pill py-2 fw-bold" style="background: linear-gradient(135deg, var(--fm-blue), var(--fm-blue-dark)); color: white; box-shadow: 0 8px 20px rgba(26,86,219,0.20);">Submit Review</button>
+        </form>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-lock fa-3x text-muted mb-3"></i>
+            <h5>Login Required</h5>
+            <p class="text-muted">You must be logged in to leave a review.</p>
+            <a href="{% url 'accounts:login' %}" class="btn rounded-pill px-4" style="background: linear-gradient(135deg, var(--fm-blue), var(--fm-blue-dark)); color: white; box-shadow: 0 8px 20px rgba(26,86,219,0.20);">Login Now</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const rawData = document.getElementById('testimonials-data');
+    if (!rawData) return;
+
+    let testimonials = [];
+    try {
+        testimonials = JSON.parse(rawData.textContent);
+    } catch (e) {
+        console.error("Failed to parse testimonials", e);
+    }
+
+    if (testimonials.length === 0) return;
+
+    let currentIndex = 0;
+    const stickyNote = document.getElementById('activeStickyNote');
+    const stickyContainer = document.getElementById('activeStickyNoteContainer');
+
+    function generateStars(rating) {
+        let html = '';
+        for (let i = 0; i < 5; i++) {
+            if (i < rating) html += '<i class="fas fa-star" style="color: #f59e0b;"></i>';
+            else html += '<i class="far fa-star" style="color: #d1d5db;"></i>';
+        }
+        return html;
+    }
+
+    function updateFace(face, review) {
+        const prefix = face === 'front' ? 'noteFront' : 'noteBack';
+        document.getElementById(prefix + 'Text').innerText = `"${review.content}"`;
+        document.getElementById(prefix + 'Name').innerText = `- ${review.name}`;
+        document.getElementById(prefix + 'Role').innerText = review.role;
+        document.getElementById(prefix + 'Stars').innerHTML = generateStars(review.rating);
+        const avatarEl = document.getElementById(prefix + 'Avatar');
+        avatarEl.src = review.avatar;
+        avatarEl.style.display = 'block';
+    }
+
+    updateFace('front', testimonials[0]);
+
+    if (testimonials.length > 1) {
+        updateFace('back', testimonials[1 % testimonials.length]);
+    }
+
+    if (testimonials.length > 1) {
+        setInterval(() => {
+            const isFlipped = stickyNote.classList.contains('flipped');
+
+            currentIndex = (currentIndex + 1) % testimonials.length;
+            const nextReview = testimonials[currentIndex];
+
+            const newColor = 'note-' + (Math.floor(Math.random() * 3) + 1);
+            stickyContainer.className = `sticky-note-container ${newColor}`;
+
+            if (!isFlipped) {
+                updateFace('back', nextReview);
+                stickyNote.classList.add('flipped');
+            } else {
+                updateFace('front', nextReview);
+                stickyNote.classList.remove('flipped');
+            }
+        }, 4000);
+    }
+});
+</script>
 {% endblock %}

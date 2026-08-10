@@ -23,7 +23,7 @@ def register(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         password_confirm = request.POST.get('password_confirm')
-        role = request.POST.get('role', 'student')
+        role = 'student' # Force role to student for security
         phone = request.POST.get('phone', '')
         
         # Validation
@@ -99,7 +99,6 @@ def login_view(request):
     return render(request, 'accounts/login.html')
 
 # ============= LOGOUT VIEW =============
-@login_required(login_url='accounts:login')
 def logout_view(request):
     """Logout user"""
     logout(request)
@@ -201,7 +200,7 @@ def student_login(request):
         
         try:
             user = CustomUser.objects.get(email=email)
-            user_auth = authenticate(request, username=user.username, password=password)
+            user_auth = authenticate(request, username=email, password=password)
             
             if user_auth is not None:
                 if user_auth.is_student():
@@ -222,7 +221,12 @@ def student_login(request):
 # ============= OWNER REGISTER =============
 @require_http_methods(["GET", "POST"])
 def owner_register(request):
-    """Register as hostel owner"""
+    """Register as hostel owner - Secured by invite token"""
+    secret_token = "secret123"
+    if request.GET.get('token') != secret_token:
+        from django.http import Http404
+        raise Http404("Page not found")
+
     if request.user.is_authenticated:
         if request.user.is_hostel_owner():
             return redirect('hostels:owner_dashboard')
@@ -270,6 +274,10 @@ def owner_register(request):
 @login_required(login_url='accounts:student_login')
 def student_dashboard(request):
     """Student/traveler dashboard"""
+    if not request.user.is_student():
+        messages.error(request, 'Access denied. This area is for travelers only.')
+        return redirect('home')
+    
     from bookings.models import Booking
     from django.utils import timezone
     
@@ -329,7 +337,7 @@ def owner_login(request):
         
         try:
             user = CustomUser.objects.get(email=email)
-            user_auth = authenticate(request, username=user.username, password=password)
+            user_auth = authenticate(request, username=email, password=password)
             
             if user_auth is not None:
                 if user_auth.is_hostel_owner():

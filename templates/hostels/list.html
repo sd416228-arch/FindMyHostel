@@ -61,50 +61,62 @@
         {% if hostels %}
             <div class="row">
                 {% for hostel in hostels %}
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100">
-                            {% if hostel.cover_image %}
-                                <img src="{{ hostel.cover_image.url }}" class="card-img-top" alt="{{ hostel.name }}" style="height: 200px; object-fit: cover;">
-                            {% else %}
-                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                    <i class="fas fa-image fa-5x text-muted"></i>
-                                </div>
-                            {% endif %}
-                            
-                            <div class="card-body">
-                                <h5 class="card-title">{{ hostel.name }}</h5>
-                                
-                                <div class="mb-2">
-                                    <small class="text-muted">
-                                        <i class="fas fa-map-marker-alt"></i> {{ hostel.city }}, {{ hostel.country }}
-                                    </small>
+                    <div class="col-12 mb-4">
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100" style="border: 1px solid #eaeaea !important;">
+                            <div class="row g-0 h-100">
+                                <!-- Image Section -->
+                                <div class="col-md-4 col-sm-12">
+                                    {% if hostel.cover_image %}
+                                        <img src="{{ hostel.cover_image.url }}" class="img-fluid h-100 w-100" alt="{{ hostel.name }}" style="object-fit: cover; min-height: 200px;">
+                                    {% else %}
+                                        <div class="bg-light d-flex align-items-center justify-content-center h-100 w-100" style="min-height: 200px;">
+                                            <i class="fas fa-hotel fa-4x text-muted"></i>
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 
-                                <div class="mb-2">
-                                    <div class="rating">
-                                        <i class="fas fa-star"></i>
-                                        <span class="fw-bold">{{ hostel.rating|floatformat:1 }}</span>
-                                        <span class="text-muted">({{ hostel.reviews_count }})</span>
+                                <!-- Details Section -->
+                                <div class="col-md-8 col-sm-12">
+                                    <div class="card-body d-flex flex-column h-100 p-4">
+                                        <!-- Title and Rating Row -->
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h4 class="card-title text-primary fw-bold mb-0" style="color: #1a56db !important;">
+                                                {{ hostel.name }}
+                                            </h4>
+                                            <div class="rating">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <span class="fw-bold ms-1">{{ hostel.rating|floatformat:1 }}</span>
+                                                <span class="text-muted small ms-1">({{ hostel.reviews_count|default:"0" }} reviews)</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Location Row -->
+                                        <p class="text-muted mb-4">
+                                            <i class="fas fa-map-marker-alt text-secondary me-1"></i> {{ hostel.city }}, {{ hostel.country }}
+                                        </p>
+                                        
+                                        <!-- Amenities -->
+                                        <div class="mb-auto">
+                                            <div class="d-flex flex-wrap gap-2">
+                                                {% for amenity in hostel.get_amenities_list %}
+                                                    <span class="badge bg-light text-secondary border fw-normal px-3 py-2 rounded-pill">
+                                                        <i class="fas fa-check text-primary me-1"></i> {{ amenity }}
+                                                    </span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Price and Action Button Row -->
+                                        <div class="d-flex justify-content-between align-items-end mt-4">
+                                            <div>
+                                                <h4 class="fw-bold mb-0">Rs. {{ hostel.base_price }}</h4>
+                                                <small class="text-muted">per month</small>
+                                            </div>
+                                            <a href="{% url 'hostels:detail' hostel.id %}" class="btn btn-primary px-4 py-2 rounded-3 fw-semibold" style="background-color: #2563eb; border: none;">
+                                                View Details <i class="fas fa-arrow-right ms-1"></i>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                                
-                                <p class="card-text text-truncate">{{ hostel.description }}</p>
-                                
-                                <div class="mb-2">
-                                    <small>
-                                        {% for amenity in hostel.get_amenities_list %}
-                                            <span class="badge bg-light text-dark">{{ amenity }}</span>
-                                        {% endfor %}
-                                    </small>
-                                </div>
-                                
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-0">From <strong>${{ hostel.base_price }}</strong>/night</h6>
-                                    </div>
-                                    <a href="{% url 'hostels:detail' hostel.id %}" class="btn btn-primary btn-sm">
-                                        View Details
-                                    </a>
                                 </div>
                             </div>
                         </div>

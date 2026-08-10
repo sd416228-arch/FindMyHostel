@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
 
 {% block title %}My Hostels - FindMy Hostel{% endblock %}
 
@@ -29,6 +29,15 @@
             </div>
         </div>
     </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                <h6 class="text-muted">User Reviews</h6>
+                <h3>{{ testimonials|length }}</h3>
+            </div>
+        </div>
+    </div>
 </div>
 
 <h3 class="mt-4 mb-3">Your Hostels</h3>
@@ -52,7 +61,7 @@
                         <div class="mb-3">
                             <p class="mb-1"><strong>Rooms:</strong> {{ hostel.rooms.count }}</p>
                             <p class="mb-1"><strong>Rating:</strong> {{ hostel.rating|floatformat:1 }}/5.0</p>
-                            <p class="mb-0"><strong>Price:</strong> ${{ hostel.base_price }}/night</p>
+                            <p class="mb-0"><strong>Price:</strong> {{ hostel.base_price }}</p>
                         </div>
                         
                         <div class="d-grid gap-2">
@@ -62,6 +71,12 @@
                             <a href="{% url 'hostels:room_create' hostel.id %}" class="btn btn-outline-success btn-sm">
                                 <i class="fas fa-plus"></i> Add Room
                             </a>
+                            <form method="POST" action="{% url 'hostels:delete' hostel.id %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete &quot;{{ hostel.name }}&quot;? This cannot be undone.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -105,6 +120,52 @@
     </div>
 {% else %}
     <p class="text-muted text-center">No recent bookings</p>
+{% endif %}
+
+<h3 class="mt-5 mb-3">User Reviews</h3>
+
+{% if testimonials %}
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Rating</th>
+                    <th>Review</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for testimonial in testimonials %}
+                    <tr>
+                        <td>{{ testimonial.user.get_full_name|default:testimonial.user.username }}</td>
+                        <td>
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= testimonial.rating %}
+                                    <i class="fas fa-star text-warning" style="font-size: 0.8rem;"></i>
+                                {% else %}
+                                    <i class="far fa-star text-muted" style="font-size: 0.8rem;"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ testimonial.content }}</td>
+                        <td>{{ testimonial.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'hostels:delete_testimonial' testimonial.id %}" onsubmit="return confirm('Delete this review by &quot;{{ testimonial.user.get_full_name|default:testimonial.user.username }}&quot;?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p class="text-muted text-center">No reviews yet.</p>
 {% endif %}
 
 {% endblock %}

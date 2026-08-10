@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import Hostel, Room
+from .models import Hostel, HostelImage, Room, Testimonial
+
+class HostelImageInline(admin.TabularInline):
+    model = HostelImage
+    extra = 3
+    fields = ('image', 'caption', 'order')
 
 @admin.register(Hostel)
 class HostelAdmin(admin.ModelAdmin):
@@ -14,6 +19,7 @@ class HostelAdmin(admin.ModelAdmin):
         ('Media', {'fields': ('cover_image',)}),
         ('Status', {'fields': ('is_active', 'is_verified')}),
     )
+    inlines = [HostelImageInline]
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
@@ -27,3 +33,24 @@ class RoomAdmin(admin.ModelAdmin):
         ('Media', {'fields': ('image',)}),
         ('Status', {'fields': ('is_available',)}),
     )
+
+@admin.register(Testimonial)
+class TestimonialAdmin(admin.ModelAdmin):
+    list_display = ('user', 'role', 'rating', 'created_at', 'is_active')
+    list_filter = ('is_active', 'rating', 'created_at')
+    search_fields = ('user__username', 'user__email', 'content')
+    actions = ['approve_testimonials', 'hide_testimonials', 'delete_testimonials']
+
+    def approve_testimonials(self, request, queryset):
+        queryset.update(is_active=True)
+    approve_testimonials.short_description = "Approve selected testimonials"
+
+    def hide_testimonials(self, request, queryset):
+        queryset.update(is_active=False)
+    hide_testimonials.short_description = "Hide selected testimonials"
+
+    def delete_testimonials(self, request, queryset):
+        count = queryset.count()
+        queryset.delete()
+        self.message_user(request, f"Successfully deleted {count} testimonial(s).")
+    delete_testimonials.short_description = "Delete selected testimonials"

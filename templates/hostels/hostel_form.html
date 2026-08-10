@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
 
 {% block title %}{% if hostel %}Edit{% else %}Add{% endif %} Hostel - FindMy Hostel{% endblock %}
 
@@ -68,6 +68,36 @@
                             <small class="text-muted d-block mt-2">Current: <a href="{{ hostel.cover_image.url }}" target="_blank">View Image</a></small>
                         {% endif %}
                     </div>
+
+                    <div class="mb-3" id="additionalImagesSection">
+                        <label class="form-label">Additional Images</label>
+                        <div id="imageInputs">
+                            <div class="input-group mb-2">
+                                <input type="file" class="form-control" name="additional_images" accept="image/*">
+                                <button class="btn btn-outline-success" type="button" onclick="addImageInput()"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <small class="text-muted d-block mt-2">Click <strong>+</strong> to add more image upload fields.</small>
+                        {% if hostel.images.all %}
+                        <div class="mt-2 d-flex flex-wrap gap-2">
+                            {% for img in hostel.images.all %}
+                            <div class="position-relative">
+                                <img src="{{ img.image.url }}" alt="{{ img.caption }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <script>
+                    function addImageInput() {
+                        var div = document.createElement('div');
+                        div.className = 'input-group mb-2';
+                        div.innerHTML = '<input type="file" class="form-control" name="additional_images" accept="image/*">' +
+                            '<button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
+                        document.getElementById('imageInputs').appendChild(div);
+                    }
+                    </script>
                     
                     <h5 class="mt-4 mb-3">Amenities</h5>
                     <div class="row mb-3">

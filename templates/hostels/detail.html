@@ -1,128 +1,325 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ hostel.name }} - FindMy Hostel{% endblock %}
 
+{% block extra_css %}
+<style>
+    .detail-hero {
+        height: 420px;
+        max-height: 55vw;
+        background-size: cover;
+        background-position: center;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    .detail-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(transparent 40%, rgba(0,0,0,0.7));
+    }
+    .detail-hero-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 2rem;
+        color: white;
+    }
+    .amenity-badge {
+        background: rgba(37, 100, 179, 0.08);
+        color: var(--fm-blue);
+        border-radius: 12px;
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+    .amenity-badge:hover {
+        background: var(--fm-blue);
+        color: white;
+        transform: translateY(-2px);
+    }
+    .feature-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: #f0f7ff;
+        border-radius: 20px;
+        padding: 0.4rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+    .info-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(37, 100, 179, 0.1);
+        color: var(--fm-blue);
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 575.98px) {
+        .amenity-badge {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.75rem;
+            word-break: break-word;
+        }
+        .feature-chip {
+            font-size: 0.75rem;
+            padding: 0.3rem 0.7rem;
+        }
+        .info-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 0.9rem;
+        }
+        #hostelGallery .carousel-indicators {
+            bottom: -5px;
+        }
+        #hostelGallery .carousel-control-prev,
+        #hostelGallery .carousel-control-next {
+            width: 10%;
+        }
+        .detail-hero-content h1 {
+            font-size: 1.2rem !important;
+        }
+        .detail-hero-content {
+            padding: 0.75rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<nav aria-label="breadcrumb">
+<nav aria-label="breadcrumb" class="mb-3">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{% url 'hostels:list' %}">Hostels</a></li>
         <li class="breadcrumb-item active">{{ hostel.name }}</li>
     </ol>
 </nav>
 
-<div class="row">
-    <div class="col-md-8">
-        <!-- Cover Image -->
-        {% if hostel.cover_image %}
-            <img src="{{ hostel.cover_image.url }}" class="img-fluid rounded mb-4" style="max-height: 400px; width: 100%; object-fit: cover;" alt="{{ hostel.name }}">
-        {% else %}
-            <div class="bg-light d-flex align-items-center justify-content-center rounded mb-4" style="height: 400px;">
-                <i class="fas fa-image fa-5x text-muted"></i>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <!-- Gallery Carousel -->
+        <div id="hostelGallery" class="carousel slide mb-4" data-bs-ride="carousel" data-bs-interval="4000">
+            <div class="carousel-indicators">
+                {% for image in gallery_images %}
+                <button type="button" data-bs-target="#hostelGallery" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></button>
+                {% endfor %}
             </div>
-        {% endif %}
-        
-        <!-- Info -->
-        <div class="mb-4">
-            <h1 class="mb-2">{{ hostel.name }}</h1>
-            <div class="mb-3">
-                <span class="rating"><i class="fas fa-star"></i> {{ hostel.rating|floatformat:1 }} ({{ hostel.reviews_count }} reviews)</span>
-                <span class="ms-3 text-muted"><i class="fas fa-map-marker-alt"></i> {{ hostel.location }}, {{ hostel.city }}, {{ hostel.country }}</span>
-            </div>
-            
-            <p class="lead">{{ hostel.description }}</p>
-        </div>
-        
-        <!-- Amenities -->
-        <div class="mb-4">
-            <h3>Amenities</h3>
-            <div>
-                {% if hostel.wifi %}<span class="badge bg-primary me-2 mb-2"><i class="fas fa-wifi"></i> WiFi</span>{% endif %}
-                {% if hostel.parking %}<span class="badge bg-primary me-2 mb-2"><i class="fas fa-car"></i> Parking</span>{% endif %}
-                {% if hostel.laundry %}<span class="badge bg-primary me-2 mb-2"><i class="fas fa-washer"></i> Laundry</span>{% endif %}
-                {% if hostel.kitchen %}<span class="badge bg-primary me-2 mb-2"><i class="fas fa-utensils"></i> Kitchen</span>{% endif %}
-                {% if hostel.gym %}<span class="badge bg-primary me-2 mb-2"><i class="fas fa-dumbbell"></i> Gym</span>{% endif %}
-            </div>
-        </div>
-        
-        <!-- Rooms -->
-        <div class="mb-4">
-            <h3>Available Rooms</h3>
-            {% if rooms %}
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Room #</th>
-                                <th>Type</th>
-                                <th>Capacity</th>
-                                <th>Price/Night</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for room in rooms %}
-                                <tr>
-                                    <td>{{ room.room_number }}</td>
-                                    <td>{{ room.get_room_type_display }}</td>
-                                    <td>{{ room.capacity }} guests</td>
-                                    <td>${{ room.price_per_night }}</td>
-                                    <td>
-                                        {% if user.is_authenticated %}
-                                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#bookingModal" 
-                                                    onclick="setRoom({{ room.id }})">
-                                                Book Now
-                                            </button>
-                                        {% else %}
-                                            <a href="{% url 'accounts:login' %}" class="btn btn-sm btn-primary">Login to Book</a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="carousel-inner detail-hero">
+                {% for image in gallery_images %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div class="detail-hero" style="background-image: url('{{ image }}');">
+                        <div class="detail-hero-overlay"></div>
+                    </div>
                 </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#hostelGallery" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#hostelGallery" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+            <div class="detail-hero-content">
+                <h1 class="fw-bold mb-1" style="font-size: 2.2rem;">{{ hostel.name }}</h1>
+                <p class="mb-0 opacity-75"><i class="fas fa-map-marker-alt me-1"></i> {{ hostel.location }}, {{ hostel.city }}</p>
+            </div>
+        </div>
+
+        <!-- Quick Info Bar -->
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-4 p-3 bg-light rounded-4">
+            <span><i class="fas fa-star text-warning me-1"></i> <strong>{{ hostel.rating|floatformat:1 }}</strong> ({{ hostel.reviews_count }} reviews)</span>
+            <span class="text-muted small d-none d-sm-inline">|</span>
+            {% if hostel.wifi %}<span class="room-chip"><i class="fas fa-wifi"></i> WiFi</span>{% endif %}
+            {% if hostel.parking %}<span class="room-chip"><i class="fas fa-car"></i> Parking</span>{% endif %}
+            {% if hostel.laundry %}<span class="room-chip"><i class="fas fa-soap"></i> Laundry</span>{% endif %}
+            {% if hostel.kitchen %}<span class="room-chip"><i class="fas fa-utensils"></i> Kitchen</span>{% endif %}
+            {% if hostel.gym %}<span class="room-chip"><i class="fas fa-dumbbell"></i> Gym</span>{% endif %}
+        </div>
+
+        <!-- Description -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-3">About {{ hostel.name }}</h3>
+            <p class="text-muted lead" style="line-height: 1.8;">{{ hostel.description }}</p>
+        </div>
+
+        <!-- Amenities & Facilities -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-3">Facilities & Amenities</h3>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <div class="amenity-badge">
+                        <i class="fas fa-wifi"></i>
+                        <span>Free WiFi{% if hostel.wifi %} (High Speed){% endif %}</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="amenity-badge {% if not hostel.parking %}opacity-25{% endif %}">
+                        <i class="fas fa-car"></i>
+                        <span>Parking {{ hostel.parking|yesno:"Available,Not Available" }}</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="amenity-badge {% if not hostel.laundry %}opacity-25{% endif %}">
+                        <i class="fas fa-soap"></i>
+                        <span>Laundry Service {{ hostel.laundry|yesno:"Available,Not Available" }}</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="amenity-badge {% if not hostel.kitchen %}opacity-25{% endif %}">
+                        <i class="fas fa-utensils"></i>
+                        <span>Shared Kitchen {{ hostel.kitchen|yesno:"Available,Not Available" }}</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="amenity-badge {% if not hostel.gym %}opacity-25{% endif %}">
+                        <i class="fas fa-dumbbell"></i>
+                        <span>Gym {{ hostel.gym|yesno:"Available,Not Available" }}</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="amenity-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>24/7 Security</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="amenity-badge">
+                        <i class="fas fa-clock"></i>
+                        <span>24/7 Reception</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="amenity-badge">
+                        <i class="fas fa-snowflake"></i>
+                        <span>Common Room</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rooms -->
+        <div class="mb-5">
+            <h3 class="fw-bold mb-3">Available Rooms</h3>
+            {% if rooms %}
+            <div class="row g-3">
+                {% for room in rooms %}
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 h-100" style="border: 1px solid #eee !important;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-1">{{ room.get_room_type_display }}</h5>
+                                    <span class="badge bg-light text-muted fw-normal">Room {{ room.room_number }}</span>
+                                </div>
+                                <h4 class="text-primary fw-bold mb-0">Rs. {{ room.price_per_night }}</h4>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                {% if room.has_ac %}<span class="feature-chip"><i class="fas fa-snowflake"></i> AC</span>{% endif %}
+                                {% if room.has_bathroom %}<span class="feature-chip"><i class="fas fa-bath"></i> Bathroom</span>{% endif %}
+                                {% if room.has_tv %}<span class="feature-chip"><i class="fas fa-tv"></i> TV</span>{% endif %}
+                                {% if room.has_balcony %}<span class="feature-chip"><i class="fas fa-door-open"></i> Balcony</span>{% endif %}
+                            </div>
+                            <p class="text-muted small mb-0">Capacity: {{ room.capacity }} guest{{ room.capacity|pluralize }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
             {% else %}
-                <div class="alert alert-info">No rooms available at the moment.</div>
+            <div class="alert alert-info">No rooms available at the moment.</div>
             {% endif %}
         </div>
-        
+
         <!-- Contact -->
-        <div class="mb-4">
-            <h3>Contact</h3>
-            <p>
-                <strong>Phone:</strong> {{ hostel.phone }}<br>
-                <strong>Email:</strong> <a href="mailto:{{ hostel.email }}">{{ hostel.email }}</a><br>
+        <div class="mb-5">
+            <h3 class="fw-bold mb-3">Contact Information</h3>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4">
+                        <div class="info-icon"><i class="fas fa-phone"></i></div>
+                        <div>
+                            <small class="text-muted d-block">Phone</small>
+                            <strong>{{ hostel.phone }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4">
+                        <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <small class="text-muted d-block">Email</small>
+                            <strong>{{ hostel.email }}</strong>
+                        </div>
+                    </div>
+                </div>
                 {% if hostel.website %}
-                    <strong>Website:</strong> <a href="{{ hostel.website }}" target="_blank">{{ hostel.website }}</a>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4">
+                        <div class="info-icon"><i class="fas fa-globe"></i></div>
+                        <div>
+                            <small class="text-muted d-block">Website</small>
+                            <strong><a href="{{ hostel.website }}" target="_blank">Visit Website</a></strong>
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
-            </p>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4">
+                        <div class="info-icon"><i class="fas fa-map-pin"></i></div>
+                        <div>
+                            <small class="text-muted d-block">Address</small>
+                            <strong>{{ hostel.location }}, {{ hostel.city }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    
+
     <!-- Sidebar -->
-    <div class="col-md-4">
-        <div class="card sticky-top" style="top: 20px;">
-            <div class="card-body">
-                <h5 class="card-title">{{ hostel.name }}</h5>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 20px; border: 1px solid #eee !important;">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-1">{{ hostel.name }}</h5>
+                <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt me-1"></i> {{ hostel.city }}</p>
                 <hr>
-                
                 <div class="mb-3">
-                    <p class="mb-1 text-muted">Starting from</p>
-                    <h4 class="mb-3">${{ hostel.base_price }} <small class="text-muted">/night</small></h4>
+                    <p class="mb-1 text-muted small">Starting from</p>
+                    <h3 class="fw-bold mb-0 text-primary">Rs. {{ hostel.base_price }}</h3>
+                    <small class="text-muted">per month</small>
                 </div>
-                
+
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-star text-warning me-1"></i>
+                    <strong class="me-1">{{ hostel.rating|floatformat:1 }}</strong>
+                    <span class="text-muted small">({{ hostel.reviews_count }} reviews)</span>
+                </div>
+
+                <hr>
                 <div class="d-grid gap-2">
                     {% if user.is_authenticated %}
-                        <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#bookingModal">
-                            <i class="fas fa-calendar"></i> Check Availability
-                        </button>
+                    <button class="btn btn-primary btn-lg rounded-pill py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#bookingModal">
+                        <i class="fas fa-calendar-check me-2"></i> Book Now
+                    </button>
                     {% else %}
-                        <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-sign-in-alt"></i> Login to Book
-                        </a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg rounded-pill py-2 fw-bold">
+                        <i class="fas fa-sign-in-alt me-2"></i> Login to Book
+                    </a>
                     {% endif %}
                 </div>
-                
                 <p class="text-muted text-center mt-3 mb-0"><small>No hidden fees. Book with confidence.</small></p>
             </div>
         </div>
@@ -134,29 +331,23 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Make a Booking</h5>
+                <h5 class="modal-title fw-bold">Book at {{ hostel.name }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="bookingForm">
                     {% csrf_token %}
-
-
                     <div class="mb-3">
-                       <label for="room_id" class="form-label">
-                         Room <span class="text-danger">*</span>
-                              </label>
-
+                       <label for="room_id" class="form-label">Room <span class="text-danger">*</span></label>
                        <select class="form-select" id="room_id" name="room_id" required>
                             <option value="">Select a room</option>
-
-                           {% for room in rooms %}
-                             <option value="{{ room.id }}">
-                          {{ room.room_number }} - {{ room.get_room_type_display }} (${{ room.price_per_night }}/night)
-                             </option>
+                            {% for room in rooms %}
+                            <option value="{{ room.id }}">
+                                {{ room.room_number }} - {{ room.get_room_type_display }} (Rs. {{ room.price_per_night }}/night)
+                            </option>
                             {% endfor %}
-                         </select>
-                        </div>
+                        </select>
+                    </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -171,41 +362,40 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div class="mb-3">
                         <label for="number_of_guests" class="form-label">Number of Guests <span class="text-danger">*</span></label>
                         <input type="number" class="form-control" id="number_of_guests" name="number_of_guests" min="1" value="1" required>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="guest_name" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="guest_name" name="guest_name" value="{{ user.first_name }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="guest_name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="guest_name" name="guest_name" value="{{ user.first_name }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="guest_phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="guest_phone" name="guest_phone">
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="guest_phone" class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" id="guest_phone" name="guest_phone">
-                    </div>
-                    
                     <div class="mb-3">
                         <label for="special_requests" class="form-label">Special Requests</label>
-                        <textarea class="form-control" id="special_requests" name="special_requests" rows="3" placeholder="Any special requests?"></textarea>
+                        <textarea class="form-control" id="special_requests" name="special_requests" rows="3"></textarea>
                     </div>
-                    
-                    <!-- Summary -->
-                    <div class="alert alert-light">
-                        <p class="mb-1"><strong>Total Price:</strong> <span id="totalPrice">$0</span></p>
+                    <div class="alert alert-light border">
+                        <p class="mb-1"><strong>Total Price:</strong> <span id="totalPrice">Rs. 0</span></p>
                         <p class="mb-0"><strong>Duration:</strong> <span id="duration">0</span> nights</p>
                     </div>
-                    
                     <div id="errorMsg" class="alert alert-danger d-none"></div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="submitBooking">
-                    <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
-                    Book Now
+                <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" id="submitBooking">
+                    <span class="spinner-border spinner-border-sm d-none me-2"></span>
+                    Confirm Booking
                 </button>
             </div>
         </div>
@@ -213,55 +403,52 @@
 </div>
 
 <script>
-    // Set room in booking modal
     function setRoom(roomId) {
         document.getElementById('room_id').value = roomId;
     }
-    
-    // Calculate price on date change
+
     document.getElementById('check_in').addEventListener('change', calculatePrice);
     document.getElementById('check_out').addEventListener('change', calculatePrice);
     document.getElementById('room_id').addEventListener('change', calculatePrice);
-    
+
     function calculatePrice() {
         const roomId = document.getElementById('room_id').value;
         const checkIn = document.getElementById('check_in').value;
         const checkOut = document.getElementById('check_out').value;
-        
+
         if (roomId && checkIn && checkOut) {
             const start = new Date(checkIn);
             const end = new Date(checkOut);
             const nights = Math.floor((end - start) / (1000 * 60 * 60 * 24));
-            
+
             if (nights > 0) {
-                const roomOption = document.querySelector(`#room_id option[value="${roomId}"]`);
-                const priceMatch = roomOption.text.match(/\$(\d+\.?\d*)/);
+                const roomOption = document.querySelector('#room_id option[value="' + roomId + '"]');
+                const priceMatch = roomOption.text.match(/Rs\.\s*(\d+\.?\d*)/);
                 if (priceMatch) {
                     const pricePerNight = parseFloat(priceMatch[1]);
                     const total = pricePerNight * nights;
-                    document.getElementById('totalPrice').textContent = '$' + total.toFixed(2);
+                    document.getElementById('totalPrice').textContent = 'Rs. ' + total.toFixed(2);
                     document.getElementById('duration').textContent = nights;
                 }
             }
         }
     }
-    
-    // Submit booking
+
     document.getElementById('submitBooking').addEventListener('click', async function() {
         const form = document.getElementById('bookingForm');
         const roomId = document.getElementById('room_id').value;
         const checkIn = document.getElementById('check_in').value;
         const checkOut = document.getElementById('check_out').value;
-        
+
         if (!roomId || !checkIn || !checkOut) {
             alert('Please fill in all required fields');
             return;
         }
-        
+
         const formData = new FormData(form);
         this.disabled = true;
         this.querySelector('.spinner-border').classList.remove('d-none');
-        
+
         try {
             const response = await fetch('{% url "bookings:api_create" %}', {
                 method: 'POST',
@@ -270,9 +457,8 @@
                     'X-CSRFToken': csrftoken
                 }
             });
-            
             const data = await response.json();
-            
+
             if (response.ok) {
                 alert('Booking created successfully!');
                 window.location.href = '{% url "bookings:list" %}';
@@ -289,5 +475,4 @@
         }
     });
 </script>
-
 {% endblock %}

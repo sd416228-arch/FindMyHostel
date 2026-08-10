@@ -112,3 +112,30 @@ class Room(models.Model):
         if self.has_balcony:
             features.append('Balcony')
         return features
+
+class HostelImage(models.Model):
+    hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='hostels/')
+    caption = models.CharField(max_length=200, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.hostel.name} - Image {self.order}"
+
+class Testimonial(models.Model):
+    """User testimonial model for the homepage"""
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='testimonials')
+    role = models.CharField(max_length=100, default='User')
+    content = models.TextField()
+    rating = models.IntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Review by {self.user.get_full_name() or self.user.username}"

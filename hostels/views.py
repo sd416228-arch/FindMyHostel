@@ -8,9 +8,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from datetime import datetime
-import json
-from .models import Hostel, Room
+from .models import Hostel, HostelImage, Room, Testimonial
 from bookings.models import Booking
+from django.views.generic import TemplateView
 
 # ============= PUBLIC VIEWS =============
 
@@ -59,17 +59,90 @@ def hostel_detail(request, pk):
     """Hostel detail view"""
     hostel = get_object_or_404(Hostel, pk=pk, is_active=True)
     rooms = hostel.rooms.filter(is_available=True)
-    
+
+    gallery_images = []
+    if hostel.cover_image:
+        gallery_images.append(hostel.cover_image.url)
+    for img in hostel.images.all():
+        gallery_images.append(img.image.url)
+    for room in rooms:
+        if room.image:
+            gallery_images.append(room.image.url)
+    if not gallery_images:
+        gallery_images = [
+            "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+        ]
+
     check_in = request.GET.get('check_in', '')
     check_out = request.GET.get('check_out', '')
-    
+
     context = {
         'hostel': hostel,
         'rooms': rooms,
+        'gallery_images': gallery_images,
         'check_in': check_in,
         'check_out': check_out,
     }
     return render(request, 'hostels/detail.html', context)
+
+class HomeView(TemplateView):
+    template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['popular_hostels'] = Hostel.objects.order_by('-rating', '-reviews_count')[:6]
+        # Fetch active testimonials ordered by newest
+        testimonials = Testimonial.objects.filter(is_active=True).order_by('-created_at')
+        context['testimonials'] = testimonials
+        
+        # Serialize for frontend JS
+        testimonials_list = []
+        for t in testimonials:
+            name = t.user.get_full_name() or t.user.username
+            testimonials_list.append({
+                'name': name,
+                'role': t.role,
+                'content': t.content,
+                'rating': t.rating,
+                'avatar': f"https://ui-avatars.com/api/?name={name.replace(' ', '+')}&background=random"
+            })
+        
+        # If empty, provide a default
+        if not testimonials_list:
+            testimonials_list.append({
+                'name': 'FindMy Hostel Team',
+                'role': 'Admin',
+                'content': 'Welcome to FindMy Hostel! Be the first to leave a review.',
+                'rating': 5,
+                'avatar': "https://ui-avatars.com/api/?name=Admin&background=random"
+            })
+            
+        context['testimonials'] = testimonials_list
+        return context
+
+@login_required
+@require_http_methods(["POST"])
+def submit_testimonial(request):
+    """Handle submission of user testimonials"""
+    role = request.POST.get('role', 'User')
+    rating = request.POST.get('rating', 5)
+    content = request.POST.get('content', '')
+
+    if content:
+        Testimonial.objects.create(
+            user=request.user,
+            role=role,
+            rating=rating,
+            content=content
+        )
+        messages.success(request, 'Your review has been added successfully!')
+    else:
+        messages.error(request, 'Review content cannot be empty.')
+        
+    return redirect('home')
 
 # ============= OWNER VIEWS =============
 
@@ -80,16 +153,31 @@ def owner_dashboard(request):
         messages.error(request, 'Access denied. Only hostel owners can access this.')
         return redirect('home')
     
-    hostels = Hostel.objects.filter(owner=request.user)
-    total_bookings = Booking.objects.filter(room__hostel__owner=request.user).count()
-    recent_bookings = Booking.objects.filter(room__hostel__owner=request.user).order_by('-created_at')[:5]
+    hostels = Hostel.objects.all()
+    total_bookings = Booking.objects.count()
+    recent_bookings = Booking.objects.order_by('-created_at')[:5]
+    testimonials = Testimonial.objects.filter(is_active=True).order_by('-created_at')
     
     context = {
         'hostels': hostels,
         'total_bookings': total_bookings,
         'recent_bookings': recent_bookings,
+        'testimonials': testimonials,
     }
     return render(request, 'hostels/owner_dashboard.html', context)
+
+@login_required(login_url='accounts:owner_login')
+@require_http_methods(["POST"])
+def delete_testimonial(request, pk):
+    """Delete a user review from the owner portal"""
+    if not request.user.is_hostel_owner():
+        messages.error(request, 'Access denied.')
+        return redirect('home')
+    
+    testimonial = get_object_or_404(Testimonial, pk=pk)
+    testimonial.delete()
+    messages.success(request, 'Review deleted successfully.')
+    return redirect('hostels:owner_dashboard')
 
 @login_required(login_url='accounts:owner_login')
 @require_http_methods(["GET", "POST"])
@@ -101,7 +189,7 @@ def hostel_form(request, pk=None):
     
     hostel = None
     if pk:
-        hostel = get_object_or_404(Hostel, pk=pk, owner=request.user)
+        hostel = get_object_or_404(Hostel, pk=pk)
     
     if request.method == 'POST':
         data = request.POST
@@ -131,6 +219,11 @@ def hostel_form(request, pk=None):
             hostel.cover_image = request.FILES['cover_image']
         
         hostel.save()
+
+        images = request.FILES.getlist('additional_images')
+        for img in images:
+            HostelImage.objects.create(hostel=hostel, image=img)
+        
         messages.success(request, 'Hostel saved successfully')
         return redirect('hostels:owner_dashboard')
     
@@ -145,7 +238,7 @@ def room_form(request, hostel_id, room_id=None):
         messages.error(request, 'Access denied.')
         return redirect('home')
     
-    hostel = get_object_or_404(Hostel, pk=hostel_id, owner=request.user)
+    hostel = get_object_or_404(Hostel, pk=hostel_id)
     room = None
     
     if room_id:
@@ -178,6 +271,17 @@ def room_form(request, hostel_id, room_id=None):
     
     context = {'hostel': hostel, 'room': room}
     return render(request, 'hostels/room_form.html', context)
+
+@login_required(login_url='accounts:owner_login')
+@require_http_methods(["POST"])
+def hostel_delete(request, pk):
+    if not request.user.is_hostel_owner():
+        messages.error(request, 'Access denied.')
+        return redirect('home')
+    hostel = get_object_or_404(Hostel, pk=pk)
+    hostel.delete()
+    messages.success(request, f'Hostel "{hostel.name}" deleted successfully')
+    return redirect('hostels:owner_dashboard')
 
 # ============= API ENDPOINTS =============
 

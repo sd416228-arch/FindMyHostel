@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Student Login - FindMy Hostel{% endblock %}
+{% block title %}User Login - FindMy Hostel{% endblock %}
 {% block main_class %}fm-auth-shell{% endblock %}
 
 {% block content %}
@@ -9,7 +9,12 @@
         <div class="col-lg-6">
             <section class="fm-auth-scene">
                 <div class="fm-auth-header">
-                    <h1>Student Login</h1>
+                    <div class="mb-3">
+                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(26,86,219,0.1), rgba(26,86,219,0.04));">
+                            <i class="fas fa-user-astronaut" style="font-size: 1.6rem; color: var(--fm-blue);"></i>
+                        </span>
+                    </div>
+                    <h1>Welcome Back</h1>
                     <p>Sign in to book your next stay.</p>
                 </div>
 
@@ -18,27 +23,42 @@
                         {% csrf_token %}
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="email" name="email" required value="{{ email }}">
+                            <label for="email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background: var(--fm-bg); border: 1.5px solid var(--fm-line); border-right: none; border-radius: 10px 0 0 10px;">
+                                    <i class="fas fa-envelope text-muted"></i>
+                                </span>
+                                <input type="email" class="form-control" id="email" name="email" required value="{{ email }}" placeholder="Enter your email" style="border-left: none; border-radius: 0 10px 10px 0;">
+                            </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="background: var(--fm-bg); border: 1.5px solid var(--fm-line); border-right: none; border-radius: 10px 0 0 10px;">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password" style="border-left: none; border-radius: 0 10px 10px 0;">
+                            </div>
                         </div>
 
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                            <label class="form-check-label" for="remember">Remember me</label>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check mb-0">
+                                <input type="checkbox" class="form-check-input" id="remember" name="remember" style="cursor: pointer;">
+                                <label class="form-check-label" for="remember" style="cursor: pointer; font-size: 0.85rem;">Remember me</label>
+                            </div>
+                            <a href="#" style="font-size: 0.85rem; color: var(--fm-blue); text-decoration: none; font-weight: 600;">Forgot password?</a>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 btn-lg">Login</button>
+                        <button type="submit" class="btn fm-btn-blue w-100 btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i> Login
+                        </button>
                     </form>
                 </div>
 
                 <p class="fm-auth-bottom text-center">
-                    Don't have an account? <a href="{% url 'accounts:student_register' %}">Register here</a>
-                    <span class="d-block mt-2">Hostel owner? <a href="{% url 'accounts:owner_login' %}">Owner login</a> or <a href="{% url 'accounts:owner_register' %}">Register here</a></span>
+                    Don't have an account? <a href="{% url 'accounts:student_register' %}">Create one here</a>
+
                 </p>
             </section>
         </div>
