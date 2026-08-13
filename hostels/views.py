@@ -246,17 +246,17 @@ def submit_testimonial(request):
 @owner_required
 def owner_dashboard(request):
     """Owner dashboard"""
-    hostels = Hostel.objects.all()
+    hostels = Hostel.objects.filter(owner=request.user)
     my_booking_filter = Q(room__hostel__owner=request.user)
     total_bookings = Booking.objects.filter(my_booking_filter).count()
     recent_bookings = Booking.objects.filter(my_booking_filter).order_by('-created_at')[:5]
-    testimonials = Testimonial.objects.filter(is_active=True).order_by('-created_at')
+    hostel_reviews = Review.objects.filter(hostel__owner=request.user).select_related('user', 'hostel').order_by('-created_at')
 
     context = {
         'hostels': hostels,
         'total_bookings': total_bookings,
         'recent_bookings': recent_bookings,
-        'testimonials': testimonials,
+        'hostel_reviews': hostel_reviews,
     }
     return render(request, 'hostels/owner_dashboard.html', context)
 
@@ -266,7 +266,7 @@ def hostel_form(request, pk=None):
     """Create or edit hostel"""
     hostel = None
     if pk:
-        hostel = get_object_or_404(Hostel, pk=pk)
+        hostel = get_object_or_404(Hostel, pk=pk, owner=request.user)
     
     if request.method == 'POST':
         data = request.POST
@@ -318,7 +318,7 @@ def hostel_form(request, pk=None):
 @require_http_methods(["GET", "POST"])
 def room_form(request, hostel_id, room_id=None):
     """Create or edit room"""
-    hostel = get_object_or_404(Hostel, pk=hostel_id)
+    hostel = get_object_or_404(Hostel, pk=hostel_id, owner=request.user)
     room = None
     
     if room_id:
@@ -355,7 +355,7 @@ def room_form(request, hostel_id, room_id=None):
 @owner_required
 @require_http_methods(["POST"])
 def hostel_delete(request, pk):
-    hostel = get_object_or_404(Hostel, pk=pk)
+    hostel = get_object_or_404(Hostel, pk=pk, owner=request.user)
     hostel.delete()
     messages.success(request, f'Hostel "{hostel.name}" deleted successfully')
     return redirect('hostels:owner_dashboard')

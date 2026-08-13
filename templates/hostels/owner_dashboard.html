@@ -2,6 +2,20 @@
 
 {% block title %}My Hostels - FindMy Hostel{% endblock %}
 
+{% block extra_css %}
+<style>
+    .stat-card {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        border-radius: 1rem;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>My Hostels</h1>
@@ -12,35 +26,41 @@
 
 <div class="row">
     <div class="col-md-3 mb-3">
-        <div class="card text-center">
-            <div class="card-body">
-                <i class="fas fa-hotel fa-2x text-primary mb-2"></i>
-                <h6 class="text-muted">Total Hostels</h6>
-                <h3>{{ hostels.count }}</h3>
+        <a href="#hostels-list" class="text-decoration-none d-block h-100">
+            <div class="card text-center h-100 stat-card">
+                <div class="card-body">
+                    <i class="fas fa-hotel fa-2x text-primary mb-2"></i>
+                    <h6 class="text-muted">Total Hostels</h6>
+                    <h3>{{ hostels.count }}</h3>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-md-3 mb-3">
-        <div class="card text-center">
-            <div class="card-body">
-                <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
-                <h6 class="text-muted">Total Bookings</h6>
-                <h3>{{ total_bookings }}</h3>
+        <a href="{% url 'bookings:owner_list' %}" class="text-decoration-none d-block h-100">
+            <div class="card text-center h-100 stat-card">
+                <div class="card-body">
+                    <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
+                    <h6 class="text-muted">Total Bookings</h6>
+                    <h3>{{ total_bookings }}</h3>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-md-3 mb-3">
-        <div class="card text-center">
-            <div class="card-body">
-                <i class="fas fa-star fa-2x text-warning mb-2"></i>
-                <h6 class="text-muted">User Reviews</h6>
-                <h3>{{ testimonials|length }}</h3>
+        <a href="#reviews-list" class="text-decoration-none d-block h-100">
+            <div class="card text-center h-100 stat-card">
+                <div class="card-body">
+                    <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                    <h6 class="text-muted">User Reviews</h6>
+                    <h3>{{ hostel_reviews|length }}</h3>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
-<h3 class="mt-4 mb-3">All Hostels</h3>
+<h3 class="mt-4 mb-3" id="hostels-list">All Hostels</h3>
 
 {% if hostels %}
     <div class="row">
@@ -137,34 +157,36 @@
     <p class="text-muted text-center">No recent bookings</p>
 {% endif %}
 
-<h3 class="mt-5 mb-3">User Reviews</h3>
+<h3 class="mt-5 mb-3" id="reviews-list">User Reviews</h3>
 
-{% if testimonials %}
+{% if hostel_reviews %}
     <div class="table-responsive">
         <table class="table table-sm">
             <thead>
                 <tr>
                     <th>User</th>
+                    <th>Hostel</th>
                     <th>Rating</th>
                     <th>Review</th>
                     <th>Date</th>
                 </tr>
             </thead>
             <tbody>
-                {% for testimonial in testimonials %}
+                {% for review in hostel_reviews %}
                     <tr>
-                        <td>{{ testimonial.user.get_full_name|default:testimonial.user.username }}</td>
+                        <td>{{ review.user.get_full_name|default:review.user.username }}</td>
+                        <td>{{ review.hostel.name }}</td>
                         <td>
                             {% for i in "12345"|make_list %}
-                                {% if forloop.counter <= testimonial.rating %}
+                                {% if forloop.counter <= review.rating %}
                                     <i class="fas fa-star text-warning" style="font-size: 0.8rem;"></i>
                                 {% else %}
                                     <i class="far fa-star text-muted" style="font-size: 0.8rem;"></i>
                                 {% endif %}
                             {% endfor %}
                         </td>
-                        <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ testimonial.content }}</td>
-                        <td>{{ testimonial.created_at|date:"M d, Y" }}</td>
+                        <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ review.comment }}</td>
+                        <td>{{ review.created_at|date:"M d, Y" }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
