@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import CustomUser
+from .validators import is_valid_phone
 from django.contrib import messages
 
 # ============= REGISTER VIEW =============
@@ -40,6 +41,9 @@ def register(request):
         
         if len(password) < 8:
             errors['password'] = 'Password must be at least 8 characters'
+        
+        if phone and not is_valid_phone(phone):
+            errors['phone'] = 'Phone number must be exactly 10 digits'
         
         if errors:
             return render(request, 'accounts/register.html', {'errors': errors, 'form_data': request.POST})
@@ -78,7 +82,7 @@ def login_view(request):
         
         try:
             user = CustomUser.objects.get(email=email)
-            user = authenticate(request, username=user.username, password=password)
+            user = authenticate(request, username=email, password=password)
             
             if user is not None:
                 login(request, user)
@@ -114,7 +118,7 @@ def profile(request):
         'user': user,
         'role': user.get_role_display()
     }
-    return render(request, 'accounts/profile.html', context)
+    return render(request, 'accounts/user/profile.html', context)
 
 # ============= EDIT PROFILE VIEW =============
 @login_required(login_url='accounts:login')
@@ -124,17 +128,26 @@ def edit_profile(request):
     user = request.user
     
     if request.method == 'POST':
-        user.phone = request.POST.get('phone', user.phone)
+        new_phone = request.POST.get('phone', '').strip()
+        if new_phone and not is_valid_phone(new_phone):
+            messages.error(request, 'Phone number must be exactly 10 digits.')
+            return redirect('accounts:edit_profile')
+        user.phone = new_phone
         
         if request.FILES.get('profile_picture'):
             user.profile_picture = request.FILES['profile_picture']
         
         user.save()
         messages.success(request, 'Profile updated successfully')
+        if getattr(request, '_fm_owner_portal', False):
+            return redirect('accounts:owner_profile')
         return redirect('accounts:profile')
     
-    context = {'user': user}
-    return render(request, 'accounts/edit_profile.html', context)
+    context = {
+        'user': user,
+        'is_owner_portal': getattr(request, '_fm_owner_portal', False),
+    }
+    return render(request, 'accounts/user/edit_profile.html', context)
 
 # ============= STUDENT REGISTER =============
 @require_http_methods(["GET", "POST"])
@@ -166,6 +179,9 @@ def student_register(request):
         
         if len(password) < 8:
             errors['password'] = 'Password must be at least 8 characters'
+        
+        if phone and not is_valid_phone(phone):
+            errors['phone'] = 'Phone number must be exactly 10 digits'
         
         if errors:
             return render(request, 'accounts/student_register.html', {'errors': errors, 'form_data': request.POST})
@@ -254,6 +270,9 @@ def owner_register(request):
         if len(password) < 8:
             errors['password'] = 'Password must be at least 8 characters'
         
+        if phone and not is_valid_phone(phone):
+            errors['phone'] = 'Phone number must be exactly 10 digits'
+        
         if errors:
             return render(request, 'accounts/owner_register.html', {'errors': errors, 'form_data': request.POST})
         
@@ -290,18 +309,14 @@ def student_dashboard(request):
     # Current and upcoming bookings
     current_bookings = all_bookings.filter(
         status__in=['pending', 'confirmed', 'checked_in'],
-        check_in_date__lte=today,
-        check_out_date__gt=today
-    ) | all_bookings.filter(
-        status__in=['pending', 'confirmed', 'checked_in'],
-        check_in_date__gt=today
+        stay_date__gte=today
     )
     
     # Past bookings
     past_bookings = all_bookings.filter(
         status__in=['completed', 'cancelled']
     ) | all_bookings.filter(
-        check_out_date__lte=today,
+        stay_date__lt=today,
         status__in=['pending', 'confirmed', 'checked_in']
     )
     
@@ -319,7 +334,7 @@ def student_dashboard(request):
         'countries_count': len(countries),
     }
     
-    return render(request, 'accounts/student_dashboard.html', context)
+    return render(request, 'accounts/user/student_dashboard.html', context)
 
 # ============= OWNER LOGIN =============
 @require_http_methods(["GET", "POST"])
@@ -328,8 +343,7 @@ def owner_login(request):
     if request.user.is_authenticated:
         if request.user.is_hostel_owner():
             return redirect('hostels:owner_dashboard')
-        else:
-            return redirect('home')
+        messages.info(request, 'You are logged in as a traveler. Login with your owner account below.')
 
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -354,6 +368,24 @@ def owner_login(request):
         return render(request, 'accounts/owner_login.html', {'email': email})
     
     return render(request, 'accounts/owner_login.html')
+
+# ============= OWNER PROFILE / LOGOUT (owner portal session) =============
+@login_required(login_url='accounts:owner_login')
+def owner_profile(request):
+    """Owner portal profile page (uses the owner session)"""
+    return profile(request)
+
+@login_required(login_url='accounts:owner_login')
+@require_http_methods(["GET", "POST"])
+def owner_edit_profile(request):
+    """Owner portal edit profile page (uses the owner session)"""
+    return edit_profile(request)
+
+def owner_logout(request):
+    """Logout from the owner portal session only"""
+    logout(request)
+    messages.success(request, 'You have been logged out successfully')
+    return redirect('accounts:owner_login')
 
 # ============= API ENDPOINT: Check if email exists =============
 @csrf_exempt

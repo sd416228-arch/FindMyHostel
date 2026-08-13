@@ -3,17 +3,61 @@
 {% block title %}My Bookings - FindMy Hostel{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">My Bookings</h1>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h1 class="mb-0">My Bookings</h1>
+    <a href="{% url 'hostels:list' %}" class="btn btn-outline-primary rounded-pill fw-bold">
+        <i class="fas fa-search me-1"></i> Browse More Hostels
+    </a>
+</div>
 
 {% if bookings %}
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm rounded-4" style="border: 1px solid #eee !important;">
+                <div class="card-body">
+                    <i class="fas fa-calendar-check fa-2x text-primary mb-2"></i>
+                    <h6 class="text-muted mb-0">Total</h6>
+                    <h3 class="fw-bold mb-0">{{ bookings.count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm rounded-4" style="border: 1px solid #eee !important;">
+                <div class="card-body">
+                    <i class="fas fa-hourglass-half fa-2x text-warning mb-2"></i>
+                    <h6 class="text-muted mb-0">Upcoming / Active</h6>
+                    <h3 class="fw-bold mb-0">{{ active_bookings }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm rounded-4" style="border: 1px solid #eee !important;">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                    <h6 class="text-muted mb-0">Completed</h6>
+                    <h3 class="fw-bold mb-0">{{ completed_bookings }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center border-0 shadow-sm rounded-4" style="border: 1px solid #eee !important;">
+                <div class="card-body">
+                    <i class="fas fa-indian-rupee-sign fa-2x text-secondary mb-2"></i>
+                    <h6 class="text-muted mb-0">Total Paid</h6>
+                    <h3 class="fw-bold mb-0">Rs. {{ total_paid }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="table-responsive">
-        <table class="table table-hover">
+        <table class="table table-hover align-middle">
             <thead class="table-light">
                 <tr>
                     <th>Booking ID</th>
                     <th>Hostel & Room</th>
-                    <th>Check-in</th>
-                    <th>Check-out</th>
+                    <th>Stay Date</th>
+                    <th>Nights</th>
                     <th>Total Price</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -22,14 +66,14 @@
             <tbody>
                 {% for booking in bookings %}
                     <tr>
-                        <td>#{{ booking.id }}</td>
+                        <td><a href="{% url 'bookings:detail' booking.id %}" class="fw-semibold text-decoration-none">#{{ booking.id }}</a></td>
                         <td>
                             <strong>{{ booking.room.hostel.name }}</strong><br>
                             <small class="text-muted">Room {{ booking.room.room_number }}</small>
                         </td>
-                        <td>{{ booking.check_in_date|date:"M d, Y" }}</td>
-                        <td>{{ booking.check_out_date|date:"M d, Y" }}</td>
-                        <td>${{ booking.total_price }}</td>
+                        <td>{{ booking.stay_date|date:"M d, Y" }}</td>
+                        <td>{{ booking.total_nights }}</td>
+                        <td>Rs. {{ booking.total_price }}</td>
                         <td>
                             {% if booking.status == 'pending' %}
                                 <span class="badge bg-warning text-dark">Pending</span>
@@ -55,10 +99,10 @@
         </table>
     </div>
 {% else %}
-    <div class="alert alert-info text-center py-5">
+    <div class="alert alert-info text-center py-5 rounded-4">
         <i class="fas fa-calendar-times fa-3x mb-3"></i>
         <p class="mb-2">You don't have any bookings yet.</p>
-        <a href="{% url 'hostels:list' %}" class="btn btn-primary">Start Booking</a>
+        <a href="{% url 'hostels:list' %}" class="btn btn-primary rounded-pill fw-bold">Start Booking</a>
     </div>
 {% endif %}
 

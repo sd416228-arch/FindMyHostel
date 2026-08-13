@@ -76,8 +76,8 @@
                                     <tr>
                                         <th>Hostel</th>
                                         <th>Room</th>
-                                        <th>Check-in</th>
-                                        <th>Check-out</th>
+                                        <th>Stay Date</th>
+                                        <th>Nights</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -92,8 +92,8 @@
                                             <td>
                                                 #{{ booking.room.room_number }} ({{ booking.room.get_room_type_display }})
                                             </td>
-                                            <td>{{ booking.check_in_date|date:"M d, Y" }}</td>
-                                            <td>{{ booking.check_out_date|date:"M d, Y" }}</td>
+                                            <td>{{ booking.stay_date|date:"M d, Y" }}</td>
+                                            <td>{{ booking.total_nights }}</td>
                                             <td>
                                                 {% if booking.status == 'pending' %}
                                                     <span class="badge bg-warning">Pending</span>
@@ -153,10 +153,10 @@
                                                 <small class="text-muted">{{ booking.room.hostel.city }}</small>
                                             </td>
                                             <td>
-                                                {{ booking.check_in_date|date:"M d" }} - {{ booking.check_out_date|date:"M d, Y" }}<br>
-                                                <small class="text-muted">{{ booking.total_nights }} night{{ booking.total_nights|pluralize }}</small>
+                                                {{ booking.stay_date|date:"M d, Y" }}<br>
+                                                <small class="text-muted">{{ booking.total_nights }} day{{ booking.total_nights|pluralize }}</small>
                                             </td>
-                                            <td><strong>${{ booking.total_price }}</strong></td>
+                                            <td><strong>Rs. {{ booking.total_price }}</strong></td>
                                             <td>
                                                 {% if booking.status == 'completed' %}
                                                     <span class="badge bg-secondary">Completed</span>

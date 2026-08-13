@@ -38,8 +38,8 @@
                             <input type="number" class="form-control" id="capacity" name="capacity" min="1" required value="{{ room.capacity|default:'' }}">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="price_per_night" class="form-label">Price per Night ($) <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="price_per_night" name="price_per_night" step="0.01" min="0" required value="{{ room.price_per_night|default:'' }}">
+                            <label for="monthly_rent" class="form-label">Monthly Rent (Rs.) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="monthly_rent" name="monthly_rent" step="0.01" min="0" required value="{{ room.monthly_rent|default:'' }}">
                         </div>
                     </div>
                     

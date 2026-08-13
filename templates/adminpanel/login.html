@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - FindMyHostel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/adminpanel.css' %}">
+</head>
+<body class="adm-body">
+    <div class="adm-login-shell">
+        <div class="adm-login-card">
+            <span class="adm-login-logo"><i class="fas fa-location-dot"></i></span>
+            <h1>Admin Dashboard</h1>
+            <p>Sign in to manage the FindMyHostel website.</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show rounded-3 border-0 shadow-sm" role="alert" style="font-weight: 500;">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'adminpanel:login' %}">
+                {% csrf_token %}
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ email|default:'' }}" required autofocus autocomplete="username">
+
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+
+                <button type="submit" class="adm-btn adm-btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+
+            <p style="margin-top: 1.25rem; margin-bottom: 0; text-align: center;">
+                <a href="{% url 'home' %}" style="color: #64748b; font-weight: 600; font-size: 0.85rem; text-decoration: none;">
+                    <i class="fas fa-arrow-left me-1"></i> Back to website
+                </a>
+                <span style="color: #cbd5e1;">&middot;</span>
+                <a href="{% url 'adminpanel:register' %}?token=admin123" style="color: #2563eb; font-weight: 700; font-size: 0.85rem; text-decoration: none;">
+                    Create admin account <i class="fas fa-arrow-right"></i>
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

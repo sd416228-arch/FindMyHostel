@@ -1,3 +1,4 @@
+from functools import wraps
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
@@ -8,9 +9,24 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from datetime import datetime
-from .models import Hostel, HostelImage, Room, Testimonial
+from .models import Hostel, HostelImage, Review, Room, Testimonial, Reservation
+from accounts.validators import is_valid_phone
 from bookings.models import Booking
 from django.views.generic import TemplateView
+
+# ============= AUTHORIZATION HELPERS =============
+
+def owner_required(view_func):
+    """Decorator: allow only logged-in Hostel Owners to access the view."""
+    @wraps(view_func)
+    @login_required(login_url='accounts:owner_login')
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_hostel_owner():
+            messages.error(request, 'Access denied. Only hostel owners can access this.')
+            return redirect('home')
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+
 
 # ============= PUBLIC VIEWS =============
 
@@ -20,23 +36,21 @@ def hostel_list(request):
     
     # Filters
     city = request.GET.get('city', '')
-    min_price = request.GET.get('min_price', '')
-    max_price = request.GET.get('max_price', '')
-    check_in = request.GET.get('check_in', '')
-    check_out = request.GET.get('check_out', '')
+    min_rent = request.GET.get('min_rent', '')
+    max_rent = request.GET.get('max_rent', '')
     
     if city:
         hostels = hostels.filter(city__icontains=city)
     
-    if min_price:
+    if min_rent:
         try:
-            hostels = hostels.filter(base_price__gte=float(min_price))
+            hostels = hostels.filter(monthly_rent__gte=float(min_rent))
         except ValueError:
             pass
     
-    if max_price:
+    if max_rent:
         try:
-            hostels = hostels.filter(base_price__lte=float(max_price))
+            hostels = hostels.filter(monthly_rent__lte=float(max_rent))
         except ValueError:
             pass
     
@@ -47,10 +61,8 @@ def hostel_list(request):
         'hostels': hostels,
         'filters': {
             'city': city,
-            'min_price': min_price,
-            'max_price': max_price,
-            'check_in': check_in,
-            'check_out': check_out,
+            'min_rent': min_rent,
+            'max_rent': max_rent,
         }
     }
     return render(request, 'hostels/list.html', context)
@@ -76,17 +88,79 @@ def hostel_detail(request, pk):
             "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
         ]
 
-    check_in = request.GET.get('check_in', '')
-    check_out = request.GET.get('check_out', '')
-
     context = {
         'hostel': hostel,
         'rooms': rooms,
         'gallery_images': gallery_images,
-        'check_in': check_in,
-        'check_out': check_out,
+        'reviews': hostel.reviews.all(),
+        'user_review': None,
+        'can_review': False,
     }
+
+    if request.user.is_authenticated and not request.user.is_hostel_owner():
+        context['user_review'] = hostel.reviews.filter(user=request.user).first()
+        context['has_confirmed_stay'] = has_confirmed_stay(request.user, hostel)
+        context['can_review'] = context['has_confirmed_stay'] and not context['user_review']
+
     return render(request, 'hostels/detail.html', context)
+
+
+def has_confirmed_stay(user, hostel):
+    """A user may only review a hostel after their booking/reservation has been accepted."""
+    if Booking.objects.filter(
+        guest=user,
+        room__hostel=hostel,
+        status__in=['confirmed', 'checked_in', 'completed']
+    ).exists():
+        return True
+    if Reservation.objects.filter(user=user, hostel=hostel, status='confirmed').exists():
+        return True
+    return False
+
+
+@login_required
+@require_http_methods(["POST"])
+def submit_review(request, pk):
+    """Leave a rating + feedback on a hostel (one review per user per hostel)."""
+    hostel = get_object_or_404(Hostel, pk=pk, is_active=True)
+
+    if request.user.is_hostel_owner():
+        messages.error(request, 'Hostel owners cannot review hostels.')
+        return redirect('hostels:detail', pk=pk)
+
+    if not has_confirmed_stay(request.user, hostel):
+        messages.error(request, 'You can review this hostel only after your booking has been accepted.')
+        return redirect('hostels:detail', pk=pk)
+
+    if Review.objects.filter(user=request.user, hostel=hostel).exists():
+        messages.warning(request, 'You have already reviewed this hostel.')
+        return redirect('hostels:detail', pk=pk)
+
+    try:
+        rating = int(request.POST.get('rating', 0))
+    except (TypeError, ValueError):
+        rating = 0
+    comment = request.POST.get('comment', '').strip()
+
+    if not 1 <= rating <= 5:
+        messages.error(request, 'Please select a rating between 1 and 5 stars.')
+        return redirect('hostels:detail', pk=pk)
+
+    if not comment:
+        messages.error(request, 'Please write a short comment about your stay.')
+        return redirect('hostels:detail', pk=pk)
+
+    Review.objects.create(hostel=hostel, user=request.user, rating=rating, comment=comment)
+
+    # Recompute the hostel's overall rating from real reviews.
+    reviews = hostel.reviews.all()
+    average = reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+    hostel.rating = round(average, 1)
+    hostel.reviews_count = reviews.count()
+    hostel.save(update_fields=['rating', 'reviews_count'])
+
+    messages.success(request, f'Thank you! Your review of {hostel.name} has been published.')
+    return redirect('hostels:detail', pk=pk)
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -121,12 +195,35 @@ class HomeView(TemplateView):
             })
             
         context['testimonials'] = testimonials_list
+
+        request = self.request
+        context['can_review'] = (
+            request.user.is_authenticated
+            and not request.user.is_hostel_owner()
+            and has_any_accepted_booking(request.user)
+        )
         return context
+
+def has_any_accepted_booking(user):
+    """A user may only post a review once at least one of their bookings has been accepted."""
+    if Booking.objects.filter(
+        guest=user,
+        status__in=['confirmed', 'checked_in', 'completed']
+    ).exists():
+        return True
+    if Reservation.objects.filter(user=user, status='confirmed').exists():
+        return True
+    return False
+
 
 @login_required
 @require_http_methods(["POST"])
 def submit_testimonial(request):
-    """Handle submission of user testimonials"""
+    """Handle submission of user testimonials (only after an accepted booking)."""
+    if not has_any_accepted_booking(request.user):
+        messages.error(request, 'You can leave a review only after one of your hostel bookings has been accepted.')
+        return redirect('home')
+
     role = request.POST.get('role', 'User')
     rating = request.POST.get('rating', 5)
     content = request.POST.get('content', '')
@@ -146,18 +243,15 @@ def submit_testimonial(request):
 
 # ============= OWNER VIEWS =============
 
-@login_required(login_url='accounts:owner_login')
+@owner_required
 def owner_dashboard(request):
     """Owner dashboard"""
-    if not request.user.is_hostel_owner():
-        messages.error(request, 'Access denied. Only hostel owners can access this.')
-        return redirect('home')
-    
     hostels = Hostel.objects.all()
-    total_bookings = Booking.objects.count()
-    recent_bookings = Booking.objects.order_by('-created_at')[:5]
+    my_booking_filter = Q(room__hostel__owner=request.user)
+    total_bookings = Booking.objects.filter(my_booking_filter).count()
+    recent_bookings = Booking.objects.filter(my_booking_filter).order_by('-created_at')[:5]
     testimonials = Testimonial.objects.filter(is_active=True).order_by('-created_at')
-    
+
     context = {
         'hostels': hostels,
         'total_bookings': total_bookings,
@@ -166,27 +260,10 @@ def owner_dashboard(request):
     }
     return render(request, 'hostels/owner_dashboard.html', context)
 
-@login_required(login_url='accounts:owner_login')
-@require_http_methods(["POST"])
-def delete_testimonial(request, pk):
-    """Delete a user review from the owner portal"""
-    if not request.user.is_hostel_owner():
-        messages.error(request, 'Access denied.')
-        return redirect('home')
-    
-    testimonial = get_object_or_404(Testimonial, pk=pk)
-    testimonial.delete()
-    messages.success(request, 'Review deleted successfully.')
-    return redirect('hostels:owner_dashboard')
-
-@login_required(login_url='accounts:owner_login')
+@owner_required
 @require_http_methods(["GET", "POST"])
 def hostel_form(request, pk=None):
     """Create or edit hostel"""
-    if not request.user.is_hostel_owner():
-        messages.error(request, 'Access denied.')
-        return redirect('home')
-    
     hostel = None
     if pk:
         hostel = get_object_or_404(Hostel, pk=pk)
@@ -203,6 +280,13 @@ def hostel_form(request, pk=None):
         hostel.city = data.get('city')
         hostel.country = data.get('country')
         hostel.phone = data.get('phone')
+
+        if not is_valid_phone(hostel.phone):
+            messages.error(request, 'Hostel phone number must be exactly 10 digits.')
+            if pk:
+                return redirect('hostels:edit', pk=pk)
+            return redirect('hostels:create')
+
         hostel.email = data.get('email')
         hostel.website = data.get('website', '')
         
@@ -213,7 +297,7 @@ def hostel_form(request, pk=None):
         hostel.kitchen = 'kitchen' in data
         hostel.gym = 'gym' in data
         
-        hostel.base_price = data.get('base_price')
+        hostel.monthly_rent = data.get('monthly_rent')
         
         if request.FILES.get('cover_image'):
             hostel.cover_image = request.FILES['cover_image']
@@ -230,14 +314,10 @@ def hostel_form(request, pk=None):
     context = {'hostel': hostel}
     return render(request, 'hostels/hostel_form.html', context)
 
-@login_required(login_url='accounts:owner_login')
+@owner_required
 @require_http_methods(["GET", "POST"])
 def room_form(request, hostel_id, room_id=None):
     """Create or edit room"""
-    if not request.user.is_hostel_owner():
-        messages.error(request, 'Access denied.')
-        return redirect('home')
-    
     hostel = get_object_or_404(Hostel, pk=hostel_id)
     room = None
     
@@ -253,7 +333,7 @@ def room_form(request, hostel_id, room_id=None):
         room.room_number = data.get('room_number')
         room.room_type = data.get('room_type')
         room.capacity = data.get('capacity')
-        room.price_per_night = data.get('price_per_night')
+        room.monthly_rent = data.get('monthly_rent')
         room.description = data.get('description', '')
         
         # Features
@@ -272,15 +352,153 @@ def room_form(request, hostel_id, room_id=None):
     context = {'hostel': hostel, 'room': room}
     return render(request, 'hostels/room_form.html', context)
 
-@login_required(login_url='accounts:owner_login')
+@owner_required
 @require_http_methods(["POST"])
 def hostel_delete(request, pk):
-    if not request.user.is_hostel_owner():
-        messages.error(request, 'Access denied.')
-        return redirect('home')
     hostel = get_object_or_404(Hostel, pk=pk)
     hostel.delete()
     messages.success(request, f'Hostel "{hostel.name}" deleted successfully')
+    return redirect('hostels:owner_dashboard')
+
+# ============= RESERVATION VIEWS =============
+
+@login_required
+@require_http_methods(["POST"])
+def submit_reservation(request, pk):
+    """User submits a simple reservation request for a hostel"""
+    hostel = get_object_or_404(Hostel, pk=pk)
+    if request.user.is_hostel_owner():
+        messages.error(request, 'Hostel owners cannot reserve hostels.')
+        return redirect('hostels:detail', pk=pk)
+
+    guest_name = request.POST.get('guest_name', '').strip()
+    guest_phone = request.POST.get('guest_phone', '').strip()
+    message = request.POST.get('message', '').strip()
+
+    if not guest_name or not guest_phone:
+        messages.error(request, 'Please provide your name and phone number.')
+        return redirect('hostels:detail', pk=pk)
+
+    if not is_valid_phone(guest_phone):
+        messages.error(request, 'Phone number must be exactly 10 digits.')
+        return redirect('hostels:detail', pk=pk)
+
+    if Reservation.objects.filter(
+        user=request.user,
+        hostel=hostel,
+        status='pending'
+    ).exists():
+        messages.warning(request, f'You already have a pending reservation request for {hostel.name}. Wait for the owner to respond.')
+        return redirect('hostels:detail', pk=pk)
+
+    try:
+        Reservation.objects.create(
+            user=request.user,
+            hostel=hostel,
+            guest_name=guest_name,
+            guest_phone=guest_phone,
+            message=message,
+            status='pending'
+        )
+    except Exception:
+        messages.warning(request, f'You already have a pending reservation request for {hostel.name}.')
+        return redirect('hostels:detail', pk=pk)
+
+    messages.success(request, f'Reservation request sent for {hostel.name}. The owner will confirm soon.')
+
+    try:
+        from django.core.mail import send_mail
+        send_mail(
+            subject=f'New Reservation Request - {hostel.name}',
+            message=(
+                f'A user has requested to reserve your hostel.\n\n'
+                f'Hostel: {hostel.name}\n'
+                f'Guest: {guest_name}\n'
+                f'Phone: {guest_phone}\n'
+                f'Message: {message or "-"}\n\n'
+                f'Confirm or cancel this request from the Reservations page '
+                f'in your Owner Portal.'
+            ),
+            from_email='no-reply@findmyhostel.com',
+            recipient_list=[hostel.owner.email],
+            fail_silently=True,
+        )
+    except Exception:
+        pass
+
+    return redirect('hostels:detail', pk=pk)
+
+@login_required
+def my_reservations(request):
+    """User portal: the traveler's own reservation requests."""
+    if request.user.is_hostel_owner():
+        messages.error(request, 'Hostel owners cannot reserve hostels.')
+        return redirect('hostels:owner_dashboard')
+
+    context = {
+        'reservations': Reservation.objects.filter(user=request.user).order_by('-created_at'),
+    }
+    return render(request, 'bookings/reservations.html', context)
+
+
+@owner_required
+def reservation_list(request):
+    """Owner portal: hostels that have reservation requests"""
+    hostels = Hostel.objects.filter(owner=request.user)
+    reservations = Reservation.objects.filter(hostel__owner=request.user).order_by('-created_at')
+
+    hostel_groups = []
+    for hostel in hostels:
+        hostel_res = [r for r in reservations if r.hostel_id == hostel.id]
+        if hostel_res:
+            pending_count = sum(1 for r in hostel_res if r.status == 'pending')
+            hostel_groups.append({
+                'hostel': hostel,
+                'reservations': hostel_res,
+                'pending_count': pending_count,
+                'total_count': len(hostel_res),
+            })
+
+    context = {
+        'hostel_groups': hostel_groups,
+        'total_pending': reservations.filter(status='pending').count(),
+    }
+    return render(request, 'hostels/reservations.html', context)
+
+@owner_required
+def reservation_detail(request, hostel_id):
+    """Owner portal: manage reservations for one of their hostels"""
+    hostel = get_object_or_404(Hostel, pk=hostel_id, owner=request.user)
+    reservations = Reservation.objects.filter(hostel=hostel).order_by('-created_at')
+    context = {
+        'hostel': hostel,
+        'reservations': reservations,
+    }
+    return render(request, 'hostels/reservation_detail.html', context)
+
+@owner_required
+@require_http_methods(["POST"])
+def update_reservation(request, pk, action):
+    """Owner confirms or cancels a reservation"""
+    if action not in ('confirm', 'cancel'):
+        messages.error(request, 'Invalid action.')
+        return redirect('hostels:owner_dashboard')
+
+    reservation = get_object_or_404(Reservation, pk=pk)
+
+    if reservation.hostel.owner != request.user:
+        messages.error(request, 'You can only manage reservations for your own hostels.')
+        return redirect('hostels:owner_dashboard')
+
+    if action == 'confirm':
+        reservation.status = 'confirmed'
+        reservation.save()
+        messages.success(request, f'Reservation by {reservation.guest_name} confirmed.')
+    else:
+        reservation.status = 'cancelled'
+        reservation.save()
+        messages.success(request, f'Reservation by {reservation.guest_name} cancelled.')
+
     return redirect('hostels:owner_dashboard')
 
 # ============= API ENDPOINTS =============
@@ -289,23 +507,23 @@ def hostel_delete(request, pk):
 def api_hostels_search(request):
     """API to search hostels with filters"""
     city = request.GET.get('city', '')
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
+    min_rent = request.GET.get('min_rent')
+    max_rent = request.GET.get('max_rent')
     
     hostels = Hostel.objects.filter(is_active=True)
     
     if city:
         hostels = hostels.filter(Q(city__icontains=city) | Q(name__icontains=city))
     
-    if min_price:
+    if min_rent:
         try:
-            hostels = hostels.filter(base_price__gte=float(min_price))
+            hostels = hostels.filter(monthly_rent__gte=float(min_rent))
         except:
             pass
     
-    if max_price:
+    if max_rent:
         try:
-            hostels = hostels.filter(base_price__lte=float(max_price))
+            hostels = hostels.filter(monthly_rent__lte=float(max_rent))
         except:
             pass
     
@@ -314,7 +532,7 @@ def api_hostels_search(request):
             'id': h.id,
             'name': h.name,
             'city': h.city,
-            'price': str(h.base_price),
+            'monthly_rent': str(h.monthly_rent),
             'rating': h.rating,
             'amenities': h.get_amenities_list(),
         }
@@ -333,7 +551,7 @@ def api_hostel_detail(request, pk):
         'name': hostel.name,
         'description': hostel.description,
         'city': hostel.city,
-        'price': str(hostel.base_price),
+        'monthly_rent': str(hostel.monthly_rent),
         'rating': hostel.rating,
         'amenities': hostel.get_amenities_list(),
         'rooms': [
@@ -342,7 +560,7 @@ def api_hostel_detail(request, pk):
                 'number': r.room_number,
                 'type': r.room_type,
                 'capacity': r.capacity,
-                'price': str(r.price_per_night),
+                'monthly_rent': str(r.monthly_rent),
             }
             for r in hostel.rooms.filter(is_available=True)
         ]
@@ -353,23 +571,25 @@ def api_hostel_detail(request, pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def api_check_availability(request):
-    """API to check room availability"""
+    """API to check room availability for a single night stay"""
     try:
         data = request.POST
         room_id = data.get('room_id')
-        check_in_str = data.get('check_in')
-        check_out_str = data.get('check_out')
+        stay_date_str = data.get('stay_date')
         
         room = Room.objects.get(id=room_id)
-        check_in = datetime.strptime(check_in_str, '%Y-%m-%d').date()
-        check_out = datetime.strptime(check_out_str, '%Y-%m-%d').date()
+        stay_date = datetime.strptime(stay_date_str, '%Y-%m-%d').date()
         
-        available = Booking.check_availability(room, check_in, check_out)
+        available = not Booking.objects.filter(
+            room=room,
+            stay_date=stay_date,
+            status__in=['pending', 'confirmed', 'checked_in']
+        ).exists()
         
         return Response({
             'available': available,
             'room_id': room_id,
-            'message': 'Room is available' if available else 'Room is not available for selected dates'
+            'message': 'Room is available' if available else 'Room is not available for the selected date'
         })
     except Exception as e:
         return Response({'error': str(e)}, status=400)

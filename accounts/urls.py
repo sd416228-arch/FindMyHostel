@@ -19,6 +19,9 @@ urlpatterns = [
     # Separate Owner routes
     path('owner/register/', views.owner_register, name='owner_register'),
     path('owner/login/', views.owner_login, name='owner_login'),
+    path('owner/logout/', views.owner_logout, name='owner_logout'),
+    path('owner/profile/', views.owner_profile, name='owner_profile'),
+    path('owner/profile/edit/', views.owner_edit_profile, name='owner_edit_profile'),
     
     # API endpoints
     path('api/check-email/', views.check_email_api, name='check_email_api'),

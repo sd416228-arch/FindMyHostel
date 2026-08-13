@@ -40,7 +40,7 @@
     </div>
 </div>
 
-<h3 class="mt-4 mb-3">Your Hostels</h3>
+<h3 class="mt-4 mb-3">All Hostels</h3>
 
 {% if hostels %}
     <div class="row">
@@ -61,7 +61,7 @@
                         <div class="mb-3">
                             <p class="mb-1"><strong>Rooms:</strong> {{ hostel.rooms.count }}</p>
                             <p class="mb-1"><strong>Rating:</strong> {{ hostel.rating|floatformat:1 }}/5.0</p>
-                            <p class="mb-0"><strong>Price:</strong> {{ hostel.base_price }}</p>
+                            <p class="mb-0"><strong>Monthly Rent:</strong> Rs. {{ hostel.monthly_rent }}</p>
                         </div>
                         
                         <div class="d-grid gap-2">
@@ -100,9 +100,10 @@
                 <tr>
                     <th>Guest</th>
                     <th>Room</th>
-                    <th>Check-in</th>
-                    <th>Check-out</th>
+                    <th>Stay Date</th>
+                    <th>Nights</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -110,9 +111,23 @@
                     <tr>
                         <td>{{ booking.guest_name }}</td>
                         <td>{{ booking.room.room_number }} - {{ booking.room.hostel.name }}</td>
-                        <td>{{ booking.check_in_date|date:"M d" }}</td>
-                        <td>{{ booking.check_out_date|date:"M d" }}</td>
+                        <td>{{ booking.stay_date|date:"M d" }}</td>
+                        <td>{{ booking.total_nights }}</td>
                         <td><span class="badge bg-info">{{ booking.status }}</span></td>
+                        <td>
+                            {% if booking.status == 'pending' %}
+                                <form method="POST" action="{% url 'bookings:owner_update' booking.id 'accept' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-success btn-sm" title="Accept"><i class="fas fa-check"></i></button>
+                                </form>
+                                <form method="POST" action="{% url 'bookings:owner_update' booking.id 'reject' %}" style="display:inline;" onsubmit="return confirm('Reject this booking by {{ booking.guest_name }}?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Reject"><i class="fas fa-times"></i></button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted small">Handled</span>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -133,7 +148,6 @@
                     <th>Rating</th>
                     <th>Review</th>
                     <th>Date</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -151,14 +165,6 @@
                         </td>
                         <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ testimonial.content }}</td>
                         <td>{{ testimonial.created_at|date:"M d, Y" }}</td>
-                        <td>
-                            <form method="POST" action="{% url 'hostels:delete_testimonial' testimonial.id %}" onsubmit="return confirm('Delete this review by &quot;{{ testimonial.user.get_full_name|default:testimonial.user.username }}&quot;?');">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger btn-sm">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </form>
-                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

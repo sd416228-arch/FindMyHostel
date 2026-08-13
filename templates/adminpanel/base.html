@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard - FindMyHostel{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/adminpanel.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="adm-body">
+    <div class="adm-wrapper" id="admWrapper">
+        <aside class="adm-sidebar" id="admSidebar">
+            <a class="adm-brand" href="{% url 'adminpanel:dashboard' %}">
+                <span class="adm-brand-icon"><i class="fas fa-location-dot"></i></span>
+                FindMyHostel
+            </a>
+
+            <div class="adm-sidebar-label">Admin Panel</div>
+            <ul class="adm-nav">
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'adminpanel:dashboard' %}">
+                        <i class="fas fa-gauge-high"></i> Dashboard
+                    </a>
+                </li>
+            </ul>
+
+            <div class="adm-sidebar-label">Management</div>
+            <ul class="adm-nav">
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.url_name == 'users' or request.resolver_match.url_name == 'user_detail' %}active{% endif %}" href="{% url 'adminpanel:users' %}">
+                        <i class="fas fa-users"></i> Users
+                    </a>
+                </li>
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.url_name == 'hostels' or request.resolver_match.url_name == 'hostel_detail' %}active{% endif %}" href="{% url 'adminpanel:hostels' %}">
+                        <i class="fas fa-hotel"></i> Hostels
+                        {% if adm_unverified_hostels %}
+                        <span class="adm-nav-badge">{{ adm_unverified_hostels }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.url_name == 'bookings' or request.resolver_match.url_name == 'booking_detail' %}active{% endif %}" href="{% url 'adminpanel:bookings' %}">
+                        <i class="fas fa-calendar-check"></i> Bookings
+                        {% if adm_pending_bookings %}
+                        <span class="adm-nav-badge danger">{{ adm_pending_bookings }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.url_name == 'reservations' %}active{% endif %}" href="{% url 'adminpanel:reservations' %}">
+                        <i class="fas fa-envelope-open-text"></i> Reservations
+                        {% if adm_pending_reservations %}
+                        <span class="adm-nav-badge danger">{{ adm_pending_reservations }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.url_name == 'testimonials' %}active{% endif %}" href="{% url 'adminpanel:testimonials' %}">
+                        <i class="fas fa-star"></i> Reviews
+                    </a>
+                </li>
+            </ul>
+
+            <div class="adm-sidebar-label">Site</div>
+            <ul class="adm-nav">
+                <li>
+                    <a class="adm-nav-link" href="{% url 'home' %}" target="_blank">
+                        <i class="fas fa-globe"></i> View Website
+                    </a>
+                </li>
+            </ul>
+
+            <div class="adm-sidebar-footer">
+                &copy; 2026 FindMyHostel &middot; Admin Panel
+            </div>
+        </aside>
+
+        <div class="adm-sidebar-backdrop" id="admBackdrop"></div>
+
+        <div class="adm-main">
+            <header class="adm-topbar">
+                <button class="adm-toggle" id="admToggle" type="button" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="adm-page-title">{% block page_title %}{% endblock %}</h1>
+                <div class="adm-topbar-right">
+                    <a class="adm-user-chip" href="{% url 'accounts:profile' %}" title="{{ user.email }}">
+                        <span class="adm-avatar">
+                            {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="">
+                            {% else %}
+                            {{ user.email|first|upper }}
+                            {% endif %}
+                        </span>
+                        <span class="adm-user-chip-name">{{ user.email }}</span>
+                    </a>
+                    <form method="POST" action="{% url 'adminpanel:logout' %}" style="margin:0;">
+                        {% csrf_token %}
+                        <button type="submit" class="adm-btn adm-btn-outline" title="Logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </header>
+
+            {% if messages %}
+            <div class="adm-messages">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show rounded-3 border-0 shadow-sm" role="alert" style="font-weight: 500;">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <main class="adm-content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            var wrapper = document.getElementById('admWrapper');
+            var backdrop = document.getElementById('admBackdrop');
+            document.getElementById('admToggle').addEventListener('click', function () {
+                wrapper.classList.toggle('sidebar-open');
+            });
+            backdrop.addEventListener('click', function () {
+                wrapper.classList.remove('sidebar-open');
+            });
+        })();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

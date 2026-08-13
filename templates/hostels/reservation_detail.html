@@ -1,0 +1,81 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}{{ hostel.name }} Reservations - FindMy Hostel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{% url 'hostels:reservation_list' %}" class="text-muted small text-decoration-none">
+            <i class="fas fa-arrow-left me-1"></i> All Reservations
+        </a>
+        <h1 class="mt-1 mb-0">{{ hostel.name }}</h1>
+        <p class="text-muted mb-0">{{ hostel.city }}, {{ hostel.country }}</p>
+    </div>
+    {% if reservations %}
+    <a href="{% url 'hostels:edit' hostel.id %}" class="btn btn-outline-secondary">
+        <i class="fas fa-edit"></i> Edit Hostel
+    </a>
+    {% endif %}
+</div>
+
+<h3 class="mb-3">Reservation Requests</h3>
+
+{% if reservations %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Guest</th>
+                    <th>Phone</th>
+                    <th>Message</th>
+                    <th>Received</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        <td>
+                            <strong>{{ reservation.guest_name }}</strong>
+                            <div class="text-muted small">{{ reservation.user.email }}</div>
+                        </td>
+                        <td>{{ reservation.guest_phone }}</td>
+                        <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ reservation.message|default:"-" }}</td>
+                        <td>{{ reservation.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if reservation.status == 'pending' %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif reservation.status == 'confirmed' %}
+                                <span class="badge bg-success">Confirmed</span>
+                            {% else %}
+                                <span class="badge bg-danger">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reservation.status == 'pending' %}
+                                <form method="POST" action="{% url 'hostels:update_reservation' reservation.id 'confirm' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-success btn-sm"><i class="fas fa-check"></i> Confirm</button>
+                                </form>
+                                <form method="POST" action="{% url 'hostels:update_reservation' reservation.id 'cancel' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fas fa-times"></i> Cancel</button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted small">Handled</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info text-center py-5">
+        <i class="fas fa-inbox fa-3x mb-3"></i>
+        <p class="mb-0">No reservation requests for this hostel yet.</p>
+    </div>
+{% endif %}
+
+{% endblock %}

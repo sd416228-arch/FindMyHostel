@@ -14,7 +14,7 @@ HOSTEL_DATA = [
         "phone": "9801234567",
         "email": "himalayanpeace@hostel.com",
         "wifi": True, "parking": True, "laundry": True, "kitchen": True, "gym": False,
-        "base_price": 12000, "rating": 4.8, "reviews_count": 24,
+        "monthly_rent": 12000, "rating": 4.8, "reviews_count": 24,
         "cover": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=900&q=80",
     },
     {
@@ -26,7 +26,7 @@ HOSTEL_DATA = [
         "phone": "9807654321",
         "email": "everestview@hostel.com",
         "wifi": True, "parking": False, "laundry": True, "kitchen": True, "gym": True,
-        "base_price": 15000, "rating": 4.5, "reviews_count": 18,
+        "monthly_rent": 15000, "rating": 4.5, "reviews_count": 18,
         "cover": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
     },
     {
@@ -38,7 +38,7 @@ HOSTEL_DATA = [
         "phone": "9805551234",
         "email": "lakeside@hostel.com",
         "wifi": True, "parking": True, "laundry": True, "kitchen": False, "gym": False,
-        "base_price": 10000, "rating": 4.9, "reviews_count": 42,
+        "monthly_rent": 10000, "rating": 4.9, "reviews_count": 42,
         "cover": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80",
     },
     {
@@ -50,7 +50,7 @@ HOSTEL_DATA = [
         "phone": "9809876543",
         "email": "boudhabliss@hostel.com",
         "wifi": True, "parking": False, "laundry": True, "kitchen": True, "gym": False,
-        "base_price": 8000, "rating": 4.6, "reviews_count": 31,
+        "monthly_rent": 8000, "rating": 4.6, "reviews_count": 31,
         "cover": "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?auto=format&fit=crop&w=900&q=80",
     },
     {
@@ -62,7 +62,7 @@ HOSTEL_DATA = [
         "phone": "9801112233",
         "email": "durbarsquare@hostel.com",
         "wifi": True, "parking": False, "laundry": False, "kitchen": True, "gym": False,
-        "base_price": 9000, "rating": 4.7, "reviews_count": 15,
+        "monthly_rent": 9000, "rating": 4.7, "reviews_count": 15,
         "cover": "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=900&q=80",
     },
     {
@@ -74,7 +74,7 @@ HOSTEL_DATA = [
         "phone": "9804445566",
         "email": "backpackersh@hostel.com",
         "wifi": True, "parking": True, "laundry": True, "kitchen": True, "gym": False,
-        "base_price": 11000, "rating": 4.4, "reviews_count": 28,
+        "monthly_rent": 11000, "rating": 4.4, "reviews_count": 28,
         "cover": "https://images.unsplash.com/photo-1595576508898-0ad5c879a061?format=fit&crop=w=900&q=80",
     },
 ]
@@ -119,7 +119,7 @@ class Command(BaseCommand):
                         defaults={
                             'room_type': room_type,
                             'capacity': random.choice([1, 2, 4, 6]),
-                            'price_per_night': random.randint(1000, 5000),
+                            'monthly_rent': random.randint(1000, 5000),
                             'description': f"Comfortable {room_type} room with modern amenities.",
                             'has_ac': random.choice([True, True, False]),
                             'has_bathroom': True,

@@ -1,0 +1,83 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}Users - FindMyHostel{% endblock %}
+{% block page_title %}Users{% endblock %}
+
+{% block content %}
+<div class="adm-panel">
+    <div class="adm-panel-head">
+        <h3 class="adm-panel-title">All Users ({{ total }})</h3>
+        <form class="adm-filters" method="GET" action="{% url 'adminpanel:users' %}">
+            <div class="adm-search">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search by name or email...">
+            </div>
+            <select name="role" onchange="this.form.submit()">
+                <option value="">All roles</option>
+                {% for value, label in user_roles %}
+                    <option value="{{ value }}" {% if role == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="adm-btn adm-btn-primary">Search</button>
+            {% if query or role %}
+                <a class="adm-btn adm-btn-outline" href="{% url 'adminpanel:users' %}">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Verified</th>
+                    <th>Hostels</th>
+                    <th>Joined</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <a class="adm-row-link" href="{% url 'adminpanel:user_detail' u.id %}">
+                            {{ u.get_full_name|default:u.username }}
+                        </a>
+                        <div class="text-muted" style="font-size:0.75rem;">{{ u.email }}</div>
+                    </td>
+                    <td>
+                        <span class="status-badge
+                            {% if u.role == 'admin' %}violet
+                            {% elif u.role == 'owner' %}info
+                            {% else %}success{% endif %}">{{ u.get_role_display }}</span>
+                    </td>
+                    <td>
+                        {% if u.is_active %}
+                            <span class="status-badge success">Active</span>
+                        {% else %}
+                            <span class="status-badge danger">Blocked</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u.is_verified %}
+                            <span class="status-badge success"><i class="fas fa-check"></i> Verified</span>
+                        {% else %}
+                            <span class="status-badge warning"><i class="fas fa-clock"></i> Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ u.hostels.count }}</td>
+                    <td>{{ u.date_joined|date:"M d, Y" }}</td>
+                    <td class="text-end">
+                        <a class="adm-btn adm-btn-ghost adm-btn-sm" href="{% url 'adminpanel:user_detail' u.id %}">
+                            <i class="fas fa-eye"></i> Manage
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted py-4">No users found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

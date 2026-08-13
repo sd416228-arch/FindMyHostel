@@ -9,12 +9,14 @@ def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
     
     if 'runserver' in sys.argv and os.environ.get('RUN_MAIN') != 'true':
-        print("\n" + "="*50)
-        print("🏠 FIND MY HOSTEL - LINKS")
-        print("="*50)
-        print("🌍 Main Website : http://127.0.0.1:8000/")
-        print("🏢 Owner Portal : http://127.0.0.1:8000/accounts/owner/login/")
-        print("="*50 + "\n")
+        banner = "\n" + "="*50 + "\n" \
+            + "FIND MY HOSTEL - LINKS\n" \
+            + "="*50 + "\n" \
+            + "1. Main Website   : http://127.0.0.1:8000/\n" \
+            + "2. Owner Portal   : http://127.0.0.1:8000/accounts/owner/login/\n" \
+            + "3. Admin Dashboard: http://127.0.0.1:8000/panel/\n" \
+            + "="*50 + "\n"
+        print(banner)
 
     try:
         # pyrefly: ignore [missing-import]

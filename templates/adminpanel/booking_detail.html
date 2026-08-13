@@ -1,0 +1,84 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}Booking #{{ booking.id }} - FindMyHostel{% endblock %}
+{% block page_title %}Booking #{{ booking.id }}{% endblock %}
+
+{% block content %}
+<div class="adm-detail-header">
+    <div>
+        <h1 class="h4 mb-1">Booking #{{ booking.id }} - {{ booking.guest_name }}</h1>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="status-badge
+                {% if booking.status == 'confirmed' %}info
+                {% elif booking.status == 'completed' %}success
+                {% elif booking.status == 'cancelled' %}danger
+                {% elif booking.status == 'checked_in' %}violet
+                {% else %}warning{% endif %}">{{ booking.get_status_display }}</span>
+            <span class="text-muted" style="font-size:0.85rem;">Created {{ booking.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <div class="adm-panel" style="margin:0;">
+            <form method="POST" action="{% url 'adminpanel:booking_set_status' booking.id %}" class="d-flex gap-2 align-items-center p-2">
+                {% csrf_token %}
+                <select name="status" style="min-height:2.4rem;border:1px solid #e2e8f0;border-radius:9px;padding:0.45rem 0.75rem;font-size:0.85rem;">
+                    {% for value, label in booking_statuses %}
+                        <option value="{{ value }}" {% if booking.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="adm-btn adm-btn-primary adm-btn-sm">Update Status</button>
+            </form>
+        </div>
+        <form method="POST" action="{% url 'adminpanel:booking_delete' booking.id %}"
+              onsubmit="return confirm('Delete booking #{{ booking.id }} permanently?');">
+            {% csrf_token %}
+            <button type="submit" class="adm-btn adm-btn-danger"><i class="fas fa-trash"></i> Delete</button>
+        </form>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="adm-panel">
+            <div class="adm-panel-head"><h3 class="adm-panel-title">Guest Information</h3></div>
+            <div class="adm-panel-body">
+                <div class="adm-meta-grid">
+                    <div class="adm-meta-item"><span>Name</span><strong>{{ booking.guest_name }}</strong></div>
+                    <div class="adm-meta-item"><span>Email</span><strong>{{ booking.guest_email }}</strong></div>
+                    <div class="adm-meta-item"><span>Phone</span><strong>{{ booking.guest_phone }}</strong></div>
+                    <div class="adm-meta-item"><span>Account</span><strong>
+                        {% if booking.guest %}
+                            <a class="adm-row-link" href="{% url 'adminpanel:user_detail' booking.guest.id %}">{{ booking.guest.email }}</a>
+                        {% else %}-{% endif %}
+                    </strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="adm-panel">
+            <div class="adm-panel-head"><h3 class="adm-panel-title">Booking Details</h3></div>
+            <div class="adm-panel-body">
+                <div class="adm-meta-grid">
+                    <div class="adm-meta-item"><span>Hostel</span><strong><a class="adm-row-link" href="{% url 'adminpanel:hostel_detail' booking.room.hostel.id %}">{{ booking.room.hostel.name }}</a></strong></div>
+                    <div class="adm-meta-item"><span>Room</span><strong>{{ booking.room.room_number }}</strong></div>
+                    <div class="adm-meta-item"><span>Stay Date</span><strong>{{ booking.stay_date }}</strong></div>
+                    <div class="adm-meta-item"><span>Guests</span><strong>{{ booking.number_of_guests }}</strong></div>
+                    <div class="adm-meta-item"><span>Monthly Rent</span><strong>Rs. {{ booking.monthly_rent }}</strong></div>
+                    <div class="adm-meta-item"><span>Nights</span><strong>{{ booking.total_nights }}</strong></div>
+                    <div class="adm-meta-item"><span>Total Price</span><strong>Rs. {{ booking.total_price }}</strong></div>
+                    <div class="adm-meta-item"><span>Updated</span><strong>{{ booking.updated_at|date:"M d, Y H:i" }}</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="adm-panel">
+    <div class="adm-panel-head"><h3 class="adm-panel-title">Special Requests</h3></div>
+    <div class="adm-panel-body">
+        <p class="mb-0 text-muted">{{ booking.special_requests|default:"No special requests." }}</p>
+    </div>
+</div>
+{% endblock %}

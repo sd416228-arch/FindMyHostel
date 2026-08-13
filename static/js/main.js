@@ -46,7 +46,7 @@ function showNotification(message, type = 'info') {
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    return 'Rs. ' + Number(amount).toLocaleString('en-IN', { maximumFractionDigits: 2 });
 }
 
 function formatDate(dateString) {

@@ -1,0 +1,73 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}Bookings - FindMyHostel{% endblock %}
+{% block page_title %}Bookings{% endblock %}
+
+{% block content %}
+<div class="adm-panel">
+    <div class="adm-panel-head">
+        <h3 class="adm-panel-title">All Bookings ({{ bookings.count }})</h3>
+        <form class="adm-filters" method="GET" action="{% url 'adminpanel:bookings' %}">
+            <div class="adm-search">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search guest or hostel...">
+            </div>
+            <select name="status" onchange="this.form.submit()">
+                <option value="">All statuses</option>
+                {% for value, label in booking_statuses %}
+                    <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="adm-btn adm-btn-primary">Filter</button>
+            {% if query or status %}
+                <a class="adm-btn adm-btn-outline" href="{% url 'adminpanel:bookings' %}">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Guest</th>
+                    <th>Hostel / Room</th>
+                    <th>Stay Date</th>
+                    <th>Nights</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td><a class="adm-row-link" href="{% url 'adminpanel:booking_detail' booking.id %}">#{{ booking.id }}</a></td>
+                    <td>
+                        {{ booking.guest_name }}
+                        <div class="text-muted" style="font-size:0.75rem;">{{ booking.guest_email }}</div>
+                    </td>
+                    <td>{{ booking.room.hostel.name }} - Room {{ booking.room.room_number }}</td>
+                    <td>{{ booking.stay_date }}</td>
+                    <td>{{ booking.total_nights }}</td>
+                    <td>Rs. {{ booking.total_price }}</td>
+                    <td>
+                        <span class="status-badge
+                            {% if booking.status == 'confirmed' %}info
+                            {% elif booking.status == 'completed' %}success
+                            {% elif booking.status == 'cancelled' %}danger
+                            {% elif booking.status == 'checked_in' %}violet
+                            {% else %}warning{% endif %}">{{ booking.get_status_display }}</span>
+                    </td>
+                    <td class="text-end">
+                        <a class="adm-btn adm-btn-ghost adm-btn-sm" href="{% url 'adminpanel:booking_detail' booking.id %}">
+                            <i class="fas fa-eye"></i> Manage
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center text-muted py-4">No bookings found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

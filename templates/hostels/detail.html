@@ -97,6 +97,39 @@
             padding: 0.75rem !important;
         }
     }
+    /* Interactive star rating input */
+    .review-rating-input {
+        display: inline-flex;
+        flex-direction: row-reverse;
+        gap: 2px;
+    }
+    .review-star {
+        cursor: pointer;
+        font-size: 1.6rem;
+        color: #cbd5e1;
+        transition: color 150ms ease, transform 150ms ease;
+    }
+    .review-star:hover,
+    .review-star:hover ~ .review-star,
+    .review-star-input:checked ~ .review-star {
+        color: #f59e0b;
+    }
+    .review-star:hover {
+        transform: scale(1.15);
+    }
+    .review-star-input {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
+        margin: 0;
+    }
+    .review-star-input:focus-visible ~ .review-star {
+        outline: 2px solid #2563eb;
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
 </style>
 {% endblock %}
 
@@ -224,7 +257,7 @@
                                     <h5 class="fw-bold mb-1">{{ room.get_room_type_display }}</h5>
                                     <span class="badge bg-light text-muted fw-normal">Room {{ room.room_number }}</span>
                                 </div>
-                                <h4 class="text-primary fw-bold mb-0">Rs. {{ room.price_per_night }}</h4>
+                                <h4 class="text-primary fw-bold mb-0">Rs. {{ room.monthly_rent }}<small class="text-muted fw-normal">/month</small></h4>
                             </div>
                             <div class="d-flex flex-wrap gap-2 mb-3">
                                 {% if room.has_ac %}<span class="feature-chip"><i class="fas fa-snowflake"></i> AC</span>{% endif %}
@@ -287,6 +320,93 @@
                 </div>
             </div>
         </div>
+
+        <!-- Reviews & Feedback -->
+        <div class="mb-5" id="reviews">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="fw-bold mb-0">Reviews &amp; Feedback</h3>
+                <span class="badge bg-light text-muted fw-normal">{{ hostel.reviews_count }} review{{ hostel.reviews_count|pluralize }}</span>
+            </div>
+
+            <!-- Review form -->
+            {% if user.is_authenticated and not user.is_hostel_owner %}
+                {% if can_review %}
+                <div class="card border-0 shadow-sm rounded-4 mb-4" style="border: 1px solid #eee !important;">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3"><i class="fas fa-pen me-2 text-primary"></i>Share your experience</h6>
+                        <form method="POST" action="{% url 'hostels:submit_review' hostel.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Your Rating</label>
+                                <div class="review-rating-input">
+                                    {% for i in "54321"|make_list %}
+                                    <input type="radio" class="review-star-input" name="rating" id="star{{ i }}" value="{{ i }}">
+                                    <label for="star{{ i }}" class="review-star" title="{{ i }} star{{ i|pluralize }}"><i class="fas fa-star"></i></label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="review_comment" class="form-label fw-semibold">Feedback</label>
+                                <textarea class="form-control" id="review_comment" name="comment" rows="3" placeholder="How was your stay? Cleanliness, staff, location, value for money..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                                <i class="fas fa-paper-plane me-1"></i> Submit Review
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% elif user_review %}
+                <div class="alert alert-success d-flex align-items-center rounded-4">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span>You already reviewed this hostel. Thank you for your feedback!</span>
+                </div>
+                {% else %}
+                <div class="alert alert-info d-flex align-items-center rounded-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <span>You can share your review after your booking at this hostel has been accepted.</span>
+                </div>
+                {% endif %}
+            {% elif not user.is_authenticated %}
+            <div class="alert alert-light border rounded-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <span class="text-muted"><i class="fas fa-sign-in-alt me-2"></i>Login to share your review and help other travelers.</span>
+                <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary btn-sm rounded-pill fw-bold">Login</a>
+            </div>
+            {% else %}
+            <div class="alert alert-light border rounded-4">
+                <span class="text-muted"><i class="fas fa-ban me-2"></i>Hostel owners cannot review hostels.</span>
+            </div>
+            {% endif %}
+
+            <!-- Review list -->
+            {% if reviews %}
+            <div class="d-flex flex-column gap-3">
+                {% for review in reviews %}
+                <div class="card border-0 shadow-sm rounded-4" style="border: 1px solid #eee !important;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                            <div>
+                                <h6 class="mb-0 fw-bold">{{ review.user.get_full_name|default:review.user.username }}</h6>
+                                <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                            </div>
+                            <div class="rating">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= review.rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="mb-0 text-muted">{{ review.comment }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted text-center py-4 mb-0">No reviews yet. Be the first to review this hostel!</p>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Sidebar -->
@@ -298,7 +418,7 @@
                 <hr>
                 <div class="mb-3">
                     <p class="mb-1 text-muted small">Starting from</p>
-                    <h3 class="fw-bold mb-0 text-primary">Rs. {{ hostel.base_price }}</h3>
+                    <h3 class="fw-bold mb-0 text-primary">Rs. {{ hostel.monthly_rent }}</h3>
                     <small class="text-muted">per month</small>
                 </div>
 
@@ -310,11 +430,14 @@
 
                 <hr>
                 <div class="d-grid gap-2">
-                    {% if user.is_authenticated %}
+                    {% if user.is_authenticated and not user.is_hostel_owner %}
                     <button class="btn btn-primary btn-lg rounded-pill py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#bookingModal">
                         <i class="fas fa-calendar-check me-2"></i> Book Now
                     </button>
-                    {% else %}
+                    <button class="btn btn-outline-primary btn-lg rounded-pill py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#reserveModal">
+                        <i class="fas fa-hand-holding-heart me-2"></i> Reserve Hostel
+                    </button>
+                    {% elif not user.is_authenticated %}
                     <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg rounded-pill py-2 fw-bold">
                         <i class="fas fa-sign-in-alt me-2"></i> Login to Book
                     </a>
@@ -343,7 +466,7 @@
                             <option value="">Select a room</option>
                             {% for room in rooms %}
                             <option value="{{ room.id }}">
-                                {{ room.room_number }} - {{ room.get_room_type_display }} (Rs. {{ room.price_per_night }}/night)
+                                {{ room.room_number }} - {{ room.get_room_type_display }} (Rs. {{ room.monthly_rent }}/month)
                             </option>
                             {% endfor %}
                         </select>
@@ -351,14 +474,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="check_in" class="form-label">Check-in <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="check_in" name="check_in" required>
+                                <label for="stay_date" class="form-label">Stay Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="stay_date" name="stay_date" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="check_out" class="form-label">Check-out <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="check_out" name="check_out" required>
+                                <label for="days" class="form-label">Number of Days <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="days" name="days" min="1" value="1" required>
                             </div>
                         </div>
                     </div>
@@ -376,7 +499,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="guest_phone" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="guest_phone" name="guest_phone">
+                                <input type="tel" class="form-control" id="guest_phone" name="guest_phone" maxlength="10" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits">
                             </div>
                         </div>
                     </div>
@@ -385,8 +508,7 @@
                         <textarea class="form-control" id="special_requests" name="special_requests" rows="3"></textarea>
                     </div>
                     <div class="alert alert-light border">
-                        <p class="mb-1"><strong>Total Price:</strong> <span id="totalPrice">Rs. 0</span></p>
-                        <p class="mb-0"><strong>Duration:</strong> <span id="duration">0</span> nights</p>
+                        <p class="mb-0"><strong>Total Price:</strong> <span id="totalPrice">Rs. 0</span></p>
                     </div>
                     <div id="errorMsg" class="alert alert-danger d-none"></div>
                 </form>
@@ -402,34 +524,66 @@
     </div>
 </div>
 
+<!-- Reservation Modal -->
+<div class="modal fade" id="reserveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Reserve at {{ hostel.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small mb-3">Send a reservation request to the owner. No payment required.</p>
+                <form method="POST" action="{% url 'hostels:reserve' hostel.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="guest_name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="guest_name" name="guest_name" value="{{ user.first_name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="guest_phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                        <input type="tel" class="form-control" id="guest_phone" name="guest_phone" value="{{ user.phone }}" required maxlength="10" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message (optional)</label>
+                        <textarea class="form-control" id="message" name="message" rows="3" placeholder="Tell the owner anything about your stay..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary w-100 rounded-pill py-2 fw-bold" id="reserveSubmitBtn">
+                        <i class="fas fa-paper-plane me-2"></i> Send Reservation Request
+                    </button>
+                </form>
+                <script>
+                    document.getElementById('reserveModal').addEventListener('submit', function(e) {
+                        var btn = document.getElementById('reserveSubmitBtn');
+                        if (btn.disabled) { e.preventDefault(); return; }
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Sending...';
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     function setRoom(roomId) {
         document.getElementById('room_id').value = roomId;
     }
 
-    document.getElementById('check_in').addEventListener('change', calculatePrice);
-    document.getElementById('check_out').addEventListener('change', calculatePrice);
     document.getElementById('room_id').addEventListener('change', calculatePrice);
+    document.getElementById('days').addEventListener('input', calculatePrice);
 
     function calculatePrice() {
         const roomId = document.getElementById('room_id').value;
-        const checkIn = document.getElementById('check_in').value;
-        const checkOut = document.getElementById('check_out').value;
+        const days = parseInt(document.getElementById('days').value) || 1;
 
-        if (roomId && checkIn && checkOut) {
-            const start = new Date(checkIn);
-            const end = new Date(checkOut);
-            const nights = Math.floor((end - start) / (1000 * 60 * 60 * 24));
-
-            if (nights > 0) {
-                const roomOption = document.querySelector('#room_id option[value="' + roomId + '"]');
-                const priceMatch = roomOption.text.match(/Rs\.\s*(\d+\.?\d*)/);
-                if (priceMatch) {
-                    const pricePerNight = parseFloat(priceMatch[1]);
-                    const total = pricePerNight * nights;
-                    document.getElementById('totalPrice').textContent = 'Rs. ' + total.toFixed(2);
-                    document.getElementById('duration').textContent = nights;
-                }
+        if (roomId && days > 0) {
+            const roomOption = document.querySelector('#room_id option[value="' + roomId + '"]');
+            const priceMatch = roomOption.text.match(/Rs\.\s*(\d+\.?\d*)/);
+            if (priceMatch) {
+                const monthlyRent = parseFloat(priceMatch[1]);
+                const total = (monthlyRent / 30) * days;
+                document.getElementById('totalPrice').textContent = 'Rs. ' + total.toFixed(2);
             }
         }
     }
@@ -437,10 +591,9 @@
     document.getElementById('submitBooking').addEventListener('click', async function() {
         const form = document.getElementById('bookingForm');
         const roomId = document.getElementById('room_id').value;
-        const checkIn = document.getElementById('check_in').value;
-        const checkOut = document.getElementById('check_out').value;
+        const stayDate = document.getElementById('stay_date').value;
 
-        if (!roomId || !checkIn || !checkOut) {
+        if (!roomId || !stayDate) {
             alert('Please fill in all required fields');
             return;
         }

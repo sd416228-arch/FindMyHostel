@@ -189,7 +189,7 @@ hostels/
     │   ├── Amenities display
     │   ├── Contact information
     │   ├── INTERACTIVE BOOKING MODAL
-    │   │   ├── Check-in/check-out date pickers
+    │   │   ├── Single stay date picker + number of nights
     │   │   ├── Guest count selector
     │   │   ├── Real-time price calculation
     │   │   ├── Guest information form
@@ -252,22 +252,19 @@ bookings/
 │   └── Booking Model
 │       ├── guest (FK to CustomUser)
 │       ├── room (FK to Room with cascade)
-│       ├── check_in_date, check_out_date
+│       ├── stay_date
 │       ├── number_of_guests
 │       ├── price_per_night, total_nights, total_price
 │       ├── status (pending/confirmed/checked_in/completed/cancelled)
 │       ├── guest_name, guest_email, guest_phone
 │       ├── special_requests
 │       ├── Timestamps
-│       ├── Indexes: (guest, status), (room, check_in_date, check_out_date)
+│       ├── Constraint: unique (room, stay_date) when status is active
 │       │
 │       └── Methods:
-│           ├── check_availability (STATIC) - Double-booking prevention
-│           │   └── SQLite query: check_in < checkout AND check_out > checkin
-│           ├── calculate_total_price() - Calculate based on nights
 │           ├── is_active() - Check if booking active
-│           ├── is_past() - Check if booking past
-│           └── days_until_checkin() - Calculate days remaining
+│           ├── is_past() - Check if stay date has passed
+│           └── days_until_stay() - Calculate days remaining
 │
 ├── views.py                         - Booking views & APIs
 │   ├── booking_list (GET)          - User's bookings
@@ -295,7 +292,7 @@ bookings/
 │   ├── BookingAvailabilityTests
 │   │   ├── test_no_conflicts
 │   │   ├── test_with_conflicts
-│   │   ├── test_after_checkout
+│   │   ├── test_past_stay_date
 │   │   └── test_invalid_dates
 │   │
 │   └── BookingPriceTests
@@ -322,7 +319,7 @@ bookings/
     │   │   └── Cancelled (red)
     │   ├── Booking cards with details
     │   │   ├── Room & hostel name
-    │   │   ├── Check-in/check-out dates
+    │   │   ├── Stay date & number of nights
     │   │   ├── Total price
     │   │   └── Status
     │   ├── Links to booking detail

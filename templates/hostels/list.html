@@ -25,23 +25,12 @@
                         <label class="form-label">Price Range</label>
                         <div class="row">
                             <div class="col">
-                                <input type="number" class="form-control" name="min_price" placeholder="Min" value="{{ filters.min_price }}">
+                                <input type="number" class="form-control" name="min_rent" placeholder="Min" value="{{ filters.min_rent }}">
                             </div>
                             <div class="col">
-                                <input type="number" class="form-control" name="max_price" placeholder="Max" value="{{ filters.max_price }}">
+                                <input type="number" class="form-control" name="max_rent" placeholder="Max" value="{{ filters.max_rent }}">
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Dates -->
-                    <div class="mb-3">
-                        <label for="check_in" class="form-label">Check-in</label>
-                        <input type="date" class="form-control" id="check_in" name="check_in" value="{{ filters.check_in }}">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="check_out" class="form-label">Check-out</label>
-                        <input type="date" class="form-control" id="check_out" name="check_out" value="{{ filters.check_out }}">
                     </div>
                     
                     <!-- Submit -->
@@ -109,7 +98,7 @@
                                         <!-- Price and Action Button Row -->
                                         <div class="d-flex justify-content-between align-items-end mt-4">
                                             <div>
-                                                <h4 class="fw-bold mb-0">Rs. {{ hostel.base_price }}</h4>
+                                                <h4 class="fw-bold mb-0">Rs. {{ hostel.monthly_rent }}</h4>
                                                 <small class="text-muted">per month</small>
                                             </div>
                                             <a href="{% url 'hostels:detail' hostel.id %}" class="btn btn-primary px-4 py-2 rounded-3 fw-semibold" style="background-color: #2563eb; border: none;">

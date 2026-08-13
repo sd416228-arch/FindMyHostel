@@ -44,7 +44,7 @@
 
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ form_data.phone }}">
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ form_data.phone }}" maxlength="10" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits">
                         </div>
 
                         <div class="mb-3">

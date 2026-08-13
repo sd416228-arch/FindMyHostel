@@ -1,0 +1,217 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}Dashboard - FindMyHostel{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="adm-stats">
+    <div class="adm-stat">
+        <span class="adm-stat-icon blue"><i class="fas fa-users"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ total_users }}</div>
+            <div class="adm-stat-label">Total Users</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon teal"><i class="fas fa-graduation-cap"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ students }}</div>
+            <div class="adm-stat-label">Students / Travelers</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon violet"><i class="fas fa-house-chimney-user"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ owners }}</div>
+            <div class="adm-stat-label">Hostel Owners</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon amber"><i class="fas fa-hotel"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ total_hostels }}</div>
+            <div class="adm-stat-label">Total Hostels</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon green"><i class="fas fa-check-circle"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ verified_hostels }} <small style="font-size:0.8rem;color:#94a3b8;">/ {{ total_hostels }}</small></div>
+            <div class="adm-stat-label">Verified Hostels</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon red"><i class="fas fa-calendar-xmark"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ pending_verification_hostels }}</div>
+            <div class="adm-stat-label">Awaiting Verification</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon blue"><i class="fas fa-calendar-check"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ total_bookings }}</div>
+            <div class="adm-stat-label">Total Bookings</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon amber"><i class="fas fa-hourglass-half"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ pending_bookings }}</div>
+            <div class="adm-stat-label">Pending Bookings</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon green"><i class="fas fa-envelope-open-text"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ pending_reservations }}</div>
+            <div class="adm-stat-label">Pending Reservations</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon teal"><i class="fas fa-indian-rupee-sign"></i></span>
+        <div>
+            <div class="adm-stat-value">Rs. {{ revenue }}</div>
+            <div class="adm-stat-label">Booking Revenue</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon violet"><i class="fas fa-star"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ total_testimonials }}</div>
+            <div class="adm-stat-label">Reviews</div>
+        </div>
+    </div>
+    <div class="adm-stat">
+        <span class="adm-stat-icon red"><i class="fas fa-user-slash"></i></span>
+        <div>
+            <div class="adm-stat-value">{{ inactive_hostels }}</div>
+            <div class="adm-stat-label">Inactive Hostels</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="adm-panel">
+            <div class="adm-panel-head">
+                <h3 class="adm-panel-title">Recent Bookings</h3>
+                <a class="adm-btn adm-btn-ghost adm-btn-sm" href="{% url 'adminpanel:bookings' %}">View all <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="table-responsive">
+                <table class="adm-table">
+                    <thead>
+                        <tr>
+                            <th>Guest</th>
+                            <th>Hostel</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in recent_bookings %}
+                        <tr>
+                            <td>
+                                <a class="adm-row-link" href="{% url 'adminpanel:booking_detail' booking.id %}">
+                                    {{ booking.guest_name }}
+                                </a>
+                                <div class="text-muted" style="font-size:0.75rem;">{{ booking.stay_date }}</div>
+                            </td>
+                            <td>{{ booking.room.hostel.name }}</td>
+                            <td>
+                                <span class="status-badge
+                                    {% if booking.status == 'confirmed' %}info
+                                    {% elif booking.status == 'completed' %}success
+                                    {% elif booking.status == 'cancelled' %}danger
+                                    {% elif booking.status == 'checked_in' %}violet
+                                    {% else %}warning{% endif %}">{{ booking.get_status_display }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center text-muted py-4">No bookings yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="adm-panel">
+            <div class="adm-panel-head">
+                <h3 class="adm-panel-title">Recent Users</h3>
+                <a class="adm-btn adm-btn-ghost adm-btn-sm" href="{% url 'adminpanel:users' %}">View all <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="table-responsive">
+                <table class="adm-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in recent_users %}
+                        <tr>
+                            <td>
+                                <a class="adm-row-link" href="{% url 'adminpanel:user_detail' u.id %}">
+                                    {{ u.get_full_name|default:u.username }}
+                                </a>
+                                <div class="text-muted" style="font-size:0.75rem;">{{ u.email }}</div>
+                            </td>
+                            <td>
+                                <span class="status-badge
+                                    {% if u.role == 'admin' %}violet
+                                    {% elif u.role == 'owner' %}info
+                                    {% else %}success{% endif %}">{{ u.get_role_display }}</span>
+                            </td>
+                            <td>{{ u.date_joined|date:"M d, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center text-muted py-4">No users yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="adm-panel">
+    <div class="adm-panel-head">
+        <h3 class="adm-panel-title">Recent Reservation Requests</h3>
+        <a class="adm-btn adm-btn-ghost adm-btn-sm" href="{% url 'adminpanel:reservations' %}">View all <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="table-responsive">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>Guest</th>
+                    <th>Hostel</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in recent_reservations %}
+                <tr>
+                    <td class="adm-row-link">{{ res.guest_name }}</td>
+                    <td>
+                        <a class="adm-row-link" href="{% url 'adminpanel:hostel_detail' res.hostel.id %}">{{ res.hostel.name }}</a>
+                    </td>
+                    <td>{{ res.guest_phone }}</td>
+                    <td>
+                        <span class="status-badge
+                            {% if res.status == 'confirmed' %}success
+                            {% elif res.status == 'cancelled' %}danger
+                            {% else %}warning{% endif %}">{{ res.get_status_display }}</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center text-muted py-4">No reservation requests yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

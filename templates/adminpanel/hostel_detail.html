@@ -1,0 +1,161 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}{{ hostel.name }} - Hostels{% endblock %}
+{% block page_title %}Hostel Details{% endblock %}
+
+{% block content %}
+<div class="adm-detail-header">
+    <div>
+        <h1 class="h4 mb-1">{{ hostel.name }}</h1>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="text-muted" style="font-size:0.85rem;"><i class="fas fa-map-marker-alt"></i> {{ hostel.location }}, {{ hostel.city }}, {{ hostel.country }}</span>
+            {% if hostel.is_verified %}
+                <span class="status-badge success">Verified</span>
+            {% else %}
+                <span class="status-badge warning">Not Verified</span>
+            {% endif %}
+            {% if hostel.is_active %}
+                <span class="status-badge success">Active</span>
+            {% else %}
+                <span class="status-badge danger">Inactive</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <form method="POST" action="{% url 'adminpanel:hostel_toggle_verified' hostel.id %}">
+            {% csrf_token %}
+            <button type="submit" class="adm-btn {% if hostel.is_verified %}adm-btn-outline{% else %}adm-btn-success{% endif %}">
+                {% if hostel.is_verified %}<i class="fas fa-ban"></i> Unverify{% else %}<i class="fas fa-badge-check"></i> Verify Hostel{% endif %}
+            </button>
+        </form>
+        <form method="POST" action="{% url 'adminpanel:hostel_toggle_active' hostel.id %}">
+            {% csrf_token %}
+            <button type="submit" class="adm-btn {% if hostel.is_active %}adm-btn-warning{% else %}adm-btn-success{% endif %}">
+                {% if hostel.is_active %}<i class="fas fa-eye-slash"></i> Hide from Site{% else %}<i class="fas fa-eye"></i> Show on Site{% endif %}
+            </button>
+        </form>
+        <form method="POST" action="{% url 'adminpanel:hostel_delete' hostel.id %}"
+              onsubmit="return confirm('Delete {{ hostel.name }} permanently? All rooms, bookings and reservations will be removed.');">
+            {% csrf_token %}
+            <button type="submit" class="adm-btn adm-btn-danger"><i class="fas fa-trash"></i> Delete</button>
+        </form>
+    </div>
+</div>
+
+{% if hostel.cover_image %}
+<img class="adm-cover" src="{{ hostel.cover_image.url }}" alt="{{ hostel.name }}">
+{% endif %}
+
+<div class="adm-panel">
+    <div class="adm-panel-head"><h3 class="adm-panel-title">Overview</h3></div>
+    <div class="adm-panel-body">
+        <div class="adm-meta-grid">
+            <div class="adm-meta-item"><span>Owner</span><strong><a href="{% url 'adminpanel:user_detail' hostel.owner.id %}" class="adm-row-link">{{ hostel.owner.email }}</a></strong></div>
+            <div class="adm-meta-item"><span>Monthly Rent</span><strong>Rs. {{ hostel.monthly_rent }}</strong></div>
+            <div class="adm-meta-item"><span>Rating</span><strong>{{ hostel.rating }} / 5</strong></div>
+            <div class="adm-meta-item"><span>Reviews</span><strong>{{ hostel.reviews_count }}</strong></div>
+            <div class="adm-meta-item"><span>Phone</span><strong>{{ hostel.phone }}</strong></div>
+            <div class="adm-meta-item"><span>Email</span><strong>{{ hostel.email }}</strong></div>
+            <div class="adm-meta-item"><span>Website</span><strong>{{ hostel.website|default:"-" }}</strong></div>
+            <div class="adm-meta-item"><span>Created</span><strong>{{ hostel.created_at|date:"M d, Y" }}</strong></div>
+        </div>
+        <p class="mt-3 mb-0 text-muted" style="font-size:0.9rem;">{{ hostel.description }}</p>
+
+        {% if hostel.get_amenities_list %}
+        <div class="mt-3 d-flex gap-2 flex-wrap">
+            {% for amenity in hostel.get_amenities_list %}
+                <span class="status-badge info"><i class="fas fa-check"></i> {{ amenity }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="adm-panel">
+            <div class="adm-panel-head"><h3 class="adm-panel-title">Rooms ({{ rooms.count }})</h3></div>
+            <div class="table-responsive">
+                <table class="adm-table">
+                    <thead><tr><th>Room</th><th>Type</th><th>Capacity</th><th>Rent</th><th>Available</th></tr></thead>
+                    <tbody>
+                        {% for room in rooms %}
+                        <tr>
+                            <td>{{ room.room_number }}</td>
+                            <td>{{ room.get_room_type_display }}</td>
+                            <td>{{ room.capacity }}</td>
+                            <td>Rs. {{ room.monthly_rent }}</td>
+                            <td>
+                                {% if room.is_available %}
+                                    <span class="status-badge success">Yes</span>
+                                {% else %}
+                                    <span class="status-badge danger">No</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-muted py-4">No rooms.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="adm-panel">
+            <div class="adm-panel-head"><h3 class="adm-panel-title">Bookings ({{ bookings.count }})</h3></div>
+            <div class="table-responsive">
+                <table class="adm-table">
+                    <thead><tr><th>Guest</th><th>Room</th><th>Stay</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td><a class="adm-row-link" href="{% url 'adminpanel:booking_detail' booking.id %}">{{ booking.guest_name }}</a></td>
+                            <td>{{ booking.room.room_number }}</td>
+                            <td>{{ booking.stay_date }}</td>
+                            <td>
+                                <span class="status-badge
+                                    {% if booking.status == 'confirmed' %}info
+                                    {% elif booking.status == 'completed' %}success
+                                    {% elif booking.status == 'cancelled' %}danger
+                                    {% elif booking.status == 'checked_in' %}violet
+                                    {% else %}warning{% endif %}">{{ booking.get_status_display }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted py-4">No bookings.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="adm-panel">
+    <div class="adm-panel-head"><h3 class="adm-panel-title">Reservation Requests ({{ reservations.count }})</h3></div>
+    <div class="table-responsive">
+        <table class="adm-table">
+            <thead><tr><th>Guest</th><th>Phone</th><th>Message</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for res in reservations %}
+                <tr>
+                    <td>{{ res.guest_name }}</td>
+                    <td>{{ res.guest_phone }}</td>
+                    <td class="text-muted" style="max-width:320px;">{{ res.message|default:"-" }}</td>
+                    <td>
+                        <span class="status-badge
+                            {% if res.status == 'confirmed' %}success
+                            {% elif res.status == 'cancelled' %}danger
+                            {% else %}warning{% endif %}">{{ res.get_status_display }}</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center text-muted py-4">No reservation requests.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -48,7 +48,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control" id="phone" name="phone" required value="{{ hostel.phone|default:'' }}">
+                            <input type="tel" class="form-control" id="phone" name="phone" required value="{{ hostel.phone|default:'' }}" maxlength="10" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="website" class="form-label">Website</label>
@@ -57,8 +57,8 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="base_price" class="form-label">Base Price ($/night) <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" min="0" required value="{{ hostel.base_price|default:'' }}">
+                        <label for="monthly_rent" class="form-label">Monthly Rent (Rs.) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="monthly_rent" name="monthly_rent" step="0.01" min="0" required value="{{ hostel.monthly_rent|default:'' }}">
                     </div>
                     
                     <div class="mb-3">

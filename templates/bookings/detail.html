@@ -64,17 +64,13 @@
                     <h5>Booking Details</h5>
                     <div class="row">
                         <div class="col-md-6">
-                            <p class="mb-1"><strong>Check-in:</strong></p>
-                            <p>{{ booking.check_in_date|date:"l, F d, Y" }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-1"><strong>Check-out:</strong></p>
-                            <p>{{ booking.check_out_date|date:"l, F d, Y" }}</p>
+                            <p class="mb-1"><strong>Stay Date:</strong></p>
+                            <p>{{ booking.stay_date|date:"l, F d, Y" }}</p>
                         </div>
                     </div>
                     
                     <p class="mb-1"><strong>Duration:</strong></p>
-                    <p>{{ booking.total_nights }} night(s)</p>
+                    <p>{{ booking.total_nights }} day(s)</p>
                     
                     <p class="mb-1"><strong>Number of Guests:</strong></p>
                     <p>{{ booking.number_of_guests }}</p>
@@ -112,13 +108,13 @@
             </div>
             <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
-                    <span>${{ booking.price_per_night }} × {{ booking.total_nights }} nights</span>
-                    <span>${{ booking.total_price }}</span>
+                    <span>Rs. {{ booking.monthly_rent }} monthly rent × {{ booking.total_nights }} days (pro-rated)</span>
+                    <span>Rs. {{ booking.total_price }}</span>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between mb-2">
                     <strong>Total:</strong>
-                    <strong class="h5" style="color: var(--primary-color);">${{ booking.total_price }}</strong>
+                    <strong class="h5" style="color: var(--primary-color);">Rs. {{ booking.total_price }}</strong>
                 </div>
             </div>
         </div>

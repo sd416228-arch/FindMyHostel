@@ -1,0 +1,90 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}Reservations - FindMyHostel{% endblock %}
+{% block page_title %}Reservations{% endblock %}
+
+{% block content %}
+<div class="adm-panel">
+    <div class="adm-panel-head">
+        <h3 class="adm-panel-title">Reservation Requests ({{ reservations.count }})</h3>
+        <form class="adm-filters" method="GET" action="{% url 'adminpanel:reservations' %}">
+            <div class="adm-search">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search guest, phone, hostel...">
+            </div>
+            <select name="status" onchange="this.form.submit()">
+                <option value="">All statuses</option>
+                {% for value, label in reservation_statuses %}
+                    <option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="adm-btn adm-btn-primary">Filter</button>
+            {% if query or status %}
+                <a class="adm-btn adm-btn-outline" href="{% url 'adminpanel:reservations' %}">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>Guest</th>
+                    <th>Hostel</th>
+                    <th>Phone</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in reservations %}
+                <tr>
+                    <td>
+                        {{ res.guest_name }}
+                        <div class="text-muted" style="font-size:0.75rem;">
+                            {% if res.user %}
+                                <a class="adm-row-link" href="{% url 'adminpanel:user_detail' res.user.id %}">{{ res.user.email }}</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <a class="adm-row-link" href="{% url 'adminpanel:hostel_detail' res.hostel.id %}">{{ res.hostel.name }}</a>
+                    </td>
+                    <td>{{ res.guest_phone }}</td>
+                    <td class="text-muted" style="max-width:260px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ res.message|default:"-" }}</td>
+                    <td>
+                        <span class="status-badge
+                            {% if res.status == 'confirmed' %}success
+                            {% elif res.status == 'cancelled' %}danger
+                            {% else %}warning{% endif %}">{{ res.get_status_display }}</span>
+                    </td>
+                    <td class="text-end">
+                        {% if res.status == 'pending' %}
+                        <div class="d-flex gap-1 justify-content-end">
+                            <form method="POST" action="{% url 'adminpanel:reservation_action' res.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="confirm">
+                                <button type="submit" class="adm-btn adm-btn-success adm-btn-sm">
+                                    <i class="fas fa-check"></i> Confirm
+                                </button>
+                            </form>
+                            <form method="POST" action="{% url 'adminpanel:reservation_action' res.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="cancel">
+                                <button type="submit" class="adm-btn adm-btn-danger adm-btn-sm">
+                                    <i class="fas fa-xmark"></i> Cancel
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                            <span class="text-muted" style="font-size:0.75rem;">Handled on {{ res.updated_at|default:res.created_at|date:"M d" }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No reservation requests found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

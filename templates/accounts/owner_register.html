@@ -50,7 +50,7 @@
                                 <span class="input-group-text" style="background: var(--fm-bg); border: 1.5px solid var(--fm-line); border-right: none; border-radius: 10px 0 0 10px;">
                                     <i class="fas fa-phone text-muted"></i>
                                 </span>
-                                <input type="tel" class="form-control" name="phone" placeholder="Enter your phone number" value="{{ form_data.phone|default:'' }}" required style="border-left: none; border-radius: 0 10px 10px 0;">
+                                <input type="tel" class="form-control" name="phone" placeholder="Enter your phone number" value="{{ form_data.phone|default:'' }}" required maxlength="10" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits" style="border-left: none; border-radius: 0 10px 10px 0;">
                             </div>
                         </div>
 

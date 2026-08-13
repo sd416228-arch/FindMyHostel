@@ -42,12 +42,13 @@ INSTALLED_APPS = [
     'accounts',
     'hostels',
     'bookings',
+    'adminpanel',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'accounts.middleware.MultiSessionMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'config.middleware.NoCacheMiddleware',
+    'config.middleware.PortalSessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -68,6 +69,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'config.context_processors.pending_reservations_count',
+                'config.context_processors.pending_bookings_count',
+                'config.context_processors.admin_panel_counts',
             ],
         },
     },
@@ -143,6 +147,31 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Keep the CSRF token in the portal-specific session instead of a single shared
+# cookie. The Owner Portal and the main site have separate sessions, and Django
+# rotates the token on every login; with a shared cookie, logging into one
+# portal invalidates forms already loaded on the other portal.
+CSRF_USE_SESSIONS = True
+
+# ============= SEPARATE PORTAL SESSIONS =============
+# PortalSessionMiddleware replaces SessionMiddleware (admin.E410 is silenced
+# because it is functionally equivalent for non-owner paths).
+SILENCED_SYSTEM_CHECKS = ['admin.E410']
+
+# Store messages in the portal-specific session so owner-portal flash
+# messages never leak onto the main (user) website and vice versa.
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# ============= EMAIL =============
+# Dev default: print outgoing email to the runserver console.
+# In production set EMAIL_BACKEND + SMTP vars in .env.
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST', default='')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 
 # ============= REST FRAMEWORK =============
 REST_FRAMEWORK = {

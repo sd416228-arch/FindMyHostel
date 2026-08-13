@@ -1,0 +1,206 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}{{ profile.email }} - Users{% endblock %}
+{% block page_title %}User Details{% endblock %}
+
+{% block content %}
+<div class="adm-detail-header">
+    <div class="d-flex align-items-center gap-3">
+        <div class="adm-avatar" style="width:56px;height:56px;font-size:1.3rem;">
+            {% if profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}" alt="">
+            {% else %}
+            {{ profile.email|first|upper }}
+            {% endif %}
+        </div>
+        <div>
+            <h1 class="h4 mb-1">{{ profile.get_full_name|default:profile.username }}</h1>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="status-badge
+                    {% if profile.role == 'admin' %}violet
+                    {% elif profile.role == 'owner' %}info
+                    {% else %}success{% endif %}">{{ profile.get_role_display }}</span>
+                {% if profile.is_active %}
+                    <span class="status-badge success">Active</span>
+                {% else %}
+                    <span class="status-badge danger">Blocked</span>
+                {% endif %}
+                {% if profile.is_verified %}
+                    <span class="status-badge success">Verified</span>
+                {% else %}
+                    <span class="status-badge warning">Not Verified</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <form method="POST" action="{% url 'adminpanel:user_toggle_active' profile.id %}">
+            {% csrf_token %}
+            <button type="submit" class="adm-btn {% if profile.is_active %}adm-btn-warning{% else %}adm-btn-success{% endif %}">
+                {% if profile.is_active %}<i class="fas fa-ban"></i> Block User{% else %}<i class="fas fa-check"></i> Unblock User{% endif %}
+            </button>
+        </form>
+        <form method="POST" action="{% url 'adminpanel:user_toggle_verified' profile.id %}">
+            {% csrf_token %}
+            <button type="submit" class="adm-btn adm-btn-ghost">
+                <i class="fas fa-user-check"></i> {% if profile.is_verified %}Unverify{% else %}Verify{% endif %}
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="adm-panel">
+            <div class="adm-panel-head">
+                <h3 class="adm-panel-title">Profile Information</h3>
+            </div>
+            <div class="adm-panel-body">
+                <div class="adm-meta-grid">
+                    <div class="adm-meta-item"><span>Email</span><strong>{{ profile.email }}</strong></div>
+                    <div class="adm-meta-item"><span>Username</span><strong>{{ profile.username }}</strong></div>
+                    <div class="adm-meta-item"><span>Full Name</span><strong>{{ profile.get_full_name|default:"-" }}</strong></div>
+                    <div class="adm-meta-item"><span>Phone</span><strong>{{ profile.phone|default:"-" }}</strong></div>
+                    <div class="adm-meta-item"><span>Joined</span><strong>{{ profile.date_joined|date:"M d, Y H:i" }}</strong></div>
+                    <div class="adm-meta-item"><span>Last Login</span><strong>{{ profile.last_login|date:"M d, Y H:i"|default:"-" }}</strong></div>
+                    <div class="adm-meta-item"><span>Staff</span><strong>{{ profile.is_staff|yesno:"Yes,No" }}</strong></div>
+                    <div class="adm-meta-item"><span>Superuser</span><strong>{{ profile.is_superuser|yesno:"Yes,No" }}</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="adm-panel">
+            <div class="adm-panel-head">
+                <h3 class="adm-panel-title">Change Role</h3>
+            </div>
+            <div class="adm-panel-body">
+                <form method="POST" action="{% url 'adminpanel:user_set_role' profile.id %}" class="d-flex gap-2 align-items-center flex-wrap">
+                    {% csrf_token %}
+                    <select name="role" style="min-height:2.4rem;border:1px solid #e2e8f0;border-radius:9px;padding:0.45rem 0.75rem;font-size:0.85rem;">
+                        {% for value, label in profile.ROLE_CHOICES %}
+                            <option value="{{ value }}" {% if profile.role == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="adm-btn adm-btn-primary">Save Role</button>
+                </form>
+                <p class="text-muted mt-2 mb-0" style="font-size:0.78rem;">
+                    <i class="fas fa-info-circle"></i> Changing a user to "Website Admin" grants access to this dashboard.
+                </p>
+            </div>
+        </div>
+
+        {% if profile.pk != request.user.pk %}
+        <div class="adm-panel" style="border-color: rgba(239,68,68,0.35);">
+            <div class="adm-panel-head">
+                <h3 class="adm-panel-title" style="color:#dc2626;">Danger Zone</h3>
+            </div>
+            <div class="adm-panel-body">
+                <form method="POST" action="{% url 'adminpanel:user_delete' profile.id %}"
+                      onsubmit="return confirm('Delete {{ profile.email }} permanently? This cannot be undone.');">
+                    {% csrf_token %}
+                    <button type="submit" class="adm-btn adm-btn-danger">
+                        <i class="fas fa-trash"></i> Delete User Account
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-7">
+        <div class="adm-panel">
+            <div class="adm-panel-head">
+                <h3 class="adm-panel-title">Hostels Owned ({{ hostels.count }})</h3>
+                <a class="adm-btn adm-btn-ghost adm-btn-sm" href="{% url 'adminpanel:hostels' %}?q={{ profile.email }}">View all</a>
+            </div>
+            <div class="table-responsive">
+                <table class="adm-table">
+                    <thead><tr><th>Hostel</th><th>City</th><th>Verified</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for hostel in hostels %}
+                        <tr>
+                            <td><a class="adm-row-link" href="{% url 'adminpanel:hostel_detail' hostel.id %}">{{ hostel.name }}</a></td>
+                            <td>{{ hostel.city }}</td>
+                            <td>
+                                {% if hostel.is_verified %}
+                                    <span class="status-badge success">Verified</span>
+                                {% else %}
+                                    <span class="status-badge warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if hostel.is_active %}
+                                    <span class="status-badge success">Active</span>
+                                {% else %}
+                                    <span class="status-badge danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted py-4">No hostels.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="adm-panel">
+            <div class="adm-panel-head">
+                <h3 class="adm-panel-title">Bookings ({{ bookings.count }})</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="adm-table">
+                    <thead><tr><th>Booking</th><th>Hostel</th><th>Stay</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td><a class="adm-row-link" href="{% url 'adminpanel:booking_detail' booking.id %}">#{{ booking.id }}</a></td>
+                            <td>{{ booking.room.hostel.name }}</td>
+                            <td>{{ booking.stay_date }}</td>
+                            <td>
+                                <span class="status-badge
+                                    {% if booking.status == 'confirmed' %}info
+                                    {% elif booking.status == 'completed' %}success
+                                    {% elif booking.status == 'cancelled' %}danger
+                                    {% elif booking.status == 'checked_in' %}violet
+                                    {% else %}warning{% endif %}">{{ booking.get_status_display }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted py-4">No bookings.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="adm-panel">
+            <div class="adm-panel-head">
+                <h3 class="adm-panel-title">Reservations ({{ reservations.count }})</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="adm-table">
+                    <thead><tr><th>Guest</th><th>Hostel</th><th>Phone</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for res in reservations %}
+                        <tr>
+                            <td>{{ res.guest_name }}</td>
+                            <td>{{ res.hostel.name }}</td>
+                            <td>{{ res.guest_phone }}</td>
+                            <td>
+                                <span class="status-badge
+                                    {% if res.status == 'confirmed' %}success
+                                    {% elif res.status == 'cancelled' %}danger
+                                    {% else %}warning{% endif %}">{{ res.get_status_display }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted py-4">No reservations.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

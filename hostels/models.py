@@ -24,7 +24,7 @@ class Hostel(models.Model):
     gym = models.BooleanField(default=False)
     
     # Pricing & Ratings
-    base_price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    monthly_rent = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     rating = models.FloatField(default=0.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     reviews_count = models.IntegerField(default=0)
     
@@ -74,7 +74,7 @@ class Room(models.Model):
     room_number = models.CharField(max_length=50)
     room_type = models.CharField(max_length=20, choices=ROOM_TYPES)
     capacity = models.IntegerField(validators=[MinValueValidator(1)])
-    price_per_night = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    monthly_rent = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     description = models.TextField(blank=True)
     
     # Features
@@ -139,3 +139,54 @@ class Testimonial(models.Model):
 
     def __str__(self):
         return f"Review by {self.user.get_full_name() or self.user.username}"
+
+class Review(models.Model):
+    """Per-hostel review and rating left by a traveler."""
+    hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='hostel_reviews')
+    rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'hostel'],
+                name='review_unique_user_hostel'
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.rating}/5 by {self.user.email} on {self.hostel.name}"
+
+
+class Reservation(models.Model):
+    """Simple hostel reservation request from a user (no dates/pricing)"""
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('cancelled', 'Cancelled'),
+    )
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='reservations')
+    hostel = models.ForeignKey(Hostel, on_delete=models.CASCADE, related_name='reservations')
+    guest_name = models.CharField(max_length=200)
+    guest_phone = models.CharField(max_length=15)
+    message = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'hostel'],
+                condition=models.Q(status='pending'),
+                name='unique_pending_reservation_per_user_hostel'
+            ),
+        ]
+
+    def __str__(self):
+        return f"Reservation {self.id} - {self.guest_name} @ {self.hostel.name}"

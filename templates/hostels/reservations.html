@@ -1,0 +1,65 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Reservations - FindMy Hostel{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Reservations</h1>
+    {% if hostel_groups %}
+    <a href="{% url 'hostels:owner_dashboard' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+    {% endif %}
+</div>
+
+{% if hostel_groups %}
+    <p class="text-muted">
+        Select a hostel to view and manage its reservation requests.
+        {% if total_pending %}<span class="badge bg-danger ms-2">{{ total_pending }} pending</span>{% endif %}
+    </p>
+
+    <div class="row">
+        {% for group in hostel_groups %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    {% if group.hostel.cover_image %}
+                        <img src="{{ group.hostel.cover_image.url }}" class="card-img-top" alt="{{ group.hostel.name }}" style="height: 160px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 160px;">
+                            <i class="fas fa-hotel fa-4x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title mb-1">{{ group.hostel.name }}</h5>
+                            {% if group.pending_count %}
+                                <span class="badge bg-danger">{{ group.pending_count }} pending</span>
+                            {% else %}
+                                <span class="badge bg-success">All handled</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-muted small mb-3">{{ group.hostel.city }}, {{ group.hostel.country }}</p>
+
+                        <div class="mb-3">
+                            <p class="mb-1"><strong>{{ group.total_count }}</strong> total request{{ group.total_count|pluralize }}</p>
+                            {% if group.pending_count %}
+                                <p class="mb-0 text-danger small"><i class="fas fa-clock me-1"></i>{{ group.pending_count }} waiting for your response</p>
+                            {% endif %}
+                        </div>
+
+                        <a href="{% url 'hostels:reservation_detail' group.hostel.id %}" class="btn btn-primary w-100">
+                            <i class="fas fa-list-check me-1"></i> View Reservations
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info text-center py-5">
+        <i class="fas fa-calendar-check fa-3x mb-3"></i>
+        <p class="mb-2">You don't have any reservation requests yet.</p>
+        <a href="{% url 'hostels:owner_dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+    </div>
+{% endif %}
+{% endblock %}

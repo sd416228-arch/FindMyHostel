@@ -1,0 +1,85 @@
+{% extends 'adminpanel/base.html' %}
+
+{% block title %}Reviews - FindMyHostel{% endblock %}
+{% block page_title %}Reviews / Testimonials{% endblock %}
+
+{% block content %}
+<div class="adm-panel">
+    <div class="adm-panel-head">
+        <h3 class="adm-panel-title">Testimonials ({{ testimonials.count }})</h3>
+        <form class="adm-filters" method="GET" action="{% url 'adminpanel:testimonials' %}">
+            <select name="visibility" onchange="this.form.submit()">
+                <option value="">All</option>
+                <option value="active" {% if visibility == 'active' %}selected{% endif %}>Shown</option>
+                <option value="hidden" {% if visibility == 'hidden' %}selected{% endif %}>Hidden</option>
+            </select>
+            {% if visibility %}
+                <a class="adm-btn adm-btn-outline adm-btn-sm" href="{% url 'adminpanel:testimonials' %}">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Rating</th>
+                    <th>Review</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in testimonials %}
+                <tr>
+                    <td>
+                        {% if t.user %}
+                            <a class="adm-row-link" href="{% url 'adminpanel:user_detail' t.user.id %}">{{ t.user.get_full_name|default:t.user.username }}</a>
+                            <div class="text-muted" style="font-size:0.75rem;">{{ t.user.email }}</div>
+                        {% else %}-{% endif %}
+                    </td>
+                    <td>
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= t.rating %}
+                                <i class="fas fa-star text-warning" style="font-size:0.75rem;"></i>
+                            {% else %}
+                                <i class="far fa-star text-muted" style="font-size:0.75rem;"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="text-muted" style="max-width:340px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ t.content }}</td>
+                    <td>{{ t.role }}</td>
+                    <td>
+                        {% if t.is_active %}
+                            <span class="status-badge success">Shown</span>
+                        {% else %}
+                            <span class="status-badge muted">Hidden</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="d-flex gap-1 justify-content-end">
+                            <form method="POST" action="{% url 'adminpanel:testimonial_toggle_active' t.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="adm-btn adm-btn-ghost adm-btn-sm">
+                                    {% if t.is_active %}<i class="fas fa-eye-slash"></i> Hide{% else %}<i class="fas fa-eye"></i> Show{% endif %}
+                                </button>
+                            </form>
+                            <form method="POST" action="{% url 'adminpanel:testimonial_delete' t.id %}"
+                                  onsubmit="return confirm('Delete this review permanently?');">
+                                {% csrf_token %}
+                                <button type="submit" class="adm-btn adm-btn-danger adm-btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No testimonials found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

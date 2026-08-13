@@ -21,7 +21,7 @@
                     <!-- Phone -->
                     <div class="mb-3">
                         <label for="phone" class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone|default:'' }}">
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone|default:'' }}" maxlength="10" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits">
                     </div>
                     
                     <!-- Profile Picture -->
@@ -41,7 +41,7 @@
                         <button type="submit" class="btn btn-primary btn-lg">
                             <i class="fas fa-save"></i> Save Changes
                         </button>
-                        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+                        <a href="{% if is_owner_portal %}{% url 'accounts:owner_profile' %}{% else %}{% url 'accounts:profile' %}{% endif %}" class="btn btn-outline-secondary">
                             <i class="fas fa-times"></i> Cancel
                         </a>
                     </div>

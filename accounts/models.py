@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
     ROLE_CHOICES = (
         ('student', 'Student'),
         ('owner', 'Hostel Owner'),
+        ('admin', 'Website Admin'),
     )
     
     email = models.EmailField(unique=True)
@@ -34,3 +35,6 @@ class CustomUser(AbstractUser):
     
     def is_student(self):
         return self.role == 'student'
+    
+    def is_website_admin(self):
+        return self.role == 'admin' or self.is_staff or self.is_superuser
