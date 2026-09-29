@@ -252,14 +252,14 @@ bookings/
 │   └── Booking Model
 │       ├── guest (FK to CustomUser)
 │       ├── room (FK to Room with cascade)
-│       ├── stay_date
+│       ├── starting_date
 │       ├── number_of_guests
 │       ├── price_per_night, total_nights, total_price
 │       ├── status (pending/confirmed/checked_in/completed/cancelled)
 │       ├── guest_name, guest_email, guest_phone
 │       ├── special_requests
 │       ├── Timestamps
-│       ├── Constraint: unique (room, stay_date) when status is active
+│       ├── Constraint: unique (room, starting_date) when status is active
 │       │
 │       └── Methods:
 │           ├── is_active() - Check if booking active
@@ -292,7 +292,7 @@ bookings/
 │   ├── BookingAvailabilityTests
 │   │   ├── test_no_conflicts
 │   │   ├── test_with_conflicts
-│   │   ├── test_past_stay_date
+│   │   ├── test_past_starting_date
 │   │   └── test_invalid_dates
 │   │
 │   └── BookingPriceTests

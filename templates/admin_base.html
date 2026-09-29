@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}FindMyHostel - Admin{% endblock %}</title>
+    <title>{% block title %}Owner Portal - FindMyHostel{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -12,23 +12,67 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
     <link rel="stylesheet" href="{% static 'css/findmyhostel-ui.css' %}">
+    <style>
+        .owner-sidebar {
+            background: var(--fm-blue-dark, #143a6b);
+            color: #fff;
+        }
+        .owner-sidebar .offcanvas-header {
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+        .owner-sidebar .offcanvas-header .btn-close {
+            filter: invert(1);
+        }
+        .owner-sidebar .sidebar-brand {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+        .owner-sidebar .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .owner-sidebar .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: background 150ms ease, color 150ms ease;
+        }
+        .owner-sidebar .sidebar-nav a:hover {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+        }
+        .owner-sidebar .sidebar-nav a i {
+            width: 20px;
+            text-align: center;
+        }
+        .owner-sidebar .sidebar-divider {
+            border-top: 1px solid rgba(255,255,255,0.12);
+            margin: 0.75rem 1rem;
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-
     <nav class="navbar navbar-expand-lg navbar-dark fm-navbar">
         <div class="container">
             <a class="navbar-brand fm-brand" href="{% url 'hostels:owner_dashboard' %}">
                 <span class="fm-brand-mark"><i class="fas fa-location-dot"></i></span>
                 FindMyHostel
             </a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="padding: 6px 8px;">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#ownerSidebar" aria-controls="ownerSidebar" style="padding: 6px 8px;">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto gap-1"></ul>
                 <ul class="navbar-nav align-items-lg-center gap-lg-1">
-<li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'hostels:reservation_list' %}">
                             <i class="fas fa-calendar-check me-1"></i> Reservations
                             {% if pending_reservations_count %}
@@ -62,6 +106,44 @@
         </div>
     </nav>
 
+    <!-- Mobile / slide-in sidebar -->
+    <div class="offcanvas offcanvas-end owner-sidebar" tabindex="-1" id="ownerSidebar" aria-labelledby="ownerSidebarLabel">
+        <div class="offcanvas-header">
+            <span class="sidebar-brand" id="ownerSidebarLabel"><i class="fas fa-location-dot me-2"></i>FindMyHostel</span>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="sidebar-nav">
+                <li><a href="{% url 'hostels:owner_dashboard' %}"><i class="fas fa-gauge-high"></i> Dashboard</a></li>
+                <li>
+                    <a href="{% url 'hostels:reservation_list' %}">
+                        <i class="fas fa-calendar-check"></i> Reservations
+                        {% if pending_reservations_count %}
+                        <span class="badge bg-danger ms-auto">{{ pending_reservations_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'bookings:owner_list' %}">
+                        <i class="fas fa-bed"></i> Bookings
+                        {% if pending_bookings_count %}
+                        <span class="badge bg-danger ms-auto">{{ pending_bookings_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li><a href="{% url 'hostels:create' %}"><i class="fas fa-plus"></i> Add Hostel</a></li>
+            </ul>
+            <div class="sidebar-divider"></div>
+            {% if user.is_authenticated %}
+            <ul class="sidebar-nav">
+                <li><a href="{% url 'accounts:owner_profile' %}"><i class="fas fa-id-card"></i> Profile</a></li>
+                <li><a href="{% url 'accounts:owner_edit_profile' %}"><i class="fas fa-pen"></i> Edit Profile</a></li>
+                <li><a href="{% url 'accounts:owner_logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+
     {% if messages %}
         <div class="container fm-message-stack">
             {% for message in messages %}
@@ -74,7 +156,7 @@
         </div>
     {% endif %}
 
-    <main class="{% block main_class %}container my-4{% endblock %}">
+    <main class="container my-4">
         {% block content %}{% endblock %}
     </main>
 
@@ -87,6 +169,5 @@
             document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='))?.split('=')[1];
     </script>
     {% block extra_js %}{% endblock %}
-
 </body>
 </html>

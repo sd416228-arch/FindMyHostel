@@ -2,6 +2,8 @@
 
 {% block title %}My Hostels - FindMy Hostel{% endblock %}
 
+{% block page_title %}My Hostels{% endblock %}
+
 {% block extra_css %}
 <style>
     .stat-card {
@@ -120,7 +122,7 @@
                 <tr>
                     <th>Guest</th>
                     <th>Room</th>
-                    <th>Stay Date</th>
+                    <th>Starting Date</th>
                     <th>Nights</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -131,7 +133,7 @@
                     <tr>
                         <td>{{ booking.guest_name }}</td>
                         <td>{{ booking.room.room_number }} - {{ booking.room.hostel.name }}</td>
-                        <td>{{ booking.stay_date|date:"M d" }}</td>
+                        <td>{{ booking.starting_date|date:"M d" }}</td>
                         <td>{{ booking.total_nights }}</td>
                         <td><span class="badge bg-info">{{ booking.status }}</span></td>
                         <td>

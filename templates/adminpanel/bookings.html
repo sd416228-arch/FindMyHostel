@@ -30,7 +30,7 @@
                     <th>ID</th>
                     <th>Guest</th>
                     <th>Hostel / Room</th>
-                    <th>Stay Date</th>
+                    <th>Starting Date</th>
                     <th>Nights</th>
                     <th>Total</th>
                     <th>Status</th>
@@ -46,7 +46,7 @@
                         <div class="text-muted" style="font-size:0.75rem;">{{ booking.guest_email }}</div>
                     </td>
                     <td>{{ booking.room.hostel.name }} - Room {{ booking.room.room_number }}</td>
-                    <td>{{ booking.stay_date }}</td>
+                    <td>{{ booking.starting_date }}</td>
                     <td>{{ booking.total_nights }}</td>
                     <td>Rs. {{ booking.total_price }}</td>
                     <td>

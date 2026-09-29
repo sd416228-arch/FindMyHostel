@@ -143,6 +143,7 @@
 
 <div class="row g-4">
     <div class="col-lg-8">
+        {% if gallery_images %}
         <!-- Gallery Carousel -->
         <div id="hostelGallery" class="carousel slide mb-4" data-bs-ride="carousel" data-bs-interval="4000">
             <div class="carousel-indicators">
@@ -170,6 +171,16 @@
                 <p class="mb-0 opacity-75"><i class="fas fa-map-marker-alt me-1"></i> {{ hostel.location }}, {{ hostel.city }}</p>
             </div>
         </div>
+        {% else %}
+        <div class="detail-hero mb-4 d-flex align-items-end" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%); min-height: 280px;">
+            <div class="detail-hero-overlay" style="background: linear-gradient(transparent 30%, rgba(0,0,0,0.6));"></div>
+            <div class="detail-hero-content position-relative z-1">
+                <span class="badge bg-white text-primary mb-2 px-3 py-2 rounded-pill fw-semibold"><i class="fas fa-hotel me-1"></i> Verified Student Residence</span>
+                <h1 class="fw-bold mb-1 text-white" style="font-size: 2.2rem;">{{ hostel.name }}</h1>
+                <p class="mb-0 text-white-50"><i class="fas fa-map-marker-alt me-1"></i> {{ hostel.location }}, {{ hostel.city }}</p>
+            </div>
+        </div>
+        {% endif %}
 
         <!-- Quick Info Bar -->
         <div class="d-flex flex-wrap align-items-center gap-2 mb-4 p-3 bg-light rounded-4">
@@ -474,8 +485,8 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="stay_date" class="form-label">Stay Date <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="stay_date" name="stay_date" required>
+                                <label for="starting_date" class="form-label">Starting Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="starting_date" name="starting_date" required>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -591,9 +602,9 @@
     document.getElementById('submitBooking').addEventListener('click', async function() {
         const form = document.getElementById('bookingForm');
         const roomId = document.getElementById('room_id').value;
-        const stayDate = document.getElementById('stay_date').value;
+        const startingDate = document.getElementById('starting_date').value;
 
-        if (!roomId || !stayDate) {
+        if (!roomId || !startingDate) {
             alert('Please fill in all required fields');
             return;
         }

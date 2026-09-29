@@ -113,7 +113,7 @@
                         <tr>
                             <td><a class="adm-row-link" href="{% url 'adminpanel:booking_detail' booking.id %}">{{ booking.guest_name }}</a></td>
                             <td>{{ booking.room.room_number }}</td>
-                            <td>{{ booking.stay_date }}</td>
+                            <td>{{ booking.starting_date }}</td>
                             <td>
                                 <span class="status-badge
                                     {% if booking.status == 'confirmed' %}info

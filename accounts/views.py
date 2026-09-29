@@ -309,14 +309,14 @@ def student_dashboard(request):
     # Current and upcoming bookings
     current_bookings = all_bookings.filter(
         status__in=['pending', 'confirmed', 'checked_in'],
-        stay_date__gte=today
+        starting_date__gte=today
     )
     
     # Past bookings
     past_bookings = all_bookings.filter(
         status__in=['completed', 'cancelled']
     ) | all_bookings.filter(
-        stay_date__lt=today,
+        starting_date__lt=today,
         status__in=['pending', 'confirmed', 'checked_in']
     )
     

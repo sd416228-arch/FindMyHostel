@@ -122,7 +122,7 @@ def api_create_booking(request):
     try:
         data = request.POST
         room_id = data.get('room_id')
-        stay_date_str = data.get('stay_date')
+        starting_date_str = data.get('starting_date')
         days = int(data.get('days', 1))
         number_of_guests = int(data.get('number_of_guests', 1))
         guest_name = data.get('guest_name')
@@ -130,7 +130,7 @@ def api_create_booking(request):
         special_requests = data.get('special_requests', '')
         
         # Validation
-        if not all([room_id, stay_date_str]):
+        if not all([room_id, starting_date_str]):
             return Response({'error': 'Missing required fields'}, status=400)
 
         if guest_phone and not is_valid_phone(guest_phone):
@@ -139,10 +139,10 @@ def api_create_booking(request):
         # Get room
         room = Room.objects.get(id=room_id)
         
-        # Parse stay date
-        stay_date = datetime.strptime(stay_date_str, '%Y-%m-%d').date()
-        if stay_date < timezone.now().date():
-            return Response({'error': 'Stay date cannot be in the past'}, status=400)
+        # Parse starting date
+        starting_date = datetime.strptime(starting_date_str, '%Y-%m-%d').date()
+        if starting_date < timezone.now().date():
+            return Response({'error': 'Starting date cannot be in the past'}, status=400)
 
         if days < 1:
             return Response({'error': 'Number of days must be at least 1'}, status=400)
@@ -156,7 +156,7 @@ def api_create_booking(request):
 # Check availability for the selected date
         if Booking.objects.filter(
             room=room,
-            stay_date=stay_date,
+            starting_date=starting_date,
             status__in=['pending', 'confirmed', 'checked_in']
         ).exists():
             return Response({
@@ -171,7 +171,7 @@ def api_create_booking(request):
             booking = Booking.objects.create(
                 guest=request.user,
                 room=room,
-                stay_date=stay_date,
+                starting_date=starting_date,
                 number_of_guests=number_of_guests,
                 monthly_rent=room.monthly_rent,
                 total_nights=days,
@@ -213,7 +213,7 @@ def api_user_bookings(request):
             'id': b.id,
             'room': b.room.room_number,
             'hostel': b.room.hostel.name,
-            'stay_date': b.stay_date.isoformat(),
+            'starting_date': b.starting_date.isoformat(),
             'status': b.status,
             'total_price': str(b.total_price),
         }

@@ -19,7 +19,7 @@ class Booking(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='bookings')
     
     # Booking Details
-    stay_date = models.DateField()
+    starting_date = models.DateField()
     number_of_guests = models.IntegerField(validators=[MinValueValidator(1)])
     
     # Pricing
@@ -44,9 +44,9 @@ class Booking(models.Model):
         ordering = ['-created_at']
         constraints = [
             models.UniqueConstraint(
-                fields=['room', 'stay_date'],
+                fields=['room', 'starting_date'],
                 condition=models.Q(status__in=['pending', 'confirmed', 'checked_in']),
-                name='unique_room_stay_date_active'
+                name='unique_room_starting_date_active'
             ),
         ]
     
@@ -58,10 +58,10 @@ class Booking(models.Model):
         return self.status in ['confirmed', 'checked_in']
     
     def is_past(self):
-        """Check if stay date has passed"""
-        return self.stay_date < timezone.now().date()
+        """Check if starting date has passed"""
+        return self.starting_date < timezone.now().date()
     
     def days_until_stay(self):
         """Get days until stay"""
-        delta = self.stay_date - timezone.now().date()
+        delta = self.starting_date - timezone.now().date()
         return delta.days

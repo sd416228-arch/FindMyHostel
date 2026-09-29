@@ -63,7 +63,7 @@
                 <div class="adm-meta-grid">
                     <div class="adm-meta-item"><span>Hostel</span><strong><a class="adm-row-link" href="{% url 'adminpanel:hostel_detail' booking.room.hostel.id %}">{{ booking.room.hostel.name }}</a></strong></div>
                     <div class="adm-meta-item"><span>Room</span><strong>{{ booking.room.room_number }}</strong></div>
-                    <div class="adm-meta-item"><span>Stay Date</span><strong>{{ booking.stay_date }}</strong></div>
+                    <div class="adm-meta-item"><span>Starting Date</span><strong>{{ booking.starting_date }}</strong></div>
                     <div class="adm-meta-item"><span>Guests</span><strong>{{ booking.number_of_guests }}</strong></div>
                     <div class="adm-meta-item"><span>Monthly Rent</span><strong>Rs. {{ booking.monthly_rent }}</strong></div>
                     <div class="adm-meta-item"><span>Nights</span><strong>{{ booking.total_nights }}</strong></div>

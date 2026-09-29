@@ -80,13 +80,6 @@ def hostel_detail(request, pk):
     for room in rooms:
         if room.image:
             gallery_images.append(room.image.url)
-    if not gallery_images:
-        gallery_images = [
-            "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-            "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-        ]
 
     context = {
         'hostel': hostel,
@@ -575,14 +568,14 @@ def api_check_availability(request):
     try:
         data = request.POST
         room_id = data.get('room_id')
-        stay_date_str = data.get('stay_date')
+        starting_date_str = data.get('starting_date')
         
         room = Room.objects.get(id=room_id)
-        stay_date = datetime.strptime(stay_date_str, '%Y-%m-%d').date()
+        starting_date = datetime.strptime(starting_date_str, '%Y-%m-%d').date()
         
         available = not Booking.objects.filter(
             room=room,
-            stay_date=stay_date,
+            starting_date=starting_date,
             status__in=['pending', 'confirmed', 'checked_in']
         ).exists()
         

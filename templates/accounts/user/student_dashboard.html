@@ -1,6 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'user_base.html' %}
 
 {% block title %}Traveler Dashboard - FindMy Hostel{% endblock %}
+
+{% block page_title %}Traveler Dashboard{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -76,7 +78,7 @@
                                     <tr>
                                         <th>Hostel</th>
                                         <th>Room</th>
-                                        <th>Stay Date</th>
+                                        <th>Starting Date</th>
                                         <th>Nights</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -92,7 +94,7 @@
                                             <td>
                                                 #{{ booking.room.room_number }} ({{ booking.room.get_room_type_display }})
                                             </td>
-                                            <td>{{ booking.stay_date|date:"M d, Y" }}</td>
+                                            <td>{{ booking.starting_date|date:"M d, Y" }}</td>
                                             <td>{{ booking.total_nights }}</td>
                                             <td>
                                                 {% if booking.status == 'pending' %}
@@ -153,7 +155,7 @@
                                                 <small class="text-muted">{{ booking.room.hostel.city }}</small>
                                             </td>
                                             <td>
-                                                {{ booking.stay_date|date:"M d, Y" }}<br>
+                                                {{ booking.starting_date|date:"M d, Y" }}<br>
                                                 <small class="text-muted">{{ booking.total_nights }} day{{ booking.total_nights|pluralize }}</small>
                                             </td>
                                             <td><strong>Rs. {{ booking.total_price }}</strong></td>

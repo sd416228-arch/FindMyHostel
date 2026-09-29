@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}User Portal - FindMyHostel{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/adminpanel.css' %}">
+    <link rel="stylesheet" href="{% static 'css/findmyhostel-ui.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="adm-body">
+    <div class="adm-wrapper" id="admWrapper">
+        <aside class="adm-sidebar" id="admSidebar">
+            <a class="adm-brand" href="{% url 'accounts:student_dashboard' %}">
+                <span class="adm-brand-icon"><i class="fas fa-location-dot"></i></span>
+                FindMyHostel
+            </a>
+
+            <div class="adm-sidebar-label">Traveler</div>
+            <ul class="adm-nav">
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}" href="{% url 'accounts:student_dashboard' %}">
+                        <i class="fas fa-gauge-high"></i> Dashboard
+                    </a>
+                </li>
+            </ul>
+
+            <div class="adm-sidebar-label">Explore</div>
+            <ul class="adm-nav">
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.app_name == 'hostels' and request.resolver_match.url_name == 'list' %}active{% endif %}" href="{% url 'hostels:list' %}">
+                        <i class="fas fa-hotel"></i> Browse Hostels
+                    </a>
+                </li>
+            </ul>
+
+            <div class="adm-sidebar-label">My Activity</div>
+            <ul class="adm-nav">
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.app_name == 'bookings' and request.resolver_match.url_name == 'list' or request.resolver_match.app_name == 'bookings' and request.resolver_match.url_name == 'detail' %}active{% endif %}" href="{% url 'bookings:list' %}">
+                        <i class="fas fa-calendar-check"></i> My Bookings
+                    </a>
+                </li>
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.url_name == 'my_reservations' %}active{% endif %}" href="{% url 'hostels:my_reservations' %}">
+                        <i class="fas fa-hand-holding-heart"></i> My Reservations
+                    </a>
+                </li>
+            </ul>
+
+            <div class="adm-sidebar-label">Account</div>
+            <ul class="adm-nav">
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'accounts:profile' %}">
+                        <i class="fas fa-id-card"></i> Profile
+                    </a>
+                </li>
+                <li>
+                    <a class="adm-nav-link {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}" href="{% url 'accounts:edit_profile' %}">
+                        <i class="fas fa-pen"></i> Edit Profile
+                    </a>
+                </li>
+                <li>
+                    <a class="adm-nav-link" href="{% url 'accounts:logout' %}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+
+            <div class="adm-sidebar-footer">
+                &copy; 2026 FindMyHostel &middot; User Portal
+            </div>
+        </aside>
+
+        <div class="adm-sidebar-backdrop" id="admBackdrop"></div>
+
+        <div class="adm-main">
+            <header class="adm-topbar">
+                <button class="adm-toggle" id="admToggle" type="button" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="adm-page-title">{% block page_title %}User Dashboard{% endblock %}</h1>
+                <div class="adm-topbar-right">
+                    <a class="adm-user-chip" href="{% url 'accounts:profile' %}" title="{{ user.email }}">
+                        <span class="adm-avatar">
+                            {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="">
+                            {% else %}
+                            {{ user.email|first|upper }}
+                            {% endif %}
+                        </span>
+                        <span class="adm-user-chip-name">{{ user.email }}</span>
+                    </a>
+                    <a class="adm-btn adm-btn-outline" href="{% url 'accounts:logout' %}" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </header>
+
+            {% if messages %}
+            <div class="adm-messages">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show rounded-3 border-0 shadow-sm" role="alert" style="font-weight: 500;">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <main class="adm-content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+            document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='))?.split('=')[1];
+        (function () {
+            var wrapper = document.getElementById('admWrapper');
+            var backdrop = document.getElementById('admBackdrop');
+            document.getElementById('admToggle').addEventListener('click', function () {
+                wrapper.classList.toggle('sidebar-open');
+            });
+            backdrop.addEventListener('click', function () {
+                wrapper.classList.remove('sidebar-open');
+            });
+        })();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
