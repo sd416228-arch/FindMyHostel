@@ -56,3 +56,4 @@ db.sqlite3-journal
 # Environment variables
 .env
 .env.local
+production_data.json 
