@@ -1,0 +1,1205 @@
+[
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$Aoez5PWj19iS4YIn7Uruqv$DLwVeBU31awjySLuCMJeMStE9+Ql6PkFolKnh4M49cM=",
+    "last_login": "2026-08-13T14:04:07.567Z",
+    "is_superuser": false,
+    "username": "neymar",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-08T02:14:27.538Z",
+    "email": "ojha12@gmai.com",
+    "role": "student",
+    "phone": null,
+    "profile_picture": "",
+    "created_at": "2026-07-08T02:14:29.723Z",
+    "updated_at": "2026-08-14T03:13:51.004Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$UKOefsUYQRFGktKDp072KS$/wga+8bXqXatEGkw6TuOD+F9icVsRQWr2QxODn8TNLw=",
+    "last_login": "2026-08-14T03:14:34.846Z",
+    "is_superuser": false,
+    "username": "sujitdutt",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-08T02:19:55.992Z",
+    "email": "sujit321@gmail.com",
+    "role": "owner",
+    "phone": "9843959317",
+    "profile_picture": "",
+    "created_at": "2026-07-08T02:19:57.376Z",
+    "updated_at": "2026-08-14T03:13:56.389Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$KlQL9rzyNFRjaHupnLLd9z$mxMzGR5urOjMVwSs1zjPnVg3bVyW7iefzMcldUmtxvU=",
+    "last_login": "2026-07-08T02:22:54.528Z",
+    "is_superuser": false,
+    "username": "SD",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-08T02:22:52.852Z",
+    "email": "sd416228@gmail.com",
+    "role": "student",
+    "phone": "3432432432",
+    "profile_picture": "",
+    "created_at": "2026-07-08T02:22:54.515Z",
+    "updated_at": "2026-08-14T03:13:51.778Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$9Pj1gMiGy54BAnkuDF45e8$ITs0MRtBJk8s24OoheBhkdNil5F81LhPZ8tz66yBLjs=",
+    "last_login": "2026-07-08T15:44:07.433Z",
+    "is_superuser": false,
+    "username": "Suju",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-08T15:44:05.736Z",
+    "email": "s416228@gmail.com",
+    "role": "student",
+    "phone": "+97767687687698",
+    "profile_picture": "",
+    "created_at": "2026-07-08T15:44:07.392Z",
+    "updated_at": "2026-08-14T03:13:52.410Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$OzCAThXS6ncUYnU1e21ktd$5329h2Psdkl6NnY/0JIQk8k9SRe/Id9gogH0H+kZHlw=",
+    "last_login": "2026-07-09T15:43:33.055Z",
+    "is_superuser": false,
+    "username": "ammu",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-09T15:43:31.433Z",
+    "email": "ammu@gmail.com",
+    "role": "student",
+    "phone": "9843959317",
+    "profile_picture": "",
+    "created_at": "2026-07-09T15:43:33.016Z",
+    "updated_at": "2026-08-14T03:13:52.651Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$6Z7mvp2ur8HV8q7jYAlsrh$tCrSijf2w35Dqj3VLjG2s9p/4MtWpmLKblNGaVnN5Lg=",
+    "last_login": "2026-07-09T17:21:34.405Z",
+    "is_superuser": false,
+    "username": "KLD",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-09T17:21:31.788Z",
+    "email": "kld@gmail.com",
+    "role": "owner",
+    "phone": "67687687698",
+    "profile_picture": "",
+    "created_at": "2026-07-09T17:21:34.385Z",
+    "updated_at": "2026-08-14T03:13:55.019Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$PmA1Wlr0GWBHCt2ji02ljB$quUKQVcxvY7+aPveQx212fE3aSewh4eMGCSCDAY4gtY=",
+    "last_login": "2026-09-29T18:09:24.780Z",
+    "is_superuser": false,
+    "username": "Suju ",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-10T11:00:30.073Z",
+    "email": "sujit.231346@ncit.edu.np",
+    "role": "owner",
+    "phone": "9843959317",
+    "profile_picture": "",
+    "created_at": "2026-07-10T11:00:31.794Z",
+    "updated_at": "2026-08-14T03:13:55.676Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$VZRuvzB4Nw3ffCdsAJUbrQ$FN76mWQxCFTpv1l5XmiQ8Xf5mXaXE2jfwERradaxVx0=",
+    "last_login": "2026-07-10T12:12:07.358Z",
+    "is_superuser": false,
+    "username": "ks",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-10T12:12:04.504Z",
+    "email": "ks@gmail.com",
+    "role": "student",
+    "phone": "3432432432",
+    "profile_picture": "",
+    "created_at": "2026-07-10T12:12:07.339Z",
+    "updated_at": "2026-08-14T03:13:53.113Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$WmvD78X5tR4OaIGIf3BuHC$Q7QepsEQ3yyVP2gvJrARFJLkkNjTOGhm0ubr+Kq3jLs=",
+    "last_login": "2026-07-10T12:40:26.325Z",
+    "is_superuser": false,
+    "username": "ds",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-10T12:40:24.536Z",
+    "email": "ds@gmail.com",
+    "role": "student",
+    "phone": "1234567890",
+    "profile_picture": "",
+    "created_at": "2026-07-10T12:40:26.309Z",
+    "updated_at": "2026-08-14T03:13:53.315Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$BBWZITkW5WaTSivvQZxJHL$Trfr3/hhvFQg6/gjaFWTdTgU2/FmnA7563MvL0PqyUw=",
+    "last_login": "2026-07-18T07:11:48.645Z",
+    "is_superuser": false,
+    "username": "krishna",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-16T08:20:49.614Z",
+    "email": "fd@gmail.com",
+    "role": "student",
+    "phone": "9851169318",
+    "profile_picture": "",
+    "created_at": "2026-07-16T08:20:52.373Z",
+    "updated_at": "2026-08-14T03:13:53.525Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$hcmKdYER67gVnGucVptFSU$ql+TD1CCs1vRrpJeWf2X5yNqQ67DqTpQ3XzcCSdEHDg=",
+    "last_login": "2026-08-10T06:03:44.353Z",
+    "is_superuser": false,
+    "username": "sujit.231346@ncit.edu.np",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-10T06:03:42.772Z",
+    "email": "ss@gmail.com",
+    "role": "student",
+    "phone": "67687687698",
+    "profile_picture": "",
+    "created_at": "2026-08-10T06:03:44.322Z",
+    "updated_at": "2026-08-14T03:13:52.860Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$RTLWkqxgRhCOPEu3U8la7N$RWVkUnRTwnjSBD28tdoRD9TCey8lvYTpBOqVGLUB9Ls=",
+    "last_login": "2026-08-14T04:03:51.461Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-08-10T12:50:42.521Z",
+    "email": "admin@findmyhostel.com",
+    "role": "admin",
+    "phone": null,
+    "profile_picture": "",
+    "created_at": "2026-08-10T12:50:43.531Z",
+    "updated_at": "2026-08-14T03:13:54.369Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$jYx72gz0QEotN95zWOs7Fm$eE4xPMszdLN6safVXqBiFmqmZBCUH6oChRHo+t+GyfQ=",
+    "last_login": "2026-08-11T16:27:45.713Z",
+    "is_superuser": false,
+    "username": "sdf",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-11T08:42:29.227Z",
+    "email": "sdf@gmail.com",
+    "role": "student",
+    "phone": "9843959317",
+    "profile_picture": "",
+    "created_at": "2026-08-11T08:42:30.805Z",
+    "updated_at": "2026-08-14T03:13:53.727Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$meDS9YKB6dt9SkQwxZjzwX$Zqf+UBO1Nqtere8jCP/qjuA/mUY4NEB8ZA0wRTLV10c=",
+    "last_login": "2026-08-11T14:22:32.381Z",
+    "is_superuser": false,
+    "username": "saughat",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-11T14:22:30.769Z",
+    "email": "sa@gmail.com",
+    "role": "student",
+    "phone": "3432432432",
+    "profile_picture": "",
+    "created_at": "2026-08-11T14:22:32.362Z",
+    "updated_at": "2026-08-14T03:13:53.931Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$f7n9MOIpSWscN0hUVslGmL$ajXVrYQa0WbxYI2hFWiYIpcr5t7qP3tebaLC2BUeRHw=",
+    "last_login": "2026-08-12T09:39:51.334Z",
+    "is_superuser": false,
+    "username": "Sujit ",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-08-12T09:33:59.376Z",
+    "email": "penguin@gmail.com",
+    "role": "admin",
+    "phone": "9843959317",
+    "profile_picture": "",
+    "created_at": "2026-08-12T09:34:00.666Z",
+    "updated_at": "2026-08-14T03:13:54.138Z",
+    "is_verified": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$MT1t8LSNsTd7iGtnk48BaG$srmdU/B7buFvxp7JSs06jUFmN31noebog5t54MKso34=",
+    "last_login": "2026-08-14T04:04:34.436Z",
+    "is_superuser": false,
+    "username": "azay",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-14T04:04:32.072Z",
+    "email": "az@gmail.com",
+    "role": "student",
+    "phone": "9843959317",
+    "profile_picture": "",
+    "created_at": "2026-08-14T04:04:34.409Z",
+    "updated_at": "2026-08-14T04:04:34.409Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$g6cOBiPQocuFFNAcxt2ZEY$sEhjmNVpqz+INbQI2jcd0irNtmo0USgUFeIjhZLYInk=",
+    "last_login": "2026-09-29T17:41:39.591Z",
+    "is_superuser": false,
+    "username": "suj",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-29T17:41:37.762Z",
+    "email": "sj@gmail.com",
+    "role": "student",
+    "phone": "9843959317",
+    "profile_picture": "",
+    "created_at": "2026-09-29T17:41:39.543Z",
+    "updated_at": "2026-09-29T17:41:39.543Z",
+    "is_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$ZTPUwNHBTYPLUwEIumZ9MR$mMAbWma4Y8Q1o07C/Q1Fskrz6hnLTqWcesXu/SjObyQ=",
+    "last_login": "2026-09-29T17:44:39.761Z",
+    "is_superuser": false,
+    "username": "sf",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-09-29T17:44:38.901Z",
+    "email": "sf@gmail.com",
+    "role": "admin",
+    "phone": "6768768769",
+    "profile_picture": "",
+    "created_at": "2026-09-29T17:44:39.738Z",
+    "updated_at": "2026-09-29T17:44:39.738Z",
+    "is_verified": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "hostels.hostel",
+  "pk": 1,
+  "fields": {
+    "owner": [
+      "sujit321@gmail.com"
+    ],
+    "name": "Annapurna Sunrise Boys & Girls Hostel",
+    "description": "Modern and well-equipped student accommodation situated in New Baneshwor, offering peaceful study spaces, high-speed WiFi, nutritious meals, power backup, and 24/7 security.",
+    "location": "New Baneshwor",
+    "city": "Kathmandu",
+    "country": "Nepal",
+    "latitude": null,
+    "longitude": null,
+    "phone": "9841504206",
+    "email": "info@annapurnasunrise.edu.np",
+    "website": "",
+    "wifi": true,
+    "parking": true,
+    "laundry": true,
+    "kitchen": true,
+    "gym": false,
+    "monthly_rent": "15000.00",
+    "rating": 0.0,
+    "reviews_count": 0,
+    "cover_image": "",
+    "is_active": true,
+    "is_verified": false,
+    "created_at": "2026-07-08T02:21:36.826Z",
+    "updated_at": "2026-09-29T17:25:40.523Z"
+  }
+},
+{
+  "model": "hostels.hostel",
+  "pk": 3,
+  "fields": {
+    "owner": [
+      "kld@gmail.com"
+    ],
+    "name": "Bagmati Serene Student Haven",
+    "description": "Comfortable and affordable living near Shankhamul with clean furnished rooms, dedicated study hall, hot water facilities, and a supportive community environment for college students.",
+    "location": "Shankhamul",
+    "city": "Kathmandu",
+    "country": "Nepal",
+    "latitude": null,
+    "longitude": null,
+    "phone": "9807654321",
+    "email": "contact@bagmatihaven.com",
+    "website": "",
+    "wifi": true,
+    "parking": true,
+    "laundry": true,
+    "kitchen": true,
+    "gym": true,
+    "monthly_rent": "15000.00",
+    "rating": 4.5,
+    "reviews_count": 18,
+    "cover_image": "",
+    "is_active": true,
+    "is_verified": false,
+    "created_at": "2026-07-09T17:33:27.305Z",
+    "updated_at": "2026-09-29T17:25:40.528Z"
+  }
+},
+{
+  "model": "hostels.hostel",
+  "pk": 4,
+  "fields": {
+    "owner": [
+      "sujit321@gmail.com"
+    ],
+    "name": "Phewa Lakeview Youth Hostel",
+    "description": "Scenic student and traveler hostel located near Phewa Lake in Pokhara, featuring bright ventilated rooms, quiet reading area, laundry facilities, and mountain views.",
+    "location": "Lakeside",
+    "city": "Pokhara",
+    "country": "Nepal",
+    "latitude": null,
+    "longitude": null,
+    "phone": "9805551234",
+    "email": "stay@phewalakeview.com",
+    "website": "",
+    "wifi": true,
+    "parking": true,
+    "laundry": true,
+    "kitchen": true,
+    "gym": true,
+    "monthly_rent": "10000.00",
+    "rating": 3.0,
+    "reviews_count": 1,
+    "cover_image": "",
+    "is_active": true,
+    "is_verified": false,
+    "created_at": "2026-07-09T17:33:27.335Z",
+    "updated_at": "2026-09-29T17:25:40.530Z"
+  }
+},
+{
+  "model": "hostels.hostel",
+  "pk": 5,
+  "fields": {
+    "owner": [
+      "kld@gmail.com"
+    ],
+    "name": "Boudhanath Peace Residence",
+    "description": "Tranquil and secure accommodation near the historic Boudha Stupa, offering spacious rooms, hygienic dining, solar backup, and CCTV surveillance.",
+    "location": "Boudha",
+    "city": "Kathmandu",
+    "country": "Nepal",
+    "latitude": null,
+    "longitude": null,
+    "phone": "9809876543",
+    "email": "peace@boudharesidence.com",
+    "website": "",
+    "wifi": true,
+    "parking": true,
+    "laundry": true,
+    "kitchen": true,
+    "gym": true,
+    "monthly_rent": "8000.00",
+    "rating": 4.6,
+    "reviews_count": 31,
+    "cover_image": "",
+    "is_active": true,
+    "is_verified": false,
+    "created_at": "2026-07-09T17:33:27.352Z",
+    "updated_at": "2026-09-29T17:25:40.532Z"
+  }
+},
+{
+  "model": "hostels.hostel",
+  "pk": 6,
+  "fields": {
+    "owner": [
+      "sujit321@gmail.com"
+    ],
+    "name": "Janaki Model Girls Residence",
+    "description": "Safe, disciplined, and comfortable all-girls hostel in Tinkune, convenient for college students and working women. Includes 24/7 warden, CCTV, and healthy home-style meals.",
+    "location": "Tinkune",
+    "city": "Kathmandu",
+    "country": "Nepal",
+    "latitude": null,
+    "longitude": null,
+    "phone": "9801112233",
+    "email": "care@janakigirls.com",
+    "website": "",
+    "wifi": true,
+    "parking": true,
+    "laundry": true,
+    "kitchen": true,
+    "gym": true,
+    "monthly_rent": "9000.00",
+    "rating": 5.0,
+    "reviews_count": 2,
+    "cover_image": "",
+    "is_active": true,
+    "is_verified": false,
+    "created_at": "2026-07-09T17:33:27.370Z",
+    "updated_at": "2026-09-29T17:25:40.534Z"
+  }
+},
+{
+  "model": "hostels.hostel",
+  "pk": 7,
+  "fields": {
+    "owner": [
+      "kld@gmail.com"
+    ],
+    "name": "Sagarmatha Scholars Hostel",
+    "description": "Premier educational hub hostel right in Putalisadak, ideal for competitive exam students and undergraduates. Features power backup, study desks, and high-speed internet.",
+    "location": "Putalisadak",
+    "city": "Kathmandu",
+    "country": "Nepal",
+    "latitude": null,
+    "longitude": null,
+    "phone": "9808275832",
+    "email": "info@sagarmathascholars.com",
+    "website": "",
+    "wifi": true,
+    "parking": true,
+    "laundry": true,
+    "kitchen": true,
+    "gym": false,
+    "monthly_rent": "11000.00",
+    "rating": 4.4,
+    "reviews_count": 28,
+    "cover_image": "",
+    "is_active": true,
+    "is_verified": false,
+    "created_at": "2026-07-09T17:33:27.395Z",
+    "updated_at": "2026-09-29T17:25:40.536Z"
+  }
+},
+{
+  "model": "hostels.hostel",
+  "pk": 32,
+  "fields": {
+    "owner": [
+      "sujit.231346@ncit.edu.np"
+    ],
+    "name": "Boys hostel",
+    "description": "s",
+    "location": "New baneshwor",
+    "city": "Kathmandu",
+    "country": "Nepal",
+    "latitude": null,
+    "longitude": null,
+    "phone": "9805551234",
+    "email": "sd416228@gmail.com",
+    "website": "",
+    "wifi": true,
+    "parking": true,
+    "laundry": true,
+    "kitchen": true,
+    "gym": true,
+    "monthly_rent": "5000.00",
+    "rating": 0.0,
+    "reviews_count": 0,
+    "cover_image": "",
+    "is_active": true,
+    "is_verified": false,
+    "created_at": "2026-09-29T18:10:02.605Z",
+    "updated_at": "2026-09-29T18:10:43.352Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 5,
+  "fields": {
+    "hostel": 3,
+    "room_number": "SING-101",
+    "room_type": "single",
+    "capacity": 1,
+    "monthly_rent": "1791.00",
+    "description": "Comfortable single room with modern amenities.",
+    "has_ac": true,
+    "has_bathroom": true,
+    "has_tv": false,
+    "has_balcony": false,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.312Z",
+    "updated_at": "2026-07-09T17:33:27.312Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 6,
+  "fields": {
+    "hostel": 3,
+    "room_number": "DELU-102",
+    "room_type": "deluxe",
+    "capacity": 6,
+    "monthly_rent": "2838.00",
+    "description": "Comfortable deluxe room with modern amenities.",
+    "has_ac": true,
+    "has_bathroom": true,
+    "has_tv": false,
+    "has_balcony": true,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.317Z",
+    "updated_at": "2026-07-09T17:33:27.317Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 7,
+  "fields": {
+    "hostel": 3,
+    "room_number": "SING-103",
+    "room_type": "single",
+    "capacity": 1,
+    "monthly_rent": "2374.00",
+    "description": "Comfortable single room with modern amenities.",
+    "has_ac": true,
+    "has_bathroom": true,
+    "has_tv": false,
+    "has_balcony": false,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.325Z",
+    "updated_at": "2026-07-09T17:33:27.325Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 8,
+  "fields": {
+    "hostel": 3,
+    "room_number": "DELU-104",
+    "room_type": "deluxe",
+    "capacity": 6,
+    "monthly_rent": "1287.00",
+    "description": "Comfortable deluxe room with modern amenities.",
+    "has_ac": true,
+    "has_bathroom": true,
+    "has_tv": false,
+    "has_balcony": true,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.331Z",
+    "updated_at": "2026-07-09T17:33:27.331Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 9,
+  "fields": {
+    "hostel": 4,
+    "room_number": "DELU-101",
+    "room_type": "deluxe",
+    "capacity": 2,
+    "monthly_rent": "3761.00",
+    "description": "Comfortable deluxe room with modern amenities.",
+    "has_ac": false,
+    "has_bathroom": true,
+    "has_tv": true,
+    "has_balcony": false,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.342Z",
+    "updated_at": "2026-07-09T17:33:27.342Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 10,
+  "fields": {
+    "hostel": 4,
+    "room_number": "DOUB-102",
+    "room_type": "double",
+    "capacity": 2,
+    "monthly_rent": "4310.00",
+    "description": "Comfortable double room with modern amenities.",
+    "has_ac": false,
+    "has_bathroom": true,
+    "has_tv": true,
+    "has_balcony": true,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.347Z",
+    "updated_at": "2026-07-09T17:33:27.347Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 11,
+  "fields": {
+    "hostel": 5,
+    "room_number": "DORM-101",
+    "room_type": "dorm",
+    "capacity": 4,
+    "monthly_rent": "4905.00",
+    "description": "Comfortable dorm room with modern amenities.",
+    "has_ac": true,
+    "has_bathroom": true,
+    "has_tv": false,
+    "has_balcony": true,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.358Z",
+    "updated_at": "2026-07-09T17:33:27.358Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 12,
+  "fields": {
+    "hostel": 5,
+    "room_number": "SING-102",
+    "room_type": "single",
+    "capacity": 2,
+    "monthly_rent": "1201.00",
+    "description": "Comfortable single room with modern amenities.",
+    "has_ac": false,
+    "has_bathroom": true,
+    "has_tv": false,
+    "has_balcony": false,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.364Z",
+    "updated_at": "2026-07-09T17:33:27.364Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 13,
+  "fields": {
+    "hostel": 6,
+    "room_number": "SING-101",
+    "room_type": "single",
+    "capacity": 1,
+    "monthly_rent": "2428.00",
+    "description": "Comfortable single room with modern amenities.",
+    "has_ac": true,
+    "has_bathroom": true,
+    "has_tv": true,
+    "has_balcony": false,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.377Z",
+    "updated_at": "2026-07-09T17:33:27.377Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 14,
+  "fields": {
+    "hostel": 6,
+    "room_number": "DOUB-102",
+    "room_type": "double",
+    "capacity": 6,
+    "monthly_rent": "3632.00",
+    "description": "Comfortable double room with modern amenities.",
+    "has_ac": true,
+    "has_bathroom": true,
+    "has_tv": true,
+    "has_balcony": true,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.383Z",
+    "updated_at": "2026-07-09T17:33:27.383Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 15,
+  "fields": {
+    "hostel": 6,
+    "room_number": "DELU-103",
+    "room_type": "deluxe",
+    "capacity": 2,
+    "monthly_rent": "2667.00",
+    "description": "Comfortable deluxe room with modern amenities.",
+    "has_ac": true,
+    "has_bathroom": true,
+    "has_tv": false,
+    "has_balcony": false,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.389Z",
+    "updated_at": "2026-07-09T17:33:27.389Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 16,
+  "fields": {
+    "hostel": 7,
+    "room_number": "DOUB-101",
+    "room_type": "double",
+    "capacity": 1,
+    "monthly_rent": "1055.00",
+    "description": "Comfortable double room with modern amenities.",
+    "has_ac": true,
+    "has_bathroom": true,
+    "has_tv": true,
+    "has_balcony": true,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.401Z",
+    "updated_at": "2026-07-09T17:33:27.401Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 17,
+  "fields": {
+    "hostel": 7,
+    "room_number": "DOUB-102",
+    "room_type": "double",
+    "capacity": 4,
+    "monthly_rent": "1263.00",
+    "description": "Comfortable double room with modern amenities.",
+    "has_ac": true,
+    "has_bathroom": true,
+    "has_tv": true,
+    "has_balcony": false,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.409Z",
+    "updated_at": "2026-07-09T17:33:27.409Z"
+  }
+},
+{
+  "model": "hostels.room",
+  "pk": 18,
+  "fields": {
+    "hostel": 7,
+    "room_number": "DELU-103",
+    "room_type": "deluxe",
+    "capacity": 4,
+    "monthly_rent": "3576.00",
+    "description": "Comfortable deluxe room with modern amenities.",
+    "has_ac": false,
+    "has_bathroom": true,
+    "has_tv": true,
+    "has_balcony": true,
+    "image": "",
+    "is_available": true,
+    "created_at": "2026-07-09T17:33:27.416Z",
+    "updated_at": "2026-07-09T17:33:27.416Z"
+  }
+},
+{
+  "model": "hostels.review",
+  "pk": 2,
+  "fields": {
+    "hostel": 4,
+    "user": [
+      "admin@findmyhostel.com"
+    ],
+    "rating": 3,
+    "comment": "sds",
+    "created_at": "2026-08-13T13:01:24.357Z",
+    "updated_at": "2026-08-13T13:01:24.357Z"
+  }
+},
+{
+  "model": "hostels.review",
+  "pk": 3,
+  "fields": {
+    "hostel": 6,
+    "user": [
+      "admin@findmyhostel.com"
+    ],
+    "rating": 5,
+    "comment": "nice",
+    "created_at": "2026-08-13T13:05:44.652Z",
+    "updated_at": "2026-08-13T13:05:44.653Z"
+  }
+},
+{
+  "model": "hostels.review",
+  "pk": 4,
+  "fields": {
+    "hostel": 6,
+    "user": [
+      "az@gmail.com"
+    ],
+    "rating": 5,
+    "comment": "Staying is comfortable",
+    "created_at": "2026-08-14T05:29:23.324Z",
+    "updated_at": "2026-08-14T05:29:23.324Z"
+  }
+},
+{
+  "model": "hostels.reservation",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "sdf@gmail.com"
+    ],
+    "hostel": 4,
+    "guest_name": "krishna",
+    "guest_phone": "9843959317",
+    "message": "",
+    "status": "pending",
+    "created_at": "2026-08-11T15:12:34.677Z"
+  }
+},
+{
+  "model": "hostels.reservation",
+  "pk": 18,
+  "fields": {
+    "user": [
+      "sdf@gmail.com"
+    ],
+    "hostel": 6,
+    "guest_name": "krishna",
+    "guest_phone": "9843959317",
+    "message": "sfsd",
+    "status": "pending",
+    "created_at": "2026-08-11T16:48:27.420Z"
+  }
+},
+{
+  "model": "hostels.reservation",
+  "pk": 22,
+  "fields": {
+    "user": [
+      "admin@findmyhostel.com"
+    ],
+    "hostel": 3,
+    "guest_name": "sujit",
+    "guest_phone": "34354",
+    "message": "dsfd",
+    "status": "confirmed",
+    "created_at": "2026-08-11T17:17:01.873Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 1,
+  "fields": {
+    "guest": [
+      "ss@gmail.com"
+    ],
+    "room": 15,
+    "starting_date": "2026-08-05",
+    "number_of_guests": 1,
+    "monthly_rent": "2667.00",
+    "total_nights": 15,
+    "total_price": "40005.00",
+    "status": "cancelled",
+    "guest_name": "sefhds",
+    "guest_email": "ss@gmail.com",
+    "guest_phone": "3253454",
+    "special_requests": "ntgg ",
+    "created_at": "2026-08-10T06:04:18.589Z",
+    "updated_at": "2026-08-10T06:05:15.176Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 2,
+  "fields": {
+    "guest": [
+      "admin@findmyhostel.com"
+    ],
+    "room": 9,
+    "starting_date": "2026-08-06",
+    "number_of_guests": 1,
+    "monthly_rent": "3761.00",
+    "total_nights": 22,
+    "total_price": "82742.00",
+    "status": "confirmed",
+    "guest_name": "rahul",
+    "guest_email": "admin@findmyhostel.com",
+    "guest_phone": "9843959317",
+    "special_requests": "fdsdfs",
+    "created_at": "2026-08-11T17:45:32.307Z",
+    "updated_at": "2026-08-13T13:32:00.219Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 3,
+  "fields": {
+    "guest": [
+      "admin@findmyhostel.com"
+    ],
+    "room": 9,
+    "starting_date": "2026-08-30",
+    "number_of_guests": 1,
+    "monthly_rent": "3761.00",
+    "total_nights": 1,
+    "total_price": "3761.00",
+    "status": "confirmed",
+    "guest_name": "rahul",
+    "guest_email": "admin@findmyhostel.com",
+    "guest_phone": "9843959317",
+    "special_requests": "dcd",
+    "created_at": "2026-08-11T17:48:21.980Z",
+    "updated_at": "2026-08-13T12:56:38.980Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 7,
+  "fields": {
+    "guest": [
+      "admin@findmyhostel.com"
+    ],
+    "room": 9,
+    "starting_date": "2026-08-14",
+    "number_of_guests": 1,
+    "monthly_rent": "3761.00",
+    "total_nights": 1,
+    "total_price": "125.37",
+    "status": "confirmed",
+    "guest_name": "sefhds",
+    "guest_email": "admin@findmyhostel.com",
+    "guest_phone": "9843959317",
+    "special_requests": "dcd",
+    "created_at": "2026-08-12T09:57:57.273Z",
+    "updated_at": "2026-08-13T12:56:35.949Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 8,
+  "fields": {
+    "guest": [
+      "admin@findmyhostel.com"
+    ],
+    "room": 13,
+    "starting_date": "2026-08-13",
+    "number_of_guests": 1,
+    "monthly_rent": "2428.00",
+    "total_nights": 1,
+    "total_price": "80.93",
+    "status": "confirmed",
+    "guest_name": "Manil",
+    "guest_email": "admin@findmyhostel.com",
+    "guest_phone": "9843959317",
+    "special_requests": "",
+    "created_at": "2026-08-12T10:02:54.207Z",
+    "updated_at": "2026-08-13T12:51:21.947Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 9,
+  "fields": {
+    "guest": [
+      "az@gmail.com"
+    ],
+    "room": 11,
+    "starting_date": "2026-08-14",
+    "number_of_guests": 1,
+    "monthly_rent": "4905.00",
+    "total_nights": 1,
+    "total_price": "163.50",
+    "status": "pending",
+    "guest_name": "rahul",
+    "guest_email": "az@gmail.com",
+    "guest_phone": "9843959317",
+    "special_requests": "",
+    "created_at": "2026-08-14T04:07:09.431Z",
+    "updated_at": "2026-08-14T04:07:09.431Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 10,
+  "fields": {
+    "guest": [
+      "az@gmail.com"
+    ],
+    "room": 15,
+    "starting_date": "2026-08-14",
+    "number_of_guests": 1,
+    "monthly_rent": "2667.00",
+    "total_nights": 1,
+    "total_price": "88.90",
+    "status": "pending",
+    "guest_name": "krishna ",
+    "guest_email": "az@gmail.com",
+    "guest_phone": "9843959317",
+    "special_requests": "",
+    "created_at": "2026-08-14T04:08:08.510Z",
+    "updated_at": "2026-08-14T04:08:08.510Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 11,
+  "fields": {
+    "guest": [
+      "az@gmail.com"
+    ],
+    "room": 15,
+    "starting_date": "2026-08-22",
+    "number_of_guests": 1,
+    "monthly_rent": "2667.00",
+    "total_nights": 1,
+    "total_price": "88.90",
+    "status": "confirmed",
+    "guest_name": "sujit",
+    "guest_email": "az@gmail.com",
+    "guest_phone": "9843959317",
+    "special_requests": "",
+    "created_at": "2026-08-14T05:27:53.740Z",
+    "updated_at": "2026-08-14T05:28:50.210Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 12,
+  "fields": {
+    "guest": [
+      "sj@gmail.com"
+    ],
+    "room": 11,
+    "starting_date": "2026-09-29",
+    "number_of_guests": 1,
+    "monthly_rent": "4905.00",
+    "total_nights": 1,
+    "total_price": "163.50",
+    "status": "pending",
+    "guest_name": "sefhds",
+    "guest_email": "sj@gmail.com",
+    "guest_phone": "9843959317",
+    "special_requests": "n",
+    "created_at": "2026-09-29T17:46:44.398Z",
+    "updated_at": "2026-09-29T17:46:44.398Z"
+  }
+}
+]
