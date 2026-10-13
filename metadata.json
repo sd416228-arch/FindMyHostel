@@ -1,0 +1,8 @@
+{
+  "name": "FindMyHostel",
+  "description": "Find, compare, and book verified hostels across Nepal with dedicated student and owner portals.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

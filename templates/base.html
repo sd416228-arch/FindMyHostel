@@ -1,243 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}FindMyHostel - Book Your Hostel{% endblock %}</title>
+    <title>{% block title %}FindMyHostel - Student Accommodations in Nepal{% endblock %}</title>
+    <meta name="description" content="Discover, compare, and book verified student hostels in Kathmandu, Lalitpur, Pokhara, and across Nepal. Zero booking fees.">
+    
+    <!-- Modern Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS & Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
+    
+    <!-- FindMyHostel Design System -->
     <link rel="stylesheet" href="{% static 'css/findmyhostel-ui.css' %}">
-    <style>
-        .whatsapp-float {
-            position: fixed;
-            width: 56px;
-            height: 56px;
-            bottom: 36px;
-            right: 36px;
-            background: linear-gradient(135deg, #25d366, #128C7E);
-            color: #FFF;
-            border-radius: 16px;
-            text-align: center;
-            font-size: 28px;
-            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.30);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .whatsapp-float:hover {
-            background: linear-gradient(135deg, #128C7E, #075E54);
-            color: #FFF;
-            transform: scale(1.08) translateY(-2px);
-            box-shadow: 0 12px 32px rgba(37, 211, 102, 0.40);
-        }
-
-        @media (max-width: 575.98px) {
-            .whatsapp-float {
-                width: 48px;
-                height: 48px;
-                bottom: 20px;
-                right: 20px;
-                font-size: 24px;
-                border-radius: 14px;
-            }
-        }
-    </style>
+    
     {% block extra_css %}{% endblock %}
 </head>
-
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark fm-navbar">
-        <div class="container">
-            <a class="navbar-brand fm-brand" href="{% url 'home' %}">
-                <span class="fm-brand-mark"><i class="fas fa-location-dot"></i></span>
-                FindMyHostel
-            </a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                style="padding: 6px 8px;">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto gap-1">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'hostels:list' %}">Hostels</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#why-choose">About Us</a></li>
-                    {% if user.is_authenticated and not user.is_hostel_owner %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'bookings:list' %}"><i
-                                class="fas fa-calendar-check me-1"></i> My Bookings</a></li>
-                    {% endif %}
-                </ul>
-                <ul class="navbar-nav align-items-lg-center gap-lg-1">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle fm-nav-pill" href="#" id="userDropdown" role="button"
-                            data-bs-toggle="dropdown" style="background: rgba(255,255,255,0.12); border-radius: 8px;">
-                            <i class="fas fa-user-circle me-1"></i> {{ user.email }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-                            {% if not user.is_hostel_owner %}
-                            <li><a class="dropdown-item" href="{% url 'bookings:list' %}"><i
-                                        class="fas fa-calendar-check me-2 text-muted"></i> My Bookings</a></li>
-                            <li><a class="dropdown-item" href="{% url 'hostels:my_reservations' %}"><i
-                                        class="fas fa-hand-holding-heart me-2 text-muted"></i> My Reservations</a></li>
-                            <li>
-                                <hr class="dropdown-divider" style="margin: 4px 0;">
-                            </li>
-                            {% endif %}
-                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i
-                                        class="fas fa-id-card me-2 text-muted"></i> Profile</a></li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:edit_profile' %}"><i
-                                        class="fas fa-pen me-2 text-muted"></i> Edit Profile</a></li>
-                            <li>
-                                <hr class="dropdown-divider" style="margin: 4px 0;">
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:logout' %}"><i
-                                        class="fas fa-sign-out-alt me-2 text-muted"></i> Logout</a></li>
-                        </ul>
-                    </li>
-                    {% else %}
-                    {% if '/accounts/owner/' in request.path %}
-                    <li class="nav-item">
-                        <a class="nav-link fm-nav-pill fm-nav-pill-outline" href="{% url 'accounts:owner_login' %}">
-                            <i class="fas fa-sign-in-alt me-1"></i> Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fm-nav-pill fm-nav-pill-light"
-                            href="{% url 'accounts:owner_register' %}?token=secret123">
-                            <i class="fas fa-user-plus me-1"></i> Sign Up
-                        </a>
-                    </li>
-                    {% elif '/accounts/student/' in request.path %}
-                    <li class="nav-item">
-                        <a class="nav-link fm-nav-pill fm-nav-pill-outline" href="{% url 'accounts:student_login' %}">
-                            <i class="fas fa-sign-in-alt me-1"></i> Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fm-nav-pill fm-nav-pill-light" href="{% url 'accounts:student_register' %}">
-                            <i class="fas fa-user-plus me-1"></i> Sign Up
-                        </a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link fm-nav-pill fm-nav-pill-outline" href="{% url 'accounts:student_login' %}">
-                            <i class="fas fa-sign-in-alt me-1"></i> Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fm-nav-pill fm-nav-pill-light" href="{% url 'accounts:student_register' %}">
-                            <i class="fas fa-user-plus me-1"></i> Sign Up
-                        </a>
-                    </li>
-                    {% endif %}
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <!-- Top Navigation Bar (3-Zone Contract) -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark fm-navbar" aria-label="Main Navigation">
+            <div class="container">
+                <!-- Zone 1: Brand Wordmark -->
+                <a class="navbar-brand fm-brand" href="{% url 'home' %}">
+                    <span class="fm-brand-mark"><i class="fas fa-location-dot"></i></span>
+                    FindMyHostel
+                </a>
 
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Zone 2: Navigation Links (Single Line, 4-5 items) -->
+                    <ul class="navbar-nav mx-auto align-items-lg-center">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/hostels/' in request.path and not '/dashboard' in request.path %}active{% endif %}" href="{% url 'hostels:list' %}">Explore Hostels</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}#popular-locations">Locations</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}#how-it-works">How It Works</a>
+                        </li>
+                        {% if user.is_authenticated and not user.is_hostel_owner %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/bookings/' in request.path %}active{% endif %}" href="{% url 'bookings:list' %}">
+                                <i class="fas fa-calendar-check me-1 text-warning"></i> My Bookings
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+
+                    <!-- Zone 3: Actions & Account Authentication -->
+                    <div class="d-flex align-items-lg-center gap-2 mt-3 mt-lg-0">
+                        {% if user.is_authenticated %}
+                            {% if user.is_hostel_owner %}
+                            <a href="{% url 'hostels:owner_dashboard' %}" class="fm-btn-list-hostel">
+                                <i class="fas fa-gauge-high me-1"></i> Owner Portal
+                            </a>
+                            {% else %}
+                            <a href="{% url 'accounts:student_dashboard' %}" class="fm-btn-list-hostel">
+                                <i class="fas fa-user-graduate me-1"></i> Dashboard
+                            </a>
+                            {% endif %}
+
+                            <div class="dropdown">
+                                <button class="btn fm-nav-pill dropdown-toggle text-white border-0" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background: rgba(255,255,255,0.12);">
+                                    <i class="fas fa-circle-user"></i>
+                                    <span class="d-inline-block text-truncate" style="max-width: 130px;">{{ user.username|default:user.email }}</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                                    {% if not user.is_hostel_owner %}
+                                    <li><a class="dropdown-item" href="{% url 'accounts:student_dashboard' %}"><i class="fas fa-gauge me-2 text-muted"></i> Student Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'bookings:list' %}"><i class="fas fa-calendar-check me-2 text-muted"></i> My Bookings</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'hostels:my_reservations' %}"><i class="fas fa-hand-holding-heart me-2 text-muted"></i> My Reservations</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    {% else %}
+                                    <li><a class="dropdown-item" href="{% url 'hostels:owner_dashboard' %}"><i class="fas fa-gauge me-2 text-muted"></i> Owner Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'hostels:create' %}"><i class="fas fa-plus me-2 text-muted"></i> Add New Hostel</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    {% endif %}
+                                    <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-id-card me-2 text-muted"></i> Profile Settings</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'accounts:edit_profile' %}"><i class="fas fa-pen-to-square me-2 text-muted"></i> Edit Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        {% if user.is_hostel_owner %}
+                                        <a class="dropdown-item text-danger" href="{% url 'accounts:owner_logout' %}"><i class="fas fa-arrow-right-from-bracket me-2"></i> Log Out</a>
+                                        {% else %}
+                                        <a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}"><i class="fas fa-arrow-right-from-bracket me-2"></i> Log Out</a>
+                                        {% endif %}
+                                    </li>
+                                </ul>
+                            </div>
+                        {% else %}
+                            <a class="fm-btn-list-hostel d-none d-xl-inline-flex" href="{% url 'accounts:owner_login' %}">
+                                <i class="fas fa-building me-1"></i> List Your Hostel
+                            </a>
+                            <a class="fm-nav-pill fm-nav-pill-outline" href="{% url 'accounts:student_login' %}">
+                                Log In
+                            </a>
+                            <a class="fm-nav-pill fm-nav-pill-light" href="{% url 'accounts:student_register' %}">
+                                Sign Up
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Global Flash Messages Stack -->
     {% if messages %}
     <div class="container fm-message-stack">
         {% for message in messages %}
-        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show rounded-3 border-0 shadow-sm"
-            role="alert" style="font-weight: 500;">
-            <i
-                class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}circle-exclamation{% elif message.tags == 'warning' %}triangle-exclamation{% else %}circle-info{% endif %} me-2"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <main class="{% block main_class %}container my-4{% endblock %}">
+    <!-- Main Content Area -->
+    <main id="main-content" class="{% block main_class %}{% endblock %}">
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Professional Startup Footer -->
     <footer class="fm-footer">
         <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <h5><i class="fas fa-location-dot me-2" style="color: var(--fm-orange);"></i> FindMyHostel</h5>
-                    <p style="color: rgba(255,255,255,0.6); line-height: 1.7;">Search, compare, and book verified
-                        hostels across Nepal. Your perfect stay is just a click away.</p>
-                    <div class="d-flex gap-3 mt-3">
-                        <a href="#" class="d-inline-flex align-items-center justify-content-center rounded-2"
-                            style="width: 36px; height: 36px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); transition: all 0.2s;"><i
-                                class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="d-inline-flex align-items-center justify-content-center rounded-2"
-                            style="width: 36px; height: 36px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); transition: all 0.2s;"><i
-                                class="fab fa-instagram"></i></a>
-                        <a href="#" class="d-inline-flex align-items-center justify-content-center rounded-2"
-                            style="width: 36px; height: 36px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); transition: all 0.2s;"><i
-                                class="fab fa-twitter"></i></a>
+            <div class="row g-4 g-lg-5">
+                <div class="col-lg-4 col-md-6">
+                    <div class="fm-footer-brand">
+                        <span class="fm-brand-mark"><i class="fas fa-location-dot"></i></span>
+                        FindMyHostel
+                    </div>
+                    <p style="color: rgba(255,255,255,0.7); max-width: 320px; line-height: 1.65; margin-bottom: 1.5rem;">
+                        Nepal's trusted student accommodation discovery platform. Find, inspect, and book verified hostels in Kathmandu, Lalitpur, and Pokhara with total peace of mind.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-sm" style="background: rgba(255,255,255,0.08); color: #fff; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="btn btn-sm" style="background: rgba(255,255,255,0.08); color: #fff; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="btn btn-sm" style="background: rgba(255,255,255,0.08); color: #fff; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+                        <a href="https://wa.me/9779843959317" class="btn btn-sm" style="background: rgba(37,211,102,0.2); color: #25D366; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled" style="line-height: 2.2;">
-                        <li><a href="{% url 'hostels:list' %}">Browse Hostels</a></li>
-                        <li><a href="{% url 'accounts:student_register' %}">Sign Up</a></li>
-                        <li><a href="{% url 'home' %}#why-choose">About Us</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5>Top Cities</h5>
-                    <ul class="list-unstyled" style="line-height: 2.2;">
+
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h5>Student Hubs</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
                         <li><a href="{% url 'hostels:list' %}?city=Kathmandu">Kathmandu</a></li>
+                        <li><a href="{% url 'hostels:list' %}?city=Kirtipur">Kirtipur (TU Hub)</a></li>
+                        <li><a href="{% url 'hostels:list' %}?city=Lalitpur">Lalitpur (Pulchowk)</a></li>
                         <li><a href="{% url 'hostels:list' %}?city=Pokhara">Pokhara</a></li>
-                        <li><a href="{% url 'hostels:list' %}?city=Butwal">Butwal</a></li>
+                        <li><a href="{% url 'hostels:list' %}?city=Baneshwor">New Baneshwor</a></li>
                     </ul>
                 </div>
-                <div class="col-md-3">
-                    <h5>Contact</h5>
-                    <ul class="list-unstyled" style="line-height: 2.2;">
-                        <li><a href="mailto:sd416228@gmail.com"><i class="fas fa-envelope me-2"
-                                    style="width: 16px;"></i> sd416228@gmail.com</a></li>
-                        <li><a href="tel:9843959317"><i class="fas fa-phone me-2"
-                                    style="width: 16px;"></i> 9843959317</a></li>
-                        <li style="color: rgba(255,255,255,0.5);"><i class="fas fa-map-marker-alt me-2"
-                                style="width: 16px;"></i> Kathmandu, Nepal</li>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h5>Quick Navigation</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                        <li><a href="{% url 'hostels:list' %}">All Verified Hostels</a></li>
+                        <li><a href="{% url 'home' %}#how-it-works">How Booking Works</a></li>
+                        <li><a href="{% url 'accounts:student_register' %}">Student Registration</a></li>
+                        <li><a href="{% url 'accounts:owner_login' %}">Hostel Owner Portal</a></li>
+                        <li><a href="{% url 'home' %}#why-choose">Safety & Inspection Standards</a></li>
                     </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5>Support in Nepal</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-2 mb-3">
+                        <li class="d-flex align-items-center gap-2">
+                            <i class="fas fa-phone text-warning" style="width: 18px;"></i>
+                            <a href="tel:9843959317" class="tabular-nums">+977 9843959317</a>
+                        </li>
+                        <li class="d-flex align-items-center gap-2">
+                            <i class="fas fa-envelope text-warning" style="width: 18px;"></i>
+                            <a href="mailto:support@findmyhostel.com">support@findmyhostel.com</a>
+                        </li>
+                        <li class="d-flex align-items-center gap-2 text-muted">
+                            <i class="fas fa-location-pin text-warning" style="width: 18px;"></i>
+                            <span>Kathmandu Valley, Nepal</span>
+                        </li>
+                    </ul>
+                    <div class="p-2 rounded-2" style="background: rgba(255,255,255,0.05); font-size: 0.78rem;">
+                        <i class="fas fa-shield-halved text-success me-1"></i> 100% verified hostel contacts
+                    </div>
                 </div>
             </div>
-            <hr>
-            <div class="d-flex flex-column flex-md-row align-items-center justify-content-between">
-                <p class="mb-0" style="color: rgba(255,255,255,0.4); font-size: 0.85rem;">&copy; 2026 FindMyHostel. All
-                    rights reserved.</p>
-                <div class="d-flex gap-3 mt-2 mt-md-0">
-                    <a href="#" style="color: rgba(255,255,255,0.4); font-size: 0.85rem;">Privacy Policy</a>
-                    <a href="#" style="color: rgba(255,255,255,0.4); font-size: 0.85rem;">Terms of Service</a>
+
+            <div class="fm-footer-bottom">
+                <p class="mb-0">&copy; 2026 FindMyHostel Nepal. All rights reserved.</p>
+                <div class="d-flex gap-3">
+                    <a href="#">Privacy Policy</a>
+                    <span>&middot;</span>
+                    <a href="#">Terms of Service</a>
+                    <span>&middot;</span>
+                    <a href="{% url 'adminpanel:login' %}">Admin Access</a>
                 </div>
             </div>
         </div>
     </footer>
 
+    <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="{% static 'js/main.js' %}"></script>
-    <script>
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
-            document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='))?.split('=')[1];
-    </script>
-    {% block extra_js %}{% endblock %}
-
-    <a href="https://wa.me/9779843959317" class="whatsapp-float" target="_blank" rel="noopener noreferrer"
-        title="Chat with us on WhatsApp">
+    
+    <!-- WhatsApp Floating Action Trigger -->
+    <a href="https://wa.me/9779843959317" class="whatsapp-float" target="_blank" rel="noopener noreferrer" title="Chat with FindMyHostel Support on WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
-</body>
 
+    <!-- CSRF Token Global Helper -->
+    <script>
+        const getCookie = (name) => {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        };
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
 </html>

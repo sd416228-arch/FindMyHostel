@@ -39,8 +39,11 @@ def hostel_list(request):
     min_rent = request.GET.get('min_rent', '')
     max_rent = request.GET.get('max_rent', '')
     
+    room_type = request.GET.get('room_type', '')
+    sort_by = request.GET.get('sort_by', 'rating_desc')
+    
     if city:
-        hostels = hostels.filter(city__icontains=city)
+        hostels = hostels.filter(Q(city__icontains=city) | Q(location__icontains=city) | Q(name__icontains=city))
     
     if min_rent:
         try:
@@ -53,9 +56,17 @@ def hostel_list(request):
             hostels = hostels.filter(monthly_rent__lte=float(max_rent))
         except ValueError:
             pass
+
+    if room_type:
+        hostels = hostels.filter(rooms__room_type=room_type, rooms__is_available=True).distinct()
     
-    # Sort by rating
-    hostels = hostels.order_by('-rating')
+    # Sorting
+    if sort_by == 'rent_asc':
+        hostels = hostels.order_by('monthly_rent')
+    elif sort_by == 'rent_desc':
+        hostels = hostels.order_by('-monthly_rent')
+    else:
+        hostels = hostels.order_by('-rating', '-reviews_count')
     
     context = {
         'hostels': hostels,
@@ -63,6 +74,8 @@ def hostel_list(request):
             'city': city,
             'min_rent': min_rent,
             'max_rent': max_rent,
+            'room_type': room_type,
+            'sort_by': sort_by,
         }
     }
     return render(request, 'hostels/list.html', context)

@@ -1,92 +1,110 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Admin Sign Up - FindMy Hostel{% endblock %}
-{% block main_class %}fm-auth-shell{% endblock %}
+{% block title %}Hostel Owner Registration - FindMyHostel Nepal{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <section class="fm-auth-scene admin">
-                <div class="fm-auth-header">
-                    <div class="mb-3">
-                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(243, 156, 18, 0.12), rgba(243, 156, 18, 0.04));">
-                            <i class="fas fa-building" style="font-size: 1.6rem; color: var(--fm-orange);"></i>
-                        </span>
+<div class="fm-auth-container">
+    <div class="fm-auth-card" style="max-width: 520px;">
+        <div class="fm-auth-header">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px; background: rgba(224, 109, 20, 0.1); color: var(--fmh-accent);">
+                <i class="fas fa-building fa-lg"></i>
+            </div>
+            <h1>Register as Hostel Owner</h1>
+            <p>List your student hostel property and receive direct student bookings.</p>
+        </div>
+
+        {% if errors %}
+        <div class="alert alert-danger py-2 px-3 small mb-3">
+            <i class="fas fa-circle-exclamation me-1"></i> Please check the required fields below.
+        </div>
+        {% endif %}
+
+        <form method="POST" id="ownerRegisterForm" novalidate>
+            {% csrf_token %}
+
+            <div class="fm-form-group">
+                <label for="email" class="fm-form-label">Business / Owner Email <span class="text-danger">*</span></label>
+                <div class="fm-input-wrapper">
+                    <i class="fas fa-envelope fm-input-icon"></i>
+                    <input type="email" class="fm-form-control has-left-icon {% if errors.email %}is-invalid{% endif %}" id="email" name="email" value="{{ form_data.email|default:'' }}" required placeholder="owner@hostel.com">
+                </div>
+                {% if errors.email %}<div class="text-danger small mt-1">{{ errors.email }}</div>{% endif %}
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-sm-6">
+                    <label for="username" class="fm-form-label">Username <span class="text-danger">*</span></label>
+                    <div class="fm-input-wrapper">
+                        <i class="fas fa-user fm-input-icon"></i>
+                        <input type="text" class="fm-form-control has-left-icon {% if errors.username %}is-invalid{% endif %}" id="username" name="username" value="{{ form_data.username|default:'' }}" required placeholder="sunita_hostel">
                     </div>
-                    <h1>Admin Sign Up</h1>
-                    <p>Create an owner account to manage hostel listings.</p>
+                    {% if errors.username %}<div class="text-danger small mt-1">{{ errors.username }}</div>{% endif %}
                 </div>
-
-                <div class="fm-auth-card">
-                    <form method="POST" id="ownerRegisterForm">
-                        {% csrf_token %}
-
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background: var(--fm-bg); border: 1.5px solid var(--fm-line); border-right: none; border-radius: 10px 0 0 10px;">
-                                    <i class="fas fa-envelope text-muted"></i>
-                                </span>
-                                <input type="email" class="form-control {% if errors.email %}is-invalid{% endif %}" name="email" placeholder="Enter your admin email" value="{{ form_data.email|default:'' }}" required style="border-left: none; border-radius: 0 10px 10px 0;">
-                            </div>
-                            {% if errors.email %}<div class="invalid-feedback d-block">{{ errors.email }}</div>{% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background: var(--fm-bg); border: 1.5px solid var(--fm-line); border-right: none; border-radius: 10px 0 0 10px;">
-                                    <i class="fas fa-user text-muted"></i>
-                                </span>
-                                <input type="text" class="form-control {% if errors.username %}is-invalid{% endif %}" name="username" placeholder="Choose a username" value="{{ form_data.username|default:'' }}" required style="border-left: none; border-radius: 0 10px 10px 0;">
-                            </div>
-                            {% if errors.username %}<div class="invalid-feedback d-block">{{ errors.username }}</div>{% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Phone Number</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background: var(--fm-bg); border: 1.5px solid var(--fm-line); border-right: none; border-radius: 10px 0 0 10px;">
-                                    <i class="fas fa-phone text-muted"></i>
-                                </span>
-                                <input type="tel" class="form-control" name="phone" placeholder="Enter your phone number" value="{{ form_data.phone|default:'' }}" required maxlength="10" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits" style="border-left: none; border-radius: 0 10px 10px 0;">
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background: var(--fm-bg); border: 1.5px solid var(--fm-line); border-right: none; border-radius: 10px 0 0 10px;">
-                                    <i class="fas fa-lock text-muted"></i>
-                                </span>
-                                <input type="password" class="form-control {% if errors.password %}is-invalid{% endif %}" name="password" placeholder="Create a password" required style="border-left: none; border-radius: 0 10px 10px 0;">
-                            </div>
-                            {% if errors.password %}<div class="invalid-feedback d-block">{{ errors.password }}</div>{% endif %}
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label">Confirm Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background: var(--fm-bg); border: 1.5px solid var(--fm-line); border-right: none; border-radius: 10px 0 0 10px;">
-                                    <i class="fas fa-check-circle text-muted"></i>
-                                </span>
-                                <input type="password" class="form-control" name="password_confirm" placeholder="Confirm your password" required style="border-left: none; border-radius: 0 10px 10px 0;">
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn fm-btn-orange btn-lg w-100">
-                            <i class="fas fa-user-plus me-2"></i> Sign Up
-                        </button>
-                    </form>
+                <div class="col-sm-6">
+                    <label for="phone" class="fm-form-label">Official Phone <span class="text-danger">*</span></label>
+                    <div class="fm-input-wrapper">
+                        <i class="fas fa-phone fm-input-icon"></i>
+                        <input type="tel" class="fm-form-control has-left-icon {% if errors.phone %}is-invalid{% endif %}" id="phone" name="phone" value="{{ form_data.phone|default:'' }}" placeholder="98XXXXXXXX" maxlength="10" pattern="[0-9]{10}" required>
+                    </div>
+                    {% if errors.phone %}<div class="text-danger small mt-1">{{ errors.phone }}</div>{% endif %}
                 </div>
+            </div>
 
-                <p class="fm-auth-bottom text-center">
-                    Already have an admin account? <a href="{% url 'accounts:owner_login' %}">Login</a>
-                    <span class="d-block mt-2" style="font-size: 0.85rem; color: var(--fm-muted);">Booking a hostel? <a href="{% url 'accounts:student_register' %}" style="font-size: 0.85rem;">User Sign Up</a></span>
-                </p>
-            </section>
+            <div class="fm-form-group">
+                <label for="password" class="fm-form-label">Password (Min. 8 characters) <span class="text-danger">*</span></label>
+                <div class="fm-input-wrapper">
+                    <i class="fas fa-lock fm-input-icon"></i>
+                    <input type="password" class="fm-form-control has-left-icon {% if errors.password %}is-invalid{% endif %}" id="password" name="password" required placeholder="Choose a strong password">
+                    <button type="button" class="fm-password-toggle-btn" id="togglePasswordBtn" aria-label="Toggle password visibility">
+                        <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                    </button>
+                </div>
+                {% if errors.password %}<div class="text-danger small mt-1">{{ errors.password }}</div>{% endif %}
+            </div>
+
+            <div class="fm-form-group">
+                <label for="password_confirm" class="fm-form-label">Confirm Password <span class="text-danger">*</span></label>
+                <div class="fm-input-wrapper">
+                    <i class="fas fa-shield-check fm-input-icon"></i>
+                    <input type="password" class="fm-form-control has-left-icon" id="password_confirm" name="password_confirm" required placeholder="Confirm your password">
+                </div>
+            </div>
+
+            <button type="submit" class="fm-btn-accent mb-3">
+                <i class="fas fa-building-circle-check"></i>
+                <span>Complete Owner Registration</span>
+            </button>
+        </form>
+
+        <div class="text-center pt-3 border-top mt-4">
+            <p class="small text-muted mb-2">
+                Already registered your hostel? 
+                <a href="{% url 'accounts:owner_login' %}" class="fw-bold text-dark">Log in to Owner Portal</a>
+            </p>
+            <p class="small text-muted mb-0">
+                Are you a student? 
+                <a href="{% url 'accounts:student_register' %}" class="fw-semibold text-primary">Student Registration</a>
+            </p>
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('togglePasswordBtn').addEventListener('click', function() {
+    const pwd = document.getElementById('password');
+    const pwdConfirm = document.getElementById('password_confirm');
+    const icon = document.getElementById('togglePasswordIcon');
+    const newType = pwd.type === 'password' ? 'text' : 'password';
+    pwd.type = newType;
+    pwdConfirm.type = newType;
+    if (newType === 'text') {
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+});
+</script>
 {% endblock %}

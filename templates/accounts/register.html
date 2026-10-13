@@ -1,130 +1,112 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Register - FindMy Hostel{% endblock %}
-{% block main_class %}fm-auth-shell{% endblock %}
+{% block title %}Sign Up - FindMyHostel Nepal{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <section class="fm-auth-scene">
-                <div class="fm-auth-header">
-                    <h1>Register</h1>
-                    <p>Create a user or owner account to start using FindMyHostel.</p>
+<div class="fm-auth-container">
+    <div class="fm-auth-card">
+        <div class="fm-auth-header">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px; background: rgba(11, 37, 69, 0.08); color: var(--fmh-navy);">
+                <i class="fas fa-user-plus fa-lg"></i>
+            </div>
+            <h1>Create an Account</h1>
+            <p>Select your account type to get started with FindMyHostel.</p>
+        </div>
+
+        <div class="d-flex gap-2 p-1 bg-light rounded-3 mb-4">
+            <a href="{% url 'accounts:student_register' %}" class="btn btn-white flex-fill shadow-sm text-dark fw-bold small py-2">
+                <i class="fas fa-graduation-cap me-1 text-primary"></i> I am a Student
+            </a>
+            <a href="{% url 'accounts:owner_register' %}?token=secret123" class="btn btn-light flex-fill text-muted fw-semibold small py-2">
+                <i class="fas fa-hotel me-1 text-warning"></i> Hostel Owner
+            </a>
+        </div>
+
+        {% if errors %}
+        <div class="alert alert-danger py-2 px-3 small mb-3">
+            <i class="fas fa-circle-exclamation me-1"></i> Please check the required fields below.
+        </div>
+        {% endif %}
+
+        <form method="POST" id="genericRegisterForm" novalidate>
+            {% csrf_token %}
+
+            <div class="fm-form-group">
+                <label for="email" class="fm-form-label">Email Address <span class="text-danger">*</span></label>
+                <div class="fm-input-wrapper">
+                    <i class="fas fa-envelope fm-input-icon"></i>
+                    <input type="email" class="fm-form-control has-left-icon {% if errors.email %}is-invalid{% endif %}" id="email" name="email" value="{{ form_data.email|default:'' }}" required placeholder="your.email@example.com">
                 </div>
+                {% if errors.email %}<div class="text-danger small mt-1">{{ errors.email }}</div>{% endif %}
+            </div>
 
-                <div class="fm-auth-card">
-                    <form method="POST" id="registerForm" novalidate>
-                        {% csrf_token %}
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control {% if errors.email %}is-invalid{% endif %}" id="email" name="email" required value="{{ form_data.email }}">
-                            {% if errors.email %}
-                                <div class="invalid-feedback d-block">{{ errors.email }}</div>
-                            {% endif %}
-                            <small class="form-text text-muted" id="emailHelp"></small>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control {% if errors.username %}is-invalid{% endif %}" id="username" name="username" required value="{{ form_data.username }}">
-                            {% if errors.username %}
-                                <div class="invalid-feedback d-block">{{ errors.username }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="role" class="form-label">I am a <span class="text-danger">*</span></label>
-                            <select class="form-select" id="role" name="role" required>
-                                <option value="student" {% if form_data.role == 'student' %}selected{% endif %}>Student (Traveler)</option>
-                                <option value="owner" {% if form_data.role == 'owner' %}selected{% endif %}>Hostel Owner</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ form_data.phone }}" maxlength="10" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                            <input type="password" class="form-control {% if errors.password %}is-invalid{% endif %}" id="password" name="password" required>
-                            {% if errors.password %}
-                                <div class="invalid-feedback d-block">{{ errors.password }}</div>
-                            {% endif %}
-                            <small class="form-text text-muted">Minimum 8 characters</small>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password_confirm" class="form-label">Confirm Password <span class="text-danger">*</span></label>
-                            <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="terms" required>
-                            <label class="form-check-label" for="terms">I agree to the Terms & Conditions</label>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 btn-lg">Register</button>
-                    </form>
+            <div class="fm-form-group">
+                <label for="username" class="fm-form-label">Username <span class="text-danger">*</span></label>
+                <div class="fm-input-wrapper">
+                    <i class="fas fa-user fm-input-icon"></i>
+                    <input type="text" class="fm-form-control has-left-icon {% if errors.username %}is-invalid{% endif %}" id="username" name="username" value="{{ form_data.username|default:'' }}" required placeholder="username">
                 </div>
+                {% if errors.username %}<div class="text-danger small mt-1">{{ errors.username }}</div>{% endif %}
+            </div>
 
-                <p class="fm-auth-bottom text-center">
-                    Already have an account? <a href="{% url 'accounts:login' %}">Login here</a>
-                    <span class="d-block mt-2">Or use <a href="{% url 'accounts:student_register' %}">User sign up</a></span>
-                </p>
-            </section>
+            <div class="fm-form-group">
+                <label for="phone" class="fm-form-label">Phone Number (Nepal)</label>
+                <div class="fm-input-wrapper">
+                    <i class="fas fa-phone fm-input-icon"></i>
+                    <input type="tel" class="fm-form-control has-left-icon" id="phone" name="phone" value="{{ form_data.phone|default:'' }}" placeholder="98XXXXXXXX" maxlength="10">
+                </div>
+            </div>
+
+            <div class="fm-form-group">
+                <label for="password" class="fm-form-label">Password <span class="text-danger">*</span></label>
+                <div class="fm-input-wrapper">
+                    <i class="fas fa-lock fm-input-icon"></i>
+                    <input type="password" class="fm-form-control has-left-icon {% if errors.password %}is-invalid{% endif %}" id="password" name="password" required placeholder="Choose a password">
+                    <button type="button" class="fm-password-toggle-btn" id="togglePasswordBtn" aria-label="Toggle password visibility">
+                        <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                    </button>
+                </div>
+                {% if errors.password %}<div class="text-danger small mt-1">{{ errors.password }}</div>{% endif %}
+            </div>
+
+            <div class="fm-form-group">
+                <label for="password_confirm" class="fm-form-label">Confirm Password <span class="text-danger">*</span></label>
+                <div class="fm-input-wrapper">
+                    <i class="fas fa-shield-check fm-input-icon"></i>
+                    <input type="password" class="fm-form-control has-left-icon" id="password_confirm" name="password_confirm" required placeholder="Re-type password">
+                </div>
+            </div>
+
+            <button type="submit" class="fm-btn-primary mb-3">
+                <span>Create Student Account</span>
+            </button>
+        </form>
+
+        <div class="text-center pt-3 border-top mt-4">
+            <p class="small text-muted mb-0">
+                Already have an account? 
+                <a href="{% url 'accounts:login' %}" class="fw-bold text-dark">Log in</a>
+            </p>
         </div>
     </div>
 </div>
 
 <script>
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const passwordConfirm = document.getElementById('password_confirm').value;
-        let hasError = false;
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            document.getElementById('email').classList.add('is-invalid');
-            hasError = true;
-        }
-        if (password.length < 8) {
-            document.getElementById('password').classList.add('is-invalid');
-            hasError = true;
-        }
-        if (password !== passwordConfirm) {
-            document.getElementById('password_confirm').classList.add('is-invalid');
-            hasError = true;
-        }
-        if (hasError) {
-            e.preventDefault();
-        }
-    });
-
-    document.getElementById('email').addEventListener('blur', function() {
-        const email = this.value;
-        if (email && email.includes('@')) {
-            fetch('{% url "accounts:check_email_api" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({email: email})
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.exists) {
-                    document.getElementById('email').classList.add('is-invalid');
-                    document.getElementById('emailHelp').textContent = 'Email already registered';
-                } else {
-                    document.getElementById('email').classList.remove('is-invalid');
-                    document.getElementById('emailHelp').textContent = '';
-                }
-            });
-        }
-    });
+document.getElementById('togglePasswordBtn').addEventListener('click', function() {
+    const pwd = document.getElementById('password');
+    const pwdConfirm = document.getElementById('password_confirm');
+    const icon = document.getElementById('togglePasswordIcon');
+    const newType = pwd.type === 'password' ? 'text' : 'password';
+    pwd.type = newType;
+    pwdConfirm.type = newType;
+    if (newType === 'text') {
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+});
 </script>
 {% endblock %}

@@ -1,78 +1,101 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}User Login - FindMy Hostel{% endblock %}
-{% block main_class %}fm-auth-shell{% endblock %}
+{% block title %}Student Log In - FindMyHostel Nepal{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <section class="fm-auth-scene">
-                <div class="fm-auth-header">
-                    <div class="mb-3">
-                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(26,86,219,0.1), rgba(26,86,219,0.04));">
-                            <i class="fas fa-user-astronaut" style="font-size: 1.6rem; color: var(--fm-blue);"></i>
-                        </span>
-                    </div>
-                    <h1>Welcome Back</h1>
-                    <p>Sign in to book your next stay.</p>
+<div class="fm-auth-container">
+    <div class="fm-auth-card">
+        <div class="fm-auth-header">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 56px; height: 56px; background: rgba(11, 37, 69, 0.08); color: var(--fmh-navy);">
+                <i class="fas fa-graduation-cap fa-lg"></i>
+            </div>
+            <h1>Student Log In</h1>
+            <p>Access your bookings and discover verified student hostels.</p>
+        </div>
+
+        <form method="POST" id="studentLoginForm" novalidate>
+            {% csrf_token %}
+
+            <div class="fm-form-group">
+                <label for="email" class="fm-form-label">Email Address <span class="text-danger">*</span></label>
+                <div class="fm-input-wrapper">
+                    <i class="fas fa-envelope fm-input-icon"></i>
+                    <input type="email" class="fm-form-control has-left-icon" id="email" name="email" required value="{{ email|default:'' }}" placeholder="name@example.com" autocomplete="email">
                 </div>
+            </div>
 
-                <div class="fm-auth-card">
-                    <form method="POST" id="loginForm" novalidate>
-                        {% csrf_token %}
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background: var(--fm-bg); border: 1.5px solid var(--fm-line); border-right: none; border-radius: 10px 0 0 10px;">
-                                    <i class="fas fa-envelope text-muted"></i>
-                                </span>
-                                <input type="email" class="form-control" id="email" name="email" required value="{{ email }}" placeholder="Enter your email" style="border-left: none; border-radius: 0 10px 10px 0;">
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="background: var(--fm-bg); border: 1.5px solid var(--fm-line); border-right: none; border-radius: 10px 0 0 10px;">
-                                    <i class="fas fa-lock text-muted"></i>
-                                </span>
-                                <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password" style="border-left: none; border-radius: 0 10px 10px 0;">
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="form-check mb-0">
-                                <input type="checkbox" class="form-check-input" id="remember" name="remember" style="cursor: pointer;">
-                                <label class="form-check-label" for="remember" style="cursor: pointer; font-size: 0.85rem;">Remember me</label>
-                            </div>
-                            <a href="#" style="font-size: 0.85rem; color: var(--fm-blue); text-decoration: none; font-weight: 600;">Forgot password?</a>
-                        </div>
-
-                        <button type="submit" class="btn fm-btn-blue w-100 btn-lg">
-                            <i class="fas fa-sign-in-alt me-2"></i> Login
-                        </button>
-                    </form>
+            <div class="fm-form-group">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="password" class="fm-form-label mb-0">Password <span class="text-danger">*</span></label>
+                    <a href="#" class="small text-muted text-decoration-none">Forgot?</a>
                 </div>
+                <div class="fm-input-wrapper">
+                    <i class="fas fa-lock fm-input-icon"></i>
+                    <input type="password" class="fm-form-control has-left-icon" id="password" name="password" required placeholder="Enter your password" autocomplete="current-password">
+                    <button type="button" class="fm-password-toggle-btn" id="togglePasswordBtn" aria-label="Toggle password visibility">
+                        <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                    </button>
+                </div>
+            </div>
 
-                <p class="fm-auth-bottom text-center">
-                    Don't have an account? <a href="{% url 'accounts:student_register' %}">Create one here</a>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check mb-0">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember" style="cursor: pointer;">
+                    <label class="form-check-label small text-muted" for="remember" style="cursor: pointer;">Remember me</label>
+                </div>
+            </div>
 
-                </p>
-            </section>
+            <div id="authAlert" class="alert alert-danger py-2 small d-none mb-3"></div>
+
+            <button type="submit" class="fm-btn-primary mb-3">
+                <i class="fas fa-arrow-right-to-bracket"></i>
+                <span>Sign In to Student Account</span>
+            </button>
+        </form>
+
+        <div class="text-center pt-3 border-top mt-4">
+            <p class="small text-muted mb-2">
+                New student on FindMyHostel? 
+                <a href="{% url 'accounts:student_register' %}" class="fw-bold text-dark">Create student account</a>
+            </p>
+            <p class="small text-muted mb-0">
+                Are you a hostel owner? 
+                <a href="{% url 'accounts:owner_login' %}" class="fw-semibold text-primary">Go to Owner Portal</a>
+            </p>
         </div>
     </div>
 </div>
 
 <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        if (!email || !password) {
-            e.preventDefault();
-            alert('Please fill in all fields');
-        }
-    });
+// Vanilla JS password visibility toggle
+document.getElementById('togglePasswordBtn').addEventListener('click', function() {
+    const pwd = document.getElementById('password');
+    const icon = document.getElementById('togglePasswordIcon');
+    if (pwd.type === 'password') {
+        pwd.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        pwd.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+});
+
+// Vanilla JS client validation
+document.getElementById('studentLoginForm').addEventListener('submit', function(e) {
+    const email = document.getElementById('email').value.trim();
+    const pwd = document.getElementById('password').value;
+    const alertBox = document.getElementById('authAlert');
+
+    if (!email || !pwd) {
+        e.preventDefault();
+        alertBox.textContent = 'Please enter both your email address and password.';
+        alertBox.classList.remove('d-none');
+    } else {
+        alertBox.classList.add('d-none');
+    }
+});
 </script>
 {% endblock %}

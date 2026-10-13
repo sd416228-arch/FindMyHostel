@@ -1,141 +1,146 @@
 {% extends 'admin_base.html' %}
+{% load static %}
 
-{% block title %}{% if hostel %}Edit{% else %}Add{% endif %} Hostel - FindMy Hostel{% endblock %}
-
-{% block page_title %}{% if hostel %}Edit{% else %}Add{% endif %} Hostel{% endblock %}
+{% block title %}{% if hostel %}Edit {{ hostel.name }}{% else %}Add New Hostel{% endif %} - FindMyHostel{% endblock %}
+{% block page_title %}{% if hostel %}Edit Hostel{% else %}New Listing{% endif %}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center my-5">
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-body p-4">
-                <h2 class="card-title mb-4">
-                    {% if hostel %}Edit Hostel{% else %}Add New Hostel{% endif %}
-                </h2>
-                
-                <form method="POST" enctype="multipart/form-data">
+<div class="container-fluid px-0">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border rounded-4 bg-white p-4 p-md-5 shadow-sm mb-5">
+                <div class="mb-4 pb-3 border-bottom">
+                    <div class="fm-kicker mb-1">Hostel Management</div>
+                    <h1 class="h3 fw-bold mb-1">{% if hostel %}Edit Listing: {{ hostel.name }}{% else %}Register New Student Hostel{% endif %}</h1>
+                    <p class="small text-muted mb-0">Provide accurate details and photos to help students make confident booking decisions.</p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" novalidate>
                     {% csrf_token %}
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label">Hostel Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="name" name="name" required value="{{ hostel.name|default:'' }}">
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label small fw-bold text-uppercase text-muted">Hostel Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required value="{{ hostel.name|default:'' }}" placeholder="e.g. Kirtipur Scholar Student Residence" style="border-radius: 8px;">
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="email" name="email" required value="{{ hostel.email|default:'' }}">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label small fw-bold text-uppercase text-muted">Official Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required value="{{ hostel.email|default:'' }}" placeholder="hostel@gmail.com" style="border-radius: 8px;">
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="description" name="description" rows="4" required>{{ hostel.description|default:'' }}</textarea>
+                        <label for="description" class="form-label small fw-bold text-uppercase text-muted">Hostel Description &amp; House Rules <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required placeholder="Describe distance to nearby colleges, food menu, study environment, gates closing time, etc." style="border-radius: 8px;">{{ hostel.description|default:'' }}</textarea>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="location" name="location" required value="{{ hostel.location|default:'' }}">
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="location" class="form-label small fw-bold text-uppercase text-muted">Street Address / Landmark <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="location" name="location" required value="{{ hostel.location|default:'' }}" placeholder="e.g. Near TU Gate, Naya Bazaar" style="border-radius: 8px;">
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="city" class="form-label">City <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="city" name="city" required value="{{ hostel.city|default:'' }}">
+                        <div class="col-md-3">
+                            <label for="city" class="form-label small fw-bold text-uppercase text-muted">City <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="city" name="city" required value="{{ hostel.city|default:'Kathmandu' }}" placeholder="Kathmandu" style="border-radius: 8px;">
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="country" class="form-label">Country <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="country" name="country" required value="{{ hostel.country|default:'' }}">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="phone" class="form-label">Phone <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control" id="phone" name="phone" required value="{{ hostel.phone|default:'' }}" maxlength="10" pattern="[0-9]{10}" title="Phone number must be exactly 10 digits">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="website" class="form-label">Website</label>
-                            <input type="url" class="form-control" id="website" name="website" value="{{ hostel.website|default:'' }}">
+                        <div class="col-md-3">
+                            <label for="country" class="form-label small fw-bold text-uppercase text-muted">Country <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="country" name="country" required value="{{ hostel.country|default:'Nepal' }}" style="border-radius: 8px;">
                         </div>
                     </div>
-                    
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label small fw-bold text-uppercase text-muted">Contact Phone (10 Digits) <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required value="{{ hostel.phone|default:'' }}" maxlength="10" pattern="[0-9]{10}" placeholder="98XXXXXXXX" style="border-radius: 8px;">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="website" class="form-label small fw-bold text-uppercase text-muted">Website URL (Optional)</label>
+                            <input type="url" class="form-control" id="website" name="website" value="{{ hostel.website|default:'' }}" placeholder="https://myhostel.com" style="border-radius: 8px;">
+                        </div>
+                    </div>
+
                     <div class="mb-3">
-                        <label for="monthly_rent" class="form-label">Monthly Rent (Rs.) <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="monthly_rent" name="monthly_rent" step="0.01" min="0" required value="{{ hostel.monthly_rent|default:'' }}">
+                        <label for="monthly_rent" class="form-label small fw-bold text-uppercase text-muted">Base Monthly Rent (NPR) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="monthly_rent" name="monthly_rent" step="0.01" min="0" required value="{{ hostel.monthly_rent|default:'' }}" placeholder="9500" style="border-radius: 8px;">
+                        <small class="text-muted">The typical starting monthly rent displayed on discovery cards.</small>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="cover_image" class="form-label">Cover Image</label>
-                        <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*">
+
+                    <div class="mb-4">
+                        <label for="cover_image" class="form-label small fw-bold text-uppercase text-muted">Main Cover Photo</label>
+                        <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*" style="border-radius: 8px;">
                         {% if hostel.cover_image %}
-                            <small class="text-muted d-block mt-2">Current: <a href="{{ hostel.cover_image.url }}" target="_blank">View Image</a></small>
+                        <div class="d-flex align-items-center gap-2 mt-2">
+                            <img src="{{ hostel.cover_image.url }}" alt="Cover" class="rounded-3 border" style="width: 72px; height: 50px; object-fit: cover;">
+                            <span class="small text-muted">Current cover photo</span>
+                        </div>
                         {% endif %}
                     </div>
 
-                    <div class="mb-3" id="additionalImagesSection">
-                        <label class="form-label">Additional Images</label>
+                    <!-- Additional Photos -->
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Additional Gallery Photos</label>
                         <div id="imageInputs">
                             <div class="input-group mb-2">
-                                <input type="file" class="form-control" name="additional_images" accept="image/*">
-                                <button class="btn btn-outline-success" type="button" onclick="addImageInput()"><i class="fas fa-plus"></i></button>
+                                <input type="file" class="form-control" name="additional_images" accept="image/*" style="border-radius: 8px 0 0 8px;">
+                                <button class="btn btn-outline-dark" type="button" onclick="addImageInput()" style="border-radius: 0 8px 8px 0;"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
-                        <small class="text-muted d-block mt-2">Click <strong>+</strong> to add more image upload fields.</small>
+                        <small class="text-muted d-block mb-2">Click <strong>+</strong> to add more gallery photo upload fields.</small>
+
                         {% if hostel.images.all %}
-                        <div class="mt-2 d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2 mt-2">
                             {% for img in hostel.images.all %}
-                            <div class="position-relative">
-                                <img src="{{ img.image.url }}" alt="{{ img.caption }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
-                            </div>
+                            <img src="{{ img.image.url }}" alt="" class="rounded-3 border" style="width: 72px; height: 50px; object-fit: cover;">
                             {% endfor %}
                         </div>
                         {% endif %}
                     </div>
 
-                    <script>
-                    function addImageInput() {
-                        var div = document.createElement('div');
-                        div.className = 'input-group mb-2';
-                        div.innerHTML = '<input type="file" class="form-control" name="additional_images" accept="image/*">' +
-                            '<button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
-                        document.getElementById('imageInputs').appendChild(div);
-                    }
-                    </script>
-                    
-                    <h5 class="mt-4 mb-3">Amenities</h5>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="wifi" name="wifi" {% if hostel.wifi %}checked{% endif %}>
-                                <label class="form-check-label" for="wifi">WiFi</label>
+                    <!-- Amenities Checkboxes -->
+                    <div class="mb-4 pt-3 border-top">
+                        <label class="form-label small fw-bold text-uppercase text-muted mb-3 d-block">Available Facilities &amp; Amenities</label>
+                        <div class="row g-2">
+                            <div class="col-md-4 col-6">
+                                <div class="form-check p-2 border rounded-3 bg-light">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="wifi" name="wifi" {% if hostel.wifi %}checked{% endif %}>
+                                    <label class="form-check-label small fw-semibold" for="wifi"><i class="fas fa-wifi text-primary me-1"></i> High-Speed WiFi</label>
+                                </div>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="parking" name="parking" {% if hostel.parking %}checked{% endif %}>
-                                <label class="form-check-label" for="parking">Parking</label>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check p-2 border rounded-3 bg-light">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="kitchen" name="kitchen" {% if hostel.kitchen %}checked{% endif %}>
+                                    <label class="form-check-label small fw-semibold" for="kitchen"><i class="fas fa-utensils text-warning me-1"></i> Canteen / Meals</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="laundry" name="laundry" {% if hostel.laundry %}checked{% endif %}>
-                                <label class="form-check-label" for="laundry">Laundry</label>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check p-2 border rounded-3 bg-light">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="parking" name="parking" {% if hostel.parking %}checked{% endif %}>
+                                    <label class="form-check-label small fw-semibold" for="parking"><i class="fas fa-motorcycle text-success me-1"></i> Parking Area</label>
+                                </div>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="kitchen" name="kitchen" {% if hostel.kitchen %}checked{% endif %}>
-                                <label class="form-check-label" for="kitchen">Kitchen</label>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check p-2 border rounded-3 bg-light">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="laundry" name="laundry" {% if hostel.laundry %}checked{% endif %}>
+                                    <label class="form-check-label small fw-semibold" for="laundry"><i class="fas fa-shirt text-info me-1"></i> Laundry Service</label>
+                                </div>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="gym" name="gym" {% if hostel.gym %}checked{% endif %}>
-                                <label class="form-check-label" for="gym">Gym</label>
+                            <div class="col-md-4 col-6">
+                                <div class="form-check p-2 border rounded-3 bg-light">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="gym" name="gym" {% if hostel.gym %}checked{% endif %}>
+                                    <label class="form-check-label small fw-semibold" for="gym"><i class="fas fa-dumbbell text-danger me-1"></i> Gym Facility</label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <hr>
-                    
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-save"></i> Save Hostel
+
+                    <div class="d-flex gap-2 pt-3 border-top">
+                        <button type="submit" class="btn btn-warning fw-bold text-dark px-4 py-2" style="border-radius: 8px;">
+                            <i class="fas fa-floppy-disk me-1"></i> Save Hostel Details
                         </button>
-                        <a href="{% url 'hostels:owner_dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <a href="{% url 'hostels:owner_dashboard' %}" class="btn btn-light border text-muted px-3 py-2" style="border-radius: 8px;">
+                            Cancel
+                        </a>
                     </div>
                 </form>
             </div>
@@ -143,4 +148,13 @@
     </div>
 </div>
 
+<script>
+function addImageInput() {
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2';
+    div.innerHTML = '<input type="file" class="form-control" name="additional_images" accept="image/*" style="border-radius: 8px 0 0 8px;">' +
+        '<button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()" style="border-radius: 0 8px 8px 0;"><i class="fas fa-times"></i></button>';
+    document.getElementById('imageInputs').appendChild(div);
+}
+</script>
 {% endblock %}

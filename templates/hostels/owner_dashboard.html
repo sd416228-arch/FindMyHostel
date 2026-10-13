@@ -1,201 +1,277 @@
 {% extends 'admin_base.html' %}
+{% load static %}
 
-{% block title %}My Hostels - FindMy Hostel{% endblock %}
-
-{% block page_title %}My Hostels{% endblock %}
-
-{% block extra_css %}
-<style>
-    .stat-card {
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-        border-radius: 1rem;
-    }
-    .stat-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        cursor: pointer;
-    }
-</style>
-{% endblock %}
+{% block title %}Owner Dashboard - FindMyHostel{% endblock %}
+{% block page_title %}Owner Portal{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>My Hostels</h1>
-    <a href="{% url 'hostels:create' %}" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Add New Hostel
-    </a>
-</div>
+<div class="container-fluid px-0">
+    <!-- Header banner -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 pb-2 border-bottom">
+        <div>
+            <div class="fm-kicker mb-1">Hostel Management</div>
+            <h1 class="h3 fw-bold mb-0" style="color: var(--fmh-ink);">My Properties &amp; Bookings</h1>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'hostels:reservation_list' %}" class="btn btn-outline-dark btn-sm fw-semibold" style="border-radius: 8px;">
+                <i class="fas fa-hand-holding-heart me-1"></i> View Reservations
+            </a>
+            <a href="{% url 'hostels:create' %}" class="btn btn-warning btn-sm fw-bold text-dark" style="border-radius: 8px;">
+                <i class="fas fa-plus me-1"></i> Add New Hostel
+            </a>
+        </div>
+    </div>
 
-<div class="row">
-    <div class="col-md-3 mb-3">
-        <a href="#hostels-list" class="text-decoration-none d-block h-100">
-            <div class="card text-center h-100 stat-card">
-                <div class="card-body">
-                    <i class="fas fa-hotel fa-2x text-primary mb-2"></i>
-                    <h6 class="text-muted">Total Hostels</h6>
-                    <h3>{{ hostels.count }}</h3>
+    <!-- Overview Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 col-sm-6">
+            <div class="card border rounded-4 p-3 bg-white h-100 shadow-sm">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center text-primary" style="width: 48px; height: 48px; background: rgba(11,37,69,0.06); font-size: 1.25rem;">
+                        <i class="fas fa-hotel"></i>
+                    </div>
+                    <div>
+                        <div class="small text-muted fw-semibold">Listed Hostels</div>
+                        <div class="h3 fw-bold mb-0 tabular-nums" style="color: var(--fmh-ink);">{{ hostels.count }}</div>
+                    </div>
                 </div>
             </div>
-        </a>
-    </div>
-    <div class="col-md-3 mb-3">
-        <a href="{% url 'bookings:owner_list' %}" class="text-decoration-none d-block h-100">
-            <div class="card text-center h-100 stat-card">
-                <div class="card-body">
-                    <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
-                    <h6 class="text-muted">Total Bookings</h6>
-                    <h3>{{ total_bookings }}</h3>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+            <div class="card border rounded-4 p-3 bg-white h-100 shadow-sm">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center text-success" style="width: 48px; height: 48px; background: rgba(5,150,105,0.08); font-size: 1.25rem;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <div class="small text-muted fw-semibold">Total Student Bookings</div>
+                        <div class="h3 fw-bold mb-0 tabular-nums" style="color: var(--fmh-ink);">{{ total_bookings|default:"0" }}</div>
+                    </div>
                 </div>
             </div>
-        </a>
-    </div>
-    <div class="col-md-3 mb-3">
-        <a href="#reviews-list" class="text-decoration-none d-block h-100">
-            <div class="card text-center h-100 stat-card">
-                <div class="card-body">
-                    <i class="fas fa-star fa-2x text-warning mb-2"></i>
-                    <h6 class="text-muted">User Reviews</h6>
-                    <h3>{{ hostel_reviews|length }}</h3>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+            <div class="card border rounded-4 p-3 bg-white h-100 shadow-sm">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center text-warning" style="width: 48px; height: 48px; background: rgba(217,119,6,0.08); font-size: 1.25rem;">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div>
+                        <div class="small text-muted fw-semibold">Student Feedback</div>
+                        <div class="h3 fw-bold mb-0 tabular-nums" style="color: var(--fmh-ink);">{{ hostel_reviews|length }}</div>
+                    </div>
                 </div>
             </div>
-        </a>
+        </div>
     </div>
-</div>
 
-<h3 class="mt-4 mb-3" id="hostels-list">All Hostels</h3>
+    <!-- Listed Hostels Grid -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 fw-bold mb-0">My Hostel Listings</h2>
+        <span class="small text-muted">{{ hostels.count }} propert{{ hostels.count|pluralize:"y,ies" }}</span>
+    </div>
 
-{% if hostels %}
-    <div class="row">
+    {% if hostels %}
+    <div class="row g-4 mb-5">
         {% for hostel in hostels %}
-            <div class="col-md-6 mb-4">
-                <div class="card">
-                    {% if hostel.cover_image %}
-                        <img src="{{ hostel.cover_image.url }}" class="card-img-top" alt="{{ hostel.name }}" style="height: 200px; object-fit: cover;">
-                    {% else %}
-                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                            <i class="fas fa-hotel fa-5x text-muted"></i>
+        <div class="col-lg-6">
+            <div class="card border rounded-4 bg-white h-100 shadow-sm overflow-hidden">
+                <div class="row g-0 h-100">
+                    <div class="col-sm-5 position-relative">
+                        {% if hostel.cover_image %}
+                        <img src="{{ hostel.cover_image.url }}" alt="{{ hostel.name }}" class="w-100 h-100" style="object-fit: cover; min-height: 180px;">
+                        {% else %}
+                        <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center" style="min-height: 180px;">
+                            <i class="fas fa-hotel fa-3x text-muted opacity-50"></i>
                         </div>
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ hostel.name }}</h5>
-                        <p class="card-text text-muted small">{{ hostel.city }}, {{ hostel.country }}</p>
-                        
-                        <div class="mb-3">
-                            <p class="mb-1"><strong>Rooms:</strong> {{ hostel.rooms.count }}</p>
-                            <p class="mb-1"><strong>Rating:</strong> {{ hostel.rating|floatformat:1 }}/5.0</p>
-                            <p class="mb-0"><strong>Monthly Rent:</strong> Rs. {{ hostel.monthly_rent }}</p>
+                        {% endif %}
+                        {% if hostel.is_verified %}
+                        <span class="position-absolute top-0 start-0 m-2 badge bg-success text-white small">
+                            <i class="fas fa-check-circle me-1"></i>Verified
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-sm-7 p-3 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h3 class="h6 fw-bold mb-0 text-dark">{{ hostel.name }}</h3>
+                                <div class="small fw-bold text-dark d-flex align-items-center gap-1">
+                                    <i class="fas fa-star text-warning" style="font-size: 0.75rem;"></i>
+                                    <span>{{ hostel.rating|floatformat:1 }}</span>
+                                </div>
+                            </div>
+                            <div class="small text-muted mb-2">
+                                <i class="fas fa-location-dot me-1 text-danger"></i>{{ hostel.city }}, {{ hostel.location|default:"" }}
+                            </div>
+                            <div class="small text-muted mb-3">
+                                <span>{{ hostel.rooms.count }} Room Setup{{ hostel.rooms.count|pluralize }}</span>
+                                <span class="mx-1">&middot;</span>
+                                <strong class="text-dark tabular-nums">Rs. {{ hostel.monthly_rent }}/mo</strong>
+                            </div>
                         </div>
-                        
-                        <div class="d-grid gap-2">
-                            <a href="{% url 'hostels:edit' hostel.id %}" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-edit"></i> Edit
+
+                        <div class="d-flex gap-2 pt-2 border-top">
+                            <a href="{% url 'hostels:edit' hostel.id %}" class="btn btn-outline-dark btn-sm flex-fill" style="border-radius: 6px;">
+                                <i class="fas fa-pen me-1"></i> Edit
                             </a>
-                            <a href="{% url 'hostels:room_create' hostel.id %}" class="btn btn-outline-success btn-sm">
-                                <i class="fas fa-plus"></i> Add Room
+                            <a href="{% url 'hostels:room_create' hostel.id %}" class="btn btn-outline-primary btn-sm flex-fill" style="border-radius: 6px;">
+                                <i class="fas fa-plus me-1"></i> Add Room
                             </a>
-                            <form method="POST" action="{% url 'hostels:delete' hostel.id %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete &quot;{{ hostel.name }}&quot;? This cannot be undone.');">
+                            <form method="POST" action="{% url 'hostels:delete' hostel.id %}" onsubmit="return confirm('Delete this hostel listing &quot;{{ hostel.name }}&quot;?');">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                    <i class="fas fa-trash"></i> Delete
+                                <button type="submit" class="btn btn-outline-danger btn-sm" style="border-radius: 6px;" title="Delete Hostel">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         {% endfor %}
     </div>
-{% else %}
-    <div class="alert alert-info text-center py-5">
-        <i class="fas fa-hotel fa-3x mb-3"></i>
-        <p class="mb-2">You haven't added any hostels yet.</p>
-        <a href="{% url 'hostels:create' %}" class="btn btn-primary">Create First Hostel</a>
+    {% else %}
+    <div class="card border rounded-4 p-5 text-center bg-white mb-5">
+        <i class="fas fa-hotel fa-3x text-muted mb-3 opacity-50"></i>
+        <h5 class="fw-bold">No hostels listed yet</h5>
+        <p class="text-muted small mb-3">Create your first hostel listing to start receiving student bookings.</p>
+        <div>
+            <a href="{% url 'hostels:create' %}" class="btn btn-warning fw-bold text-dark px-4 py-2" style="border-radius: 8px;">
+                <i class="fas fa-plus me-1"></i> Create First Hostel
+            </a>
+        </div>
     </div>
-{% endif %}
+    {% endif %}
 
-<h3 class="mt-5 mb-3">Recent Bookings</h3>
-
-{% if recent_bookings %}
-    <div class="table-responsive">
-        <table class="table table-sm">
-            <thead>
-                <tr>
-                    <th>Guest</th>
-                    <th>Room</th>
-                    <th>Starting Date</th>
-                    <th>Nights</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for booking in recent_bookings %}
-                    <tr>
-                        <td>{{ booking.guest_name }}</td>
-                        <td>{{ booking.room.room_number }} - {{ booking.room.hostel.name }}</td>
-                        <td>{{ booking.starting_date|date:"M d" }}</td>
-                        <td>{{ booking.total_nights }}</td>
-                        <td><span class="badge bg-info">{{ booking.status }}</span></td>
-                        <td>
-                            {% if booking.status == 'pending' %}
-                                <form method="POST" action="{% url 'bookings:owner_update' booking.id 'accept' %}" style="display:inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline-success btn-sm" title="Accept"><i class="fas fa-check"></i></button>
-                                </form>
-                                <form method="POST" action="{% url 'bookings:owner_update' booking.id 'reject' %}" style="display:inline;" onsubmit="return confirm('Reject this booking by {{ booking.guest_name }}?');">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Reject"><i class="fas fa-times"></i></button>
-                                </form>
-                            {% else %}
-                                <span class="text-muted small">Handled</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-{% else %}
-    <p class="text-muted text-center">No recent bookings</p>
-{% endif %}
-
-<h3 class="mt-5 mb-3" id="reviews-list">User Reviews</h3>
-
-{% if hostel_reviews %}
-    <div class="table-responsive">
-        <table class="table table-sm">
-            <thead>
-                <tr>
-                    <th>User</th>
-                    <th>Hostel</th>
-                    <th>Rating</th>
-                    <th>Review</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for review in hostel_reviews %}
-                    <tr>
-                        <td>{{ review.user.get_full_name|default:review.user.username }}</td>
-                        <td>{{ review.hostel.name }}</td>
-                        <td>
-                            {% for i in "12345"|make_list %}
-                                {% if forloop.counter <= review.rating %}
-                                    <i class="fas fa-star text-warning" style="font-size: 0.8rem;"></i>
+    <!-- Recent Student Bookings -->
+    <div class="card border rounded-4 bg-white mb-5 shadow-sm overflow-hidden">
+        <div class="p-3 px-4 border-bottom d-flex justify-content-between align-items-center bg-light">
+            <h2 class="h6 fw-bold mb-0">
+                <i class="fas fa-calendar-check text-primary me-2"></i>Recent Booking Requests
+            </h2>
+            <a href="{% url 'bookings:owner_list' %}" class="small text-decoration-none fw-semibold">View All</a>
+        </div>
+        <div class="card-body p-0">
+            {% if recent_bookings %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Student / Guest</th>
+                            <th>Hostel &amp; Room</th>
+                            <th>Stay Date</th>
+                            <th>Nights</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in recent_bookings %}
+                        <tr>
+                            <td>
+                                <strong class="text-dark">{{ booking.guest_name }}</strong>
+                                <div class="small text-muted">{{ booking.guest_phone }}</div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ booking.room.hostel.name }}</div>
+                                <div class="small text-muted">Room {{ booking.room.room_number }} ({{ booking.room.get_room_type_display }})</div>
+                            </td>
+                            <td class="tabular-nums">
+                                {{ booking.starting_date|date:"M d, Y" }}
+                            </td>
+                            <td class="tabular-nums">
+                                {{ booking.total_nights }}
+                            </td>
+                            <td>
+                                {% if booking.status == 'pending' %}
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Pending</span>
+                                {% elif booking.status == 'confirmed' %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">Confirmed</span>
                                 {% else %}
-                                    <i class="far fa-star text-muted" style="font-size: 0.8rem;"></i>
+                                <span class="badge bg-light text-muted border">{{ booking.get_status_display }}</span>
                                 {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ review.comment }}</td>
-                        <td>{{ review.created_at|date:"M d, Y" }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            </td>
+                            <td class="text-end">
+                                {% if booking.status == 'pending' %}
+                                <form method="POST" action="{% url 'bookings:owner_update' booking.id 'accept' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm px-2 py-1" title="Accept Booking">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                                <form method="POST" action="{% url 'bookings:owner_update' booking.id 'reject' %}" class="d-inline" onsubmit="return confirm('Reject this booking request?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm px-2 py-1" title="Reject Booking">
+                                        <i class="fas fa-xmark"></i>
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="small text-muted">Handled</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted small">
+                No recent booking requests.
+            </div>
+            {% endif %}
+        </div>
     </div>
-{% else %}
-    <p class="text-muted text-center">No reviews yet.</p>
-{% endif %}
 
+    <!-- Student Reviews Summary -->
+    <div class="card border rounded-4 bg-white shadow-sm overflow-hidden" id="reviews-list">
+        <div class="p-3 px-4 border-bottom">
+            <h2 class="h6 fw-bold mb-0">
+                <i class="fas fa-star text-warning me-2"></i>Student Reviews on Your Properties
+            </h2>
+        </div>
+        <div class="card-body p-0">
+            {% if hostel_reviews %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Hostel</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                            <th class="text-end">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for review in hostel_reviews %}
+                        <tr>
+                            <td class="fw-semibold text-dark">{{ review.user.get_full_name|default:review.user.username }}</td>
+                            <td>{{ review.hostel.name }}</td>
+                            <td class="text-warning">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= review.rating %}
+                                    <i class="fas fa-star small"></i>
+                                    {% else %}
+                                    <i class="far fa-star text-muted small"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td class="text-muted small" style="max-width: 340px;">{{ review.comment }}</td>
+                            <td class="text-end text-muted small">{{ review.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted small">
+                No student reviews recorded yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

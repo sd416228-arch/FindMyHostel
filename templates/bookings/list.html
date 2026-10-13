@@ -1,130 +1,153 @@
 {% extends 'user_base.html' %}
+{% load static %}
 
-{% block title %}My Bookings - FindMy Hostel{% endblock %}
-
+{% block title %}My Bookings - FindMyHostel{% endblock %}
 {% block page_title %}My Bookings{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-    <h1 class="mb-0">My Bookings</h1>
-    <a href="{% url 'hostels:list' %}" class="btn btn-outline-primary rounded-pill fw-bold">
-        <i class="fas fa-search me-1"></i> Browse More Hostels
-    </a>
-</div>
+<div class="container-fluid px-0">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold mb-0">Booking History &amp; Stays</h1>
+            <p class="small text-muted mb-0">All past and upcoming hostel reservations made under your student account.</p>
+        </div>
+        <a href="{% url 'hostels:list' %}" class="btn btn-warning btn-sm fw-bold text-dark px-3" style="border-radius: 8px;">
+            <i class="fas fa-plus me-1"></i> Book New Hostel
+        </a>
+    </div>
 
-{% if bookings %}
+    {% if bookings %}
+    <!-- Summary Metrics -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
-            <div class="card text-center border-0 shadow-sm rounded-4" style="border: 1px solid #eee !important;">
-                <div class="card-body">
-                    <i class="fas fa-calendar-check fa-2x text-primary mb-2"></i>
-                    <h6 class="text-muted mb-0">Total</h6>
-                    <h3 class="fw-bold mb-0">{{ bookings.count }}</h3>
-                </div>
+            <div class="card border rounded-4 p-3 bg-white h-100 shadow-sm">
+                <div class="small text-muted fw-semibold">Total Stays</div>
+                <div class="h3 fw-bold mb-0 tabular-nums text-dark">{{ bookings.count }}</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card text-center border-0 shadow-sm rounded-4" style="border: 1px solid #eee !important;">
-                <div class="card-body">
-                    <i class="fas fa-hourglass-half fa-2x text-warning mb-2"></i>
-                    <h6 class="text-muted mb-0">Upcoming / Active</h6>
-                    <h3 class="fw-bold mb-0">{{ active_bookings }}</h3>
-                </div>
+            <div class="card border rounded-4 p-3 bg-white h-100 shadow-sm">
+                <div class="small text-muted fw-semibold">Active / Upcoming</div>
+                <div class="h3 fw-bold mb-0 tabular-nums text-primary">{{ active_bookings }}</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card text-center border-0 shadow-sm rounded-4" style="border: 1px solid #eee !important;">
-                <div class="card-body">
-                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
-                    <h6 class="text-muted mb-0">Completed</h6>
-                    <h3 class="fw-bold mb-0">{{ completed_bookings }}</h3>
-                </div>
+            <div class="card border rounded-4 p-3 bg-white h-100 shadow-sm">
+                <div class="small text-muted fw-semibold">Completed</div>
+                <div class="h3 fw-bold mb-0 tabular-nums text-success">{{ completed_bookings }}</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card text-center border-0 shadow-sm rounded-4" style="border: 1px solid #eee !important;">
-                <div class="card-body">
-                    <i class="fas fa-indian-rupee-sign fa-2x text-secondary mb-2"></i>
-                    <h6 class="text-muted mb-0">Total Paid</h6>
-                    <h3 class="fw-bold mb-0">Rs. {{ total_paid }}</h3>
-                </div>
+            <div class="card border rounded-4 p-3 bg-white h-100 shadow-sm">
+                <div class="small text-muted fw-semibold">Total Expenditure</div>
+                <div class="h3 fw-bold mb-0 tabular-nums text-dark">Rs. {{ total_paid }}</div>
             </div>
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Booking ID</th>
-                    <th>Hostel & Room</th>
-                    <th>Starting Date</th>
-                    <th>Nights</th>
-                    <th>Total Price</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for booking in bookings %}
+    <!-- Bookings Table -->
+    <div class="card border rounded-4 bg-white shadow-sm overflow-hidden mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
                     <tr>
-                        <td><a href="{% url 'bookings:detail' booking.id %}" class="fw-semibold text-decoration-none">#{{ booking.id }}</a></td>
+                        <th>Booking Ref</th>
+                        <th>Hostel &amp; Room</th>
+                        <th>Starting Date</th>
+                        <th>Stay Duration</th>
+                        <th>Total Rent</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
                         <td>
-                            <strong>{{ booking.room.hostel.name }}</strong><br>
-                            <small class="text-muted">Room {{ booking.room.room_number }}</small>
+                            <a href="{% url 'bookings:detail' booking.id %}" class="fw-bold text-dark text-decoration-none tabular-nums">
+                                #FMH-{{ booking.id }}
+                            </a>
                         </td>
-                        <td>{{ booking.starting_date|date:"M d, Y" }}</td>
-                        <td>{{ booking.total_nights }}</td>
-                        <td>Rs. {{ booking.total_price }}</td>
                         <td>
-                            {% if booking.status == 'pending' %}
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            {% elif booking.status == 'confirmed' %}
-                                <span class="badge bg-success">Confirmed</span>
+                            <strong>{{ booking.room.hostel.name }}</strong>
+                            <div class="small text-muted">Room {{ booking.room.room_number }} &middot; {{ booking.room.get_room_type_display }}</div>
+                        </td>
+                        <td class="tabular-nums">
+                            {{ booking.starting_date|date:"M d, Y" }}
+                        </td>
+                        <td class="tabular-nums">
+                            {{ booking.total_nights }} night{{ booking.total_nights|pluralize }}
+                        </td>
+                        <td>
+                            <strong class="tabular-nums text-dark">Rs. {{ booking.total_price }}</strong>
+                        </td>
+                        <td>
+                            {% if booking.status == 'confirmed' %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">Confirmed</span>
                             {% elif booking.status == 'checked_in' %}
-                                <span class="badge bg-info">Checked In</span>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Checked In</span>
+                            {% elif booking.status == 'pending' %}
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Pending</span>
                             {% elif booking.status == 'completed' %}
-                                <span class="badge bg-secondary">Completed</span>
+                            <span class="badge bg-light text-muted border">Completed</span>
                             {% else %}
-                                <span class="badge bg-danger">Cancelled</span>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Cancelled</span>
                             {% endif %}
                         </td>
-                        <td>
-                            <a href="{% url 'bookings:detail' booking.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                        <td class="text-end">
+                            <a href="{% url 'bookings:detail' booking.id %}" class="btn btn-outline-dark btn-sm px-2 py-1" style="border-radius: 6px;">
+                                Details
+                            </a>
                             {% if booking.status not in 'completed,cancelled' %}
-                                <button class="btn btn-sm btn-outline-danger" onclick="cancelBooking({{ booking.id }})">Cancel</button>
+                            <button class="btn btn-outline-danger btn-sm px-2 py-1 ms-1" style="border-radius: 6px;" onclick="cancelBookingAction({{ booking.id }})">
+                                Cancel
+                            </button>
                             {% endif %}
                         </td>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-{% else %}
-    <div class="alert alert-info text-center py-5 rounded-4">
-        <i class="fas fa-calendar-times fa-3x mb-3"></i>
-        <p class="mb-2">You don't have any bookings yet.</p>
-        <a href="{% url 'hostels:list' %}" class="btn btn-primary rounded-pill fw-bold">Start Booking</a>
+    {% else %}
+    <div class="card border rounded-4 p-5 text-center bg-white">
+        <i class="fas fa-calendar-xmark fa-3x text-muted mb-3 opacity-50"></i>
+        <h4 class="fw-bold">No Bookings Yet</h4>
+        <p class="text-muted small mb-4">You haven't made any hostel bookings yet. Browse our verified student homes across Nepal.</p>
+        <div>
+            <a href="{% url 'hostels:list' %}" class="btn btn-warning fw-bold text-dark px-4 py-2" style="border-radius: 8px;">
+                Explore Verified Hostels
+            </a>
+        </div>
     </div>
-{% endif %}
+    {% endif %}
+</div>
 
 <script>
-    function cancelBooking(bookingId) {
-        if (confirm('Are you sure you want to cancel this booking?')) {
-            fetch(`{% url "bookings:api_cancel" 0 %}`.replace('0', bookingId), {
-                method: 'POST',
-                headers: {'X-CSRFToken': csrftoken}
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert(data.error);
-                }
-            });
-        }
+async function cancelBookingAction(bookingId) {
+    if (!confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+        return;
     }
-</script>
 
+    try {
+        const response = await fetch(`/bookings/api/${bookingId}/cancel/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            const data = await response.json();
+            alert(data.error || 'Failed to cancel booking.');
+        }
+    } catch (err) {
+        alert('Network error while cancelling booking.');
+    }
+}
+</script>
 {% endblock %}

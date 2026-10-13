@@ -26,6 +26,14 @@ class Migration(migrations.Migration):
             name='stay_date',
             field=models.DateField(),
         ),
+        migrations.RemoveIndex(
+            model_name='booking',
+            name='bookings_bo_room_id_59e0a4_idx',
+        ),
+        migrations.RemoveIndex(
+            model_name='booking',
+            name='bookings_bo_status_4382c8_idx',
+        ),
         migrations.RemoveField(
             model_name='booking',
             name='check_in_date',
